@@ -1,0 +1,17 @@
+{
+    "name": "project/hotel-booking-backend",
+    "description": "Backend sinh tu so do lop (class diagram) - kien truc module hoa (Routes/Controllers/Services/Repositories/Models)",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "vlucas/phpdotenv": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\": "database/",
+            "Shared\\": "shared/",
+            "Middleware\\": "middleware/"
+        }
+    }
+}
