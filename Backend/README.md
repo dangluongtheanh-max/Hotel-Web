@@ -7,12 +7,11 @@ hoa: moi module nghiep vu co du 4 lop `Routes -> Controllers -> Services -> Repo
 
 - `TaiKhoan` (BE1) — model: TaiKhoan
 - `KhachHang` (BE1) — model: KhachHang
-- `DatPhong` (BE1) — model: PhieuNhanPhong, KhuyenMai
+- `DatPhong` (BE1) — entities: PhieuNhanPhong, ChiTietPhieuNhanPhong, KhuyenMai
 - `DanhGia` (BE1) — model: DanhGia
 - `LeTan` (BE2) — model: LeTan
 - `Phong` (BE3) — model: Phong, LoaiPhong
-- `ChiNhanh` (BE3) — model: ChiNhanh
-- `QuanLy` (BE3) — model: QuanLy
+- `DichVu` — catalog and service-booking controller; other layers remain unimplemented
 - `ThanhToan` (BE4) — model: ThanhToan
 - `HoaDon` (BE4) — model: HoaDon, CTHD
 - `Admin` (BE4) — model: Admin
@@ -24,8 +23,10 @@ hoa: moi module nghiep vu co du 4 lop `Routes -> Controllers -> Services -> Repo
    goi qua **Service** cua module do (khong duoc goi thang Repository/Model cheo module)
    de giu tinh dong goi giua cac module.
 3. **Controller** chi nhan request/goi Service/tra response, khong chua logic nghiep vu.
-4. `database/migrations` duoc danh so thu tu theo phu thuoc khoa ngoai
-   (TaiKhoan -> ChiNhanh/Admin -> KhachHang/LeTan/QuanLy -> Phong -> PhieuNhanPhong -> ...).
+4. Thứ tự tạo bảng theo phụ thuộc khóa ngoại: tài khoản và vai trò, khách hàng/nhân viên,
+   loại phòng/phòng/khuyến mãi, phiếu và chi tiết phiếu, dịch vụ/hóa đơn, rồi đánh giá/thanh toán.
+5. Admin quản lý tài khoản nhân viên lễ tân; hệ thống hiện mô hình hóa một khách sạn,
+   không tách chi nhánh hoặc vai trò quản lý riêng.
 
 ## Cai dat
 

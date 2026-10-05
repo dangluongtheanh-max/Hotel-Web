@@ -2,35 +2,35 @@
 
 namespace App\DatPhong\Models;
 
-/**
- * Model KhuyenMai
- * Sinh ra tu so do lop (class diagram) - module DatPhong.
- */
 class KhuyenMai
 {
-    /** @var string (PK) */
     private string $MaKM;
-    /** @var string */
     private string $TenKM;
-    /** @var string */
     private string $LoaiKM;
-    /** @var float */
     private float $GiaTriGiam;
-    /** @var int */
     private int $SoDemToiThieu;
+    private \DateTimeInterface $NgayBatDau;
+    private \DateTimeInterface $NgayKetThuc;
+    private string $TrangThai;
 
     public function __construct(
         string $MaKM,
         string $TenKM,
         string $LoaiKM,
         float $GiaTriGiam,
-        int $SoDemToiThieu
+        int $SoDemToiThieu,
+        \DateTimeInterface $NgayBatDau,
+        \DateTimeInterface $NgayKetThuc,
+        string $TrangThai = 'HoatDong'
     ) {
         $this->MaKM = $MaKM;
         $this->TenKM = $TenKM;
         $this->LoaiKM = $LoaiKM;
         $this->GiaTriGiam = $GiaTriGiam;
         $this->SoDemToiThieu = $SoDemToiThieu;
+        $this->NgayBatDau = $NgayBatDau;
+        $this->NgayKetThuc = $NgayKetThuc;
+        $this->TrangThai = $TrangThai;
     }
 
     public function getMaKM(): string
@@ -58,6 +58,21 @@ class KhuyenMai
         return $this->SoDemToiThieu;
     }
 
+    public function getNgayBatDau(): \DateTimeInterface
+    {
+        return $this->NgayBatDau;
+    }
+
+    public function getNgayKetThuc(): \DateTimeInterface
+    {
+        return $this->NgayKetThuc;
+    }
+
+    public function getTrangThai(): string
+    {
+        return $this->TrangThai;
+    }
+
     public function setMaKM(string $MaKM): void
     {
         $this->MaKM = $MaKM;
@@ -83,6 +98,21 @@ class KhuyenMai
         $this->SoDemToiThieu = $SoDemToiThieu;
     }
 
+    public function setNgayBatDau(\DateTimeInterface $NgayBatDau): void
+    {
+        $this->NgayBatDau = $NgayBatDau;
+    }
+
+    public function setNgayKetThuc(\DateTimeInterface $NgayKetThuc): void
+    {
+        $this->NgayKetThuc = $NgayKetThuc;
+    }
+
+    public function setTrangThai(string $TrangThai): void
+    {
+        $this->TrangThai = $TrangThai;
+    }
+
     public function toArray(): array
     {
         return [
@@ -91,6 +121,9 @@ class KhuyenMai
             'LoaiKM' => $this->LoaiKM,
             'GiaTriGiam' => $this->GiaTriGiam,
             'SoDemToiThieu' => $this->SoDemToiThieu,
+            'NgayBatDau' => $this->NgayBatDau,
+            'NgayKetThuc' => $this->NgayKetThuc,
+            'TrangThai' => $this->TrangThai,
         ];
     }
 }

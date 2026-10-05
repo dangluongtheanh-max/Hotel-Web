@@ -20,7 +20,14 @@ class AdminRoute
     $router->post('/admin/motaikhoannhanvien', [AdminController::class, 'moTaiKhoanNhanVien']);
     $router->post('/admin/khoataikhoannhanvien', [AdminController::class, 'khoaTaiKhoanNhanVien']);
     $router->post('/admin/thongkesoluongnhanvien', [AdminController::class, 'thongKeSoLuongNhanVien']);
-    $router->post('/admin/thongkedoanhthuchinhanh', [AdminController::class, 'thongKeDoanhThuChiNhanh']);
+    $router->post('/admin/thongkedoanhthu', [AdminController::class, 'thongKeDoanhThu']);
     $router->post('/admin/thongkesoluongphong', [AdminController::class, 'thongKeSoLuongPhong']);
+    $router->post('/admin/xemdsletan', [AdminController::class, 'xemDSLeTan']);
+    $router->post('/admin/timkiemletan', [AdminController::class, 'timKiemLeTan']);
+    $router->post('/admin/xemctletan', [AdminController::class, 'xemCTLeTan']);
+    $router->post('/admin/capnhatthongtinletan', [AdminController::class, 'capNhatThongTinLeTan']);
+    $router->post('/admin/themletan', [AdminController::class, 'themLeTan']);
+    $router->post('/admin/motaikhoanletan', [AdminController::class, 'moTaiKhoanLeTan']);
+    $router->post('/admin/khoataikhoanletan', [AdminController::class, 'khoaTaiKhoanLeTan']);
     }
 }

@@ -24,7 +24,19 @@ class AdminController
         return Response::json($response, $result);
     }
 
+    public function xemDSLeTan($request, $response)
+    {
+        $result = $this->service->xemDSNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
     public function timKiemNhanVien($request, $response)
+    {
+        $result = $this->service->timKiemNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
+    public function timKiemLeTan($request, $response)
     {
         $result = $this->service->timKiemNhanVien($request->all());
         return Response::json($response, $result);
@@ -36,7 +48,19 @@ class AdminController
         return Response::json($response, $result);
     }
 
+    public function xemCTLeTan($request, $response)
+    {
+        $result = $this->service->xemCTNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
     public function capNhatThongTinNhanVien($request, $response)
+    {
+        $result = $this->service->capNhatThongTinNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
+    public function capNhatThongTinLeTan($request, $response)
     {
         $result = $this->service->capNhatThongTinNhanVien($request->all());
         return Response::json($response, $result);
@@ -48,7 +72,19 @@ class AdminController
         return Response::json($response, $result);
     }
 
+    public function themLeTan($request, $response)
+    {
+        $result = $this->service->themNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
     public function moTaiKhoanNhanVien($request, $response)
+    {
+        $result = $this->service->moTaiKhoanNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
+    public function moTaiKhoanLeTan($request, $response)
     {
         $result = $this->service->moTaiKhoanNhanVien($request->all());
         return Response::json($response, $result);
@@ -60,13 +96,19 @@ class AdminController
         return Response::json($response, $result);
     }
 
+    public function khoaTaiKhoanLeTan($request, $response)
+    {
+        $result = $this->service->khoaTaiKhoanNhanVien($request->all());
+        return Response::json($response, $result);
+    }
+
     public function thongKeSoLuongNhanVien($request, $response)
     {
         $result = $this->service->thongKeSoLuongNhanVien($request->all());
         return Response::json($response, $result);
     }
 
-    public function thongKeDoanhThuChiNhanh($request, $response)
+    public function thongKeDoanhThu($request, $response)
     {
         $result = $this->service->thongKeDoanhThuChiNhanh($request->all());
         return Response::json($response, $result);

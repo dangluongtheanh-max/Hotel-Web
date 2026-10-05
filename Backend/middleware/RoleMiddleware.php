@@ -4,7 +4,7 @@ namespace Middleware;
 
 /**
  * Kiem tra vai tro (VaiTro trong TaiKhoan) co duoc phep truy cap route hay khong.
- * Vi du: chi Admin moi duoc goi cac route trong module Admin/ChiNhanh.
+ * Vi du: chi Admin moi duoc goi cac route trong module Admin.
  */
 class RoleMiddleware
 {

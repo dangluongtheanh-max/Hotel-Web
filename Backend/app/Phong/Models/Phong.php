@@ -14,19 +14,14 @@ class Phong
     private string $TrangThaiPhong;
     /** @var string (FK) */
     private string $MaLoaiPhong;
-    /** @var string (PK/FK) */
-    private string $MaChiNhanh;
-
     public function __construct(
         string $MaPhong,
         string $TrangThaiPhong,
-        string $MaLoaiPhong,
-        string $MaChiNhanh
+        string $MaLoaiPhong
     ) {
         $this->MaPhong = $MaPhong;
         $this->TrangThaiPhong = $TrangThaiPhong;
         $this->MaLoaiPhong = $MaLoaiPhong;
-        $this->MaChiNhanh = $MaChiNhanh;
     }
 
     public function getMaPhong(): string
@@ -44,11 +39,6 @@ class Phong
         return $this->MaLoaiPhong;
     }
 
-    public function getMaChiNhanh(): string
-    {
-        return $this->MaChiNhanh;
-    }
-
     public function setMaPhong(string $MaPhong): void
     {
         $this->MaPhong = $MaPhong;
@@ -64,18 +54,12 @@ class Phong
         $this->MaLoaiPhong = $MaLoaiPhong;
     }
 
-    public function setMaChiNhanh(string $MaChiNhanh): void
-    {
-        $this->MaChiNhanh = $MaChiNhanh;
-    }
-
     public function toArray(): array
     {
         return [
             'MaPhong' => $this->MaPhong,
             'TrangThaiPhong' => $this->TrangThaiPhong,
             'MaLoaiPhong' => $this->MaLoaiPhong,
-            'MaChiNhanh' => $this->MaChiNhanh,
         ];
     }
 }

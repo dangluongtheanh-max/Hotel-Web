@@ -2,33 +2,27 @@
 
 namespace App\ThanhToan\Models;
 
-/**
- * Model ThanhToan
- * Sinh ra tu so do lop (class diagram) - module ThanhToan.
- */
 class ThanhToan
 {
-    /** @var string (PK) */
     private string $MaThanhToan;
-    /** @var float */
     private float $SoTien;
-    /** @var \DateTimeInterface */
     private \DateTimeInterface $ThoiGianThanhToan;
-    /** @var string */
+    private string $HinhThuc;
     private string $TrangThaiThanhToan;
-    /** @var string (FK) */
     private string $MaHD;
 
     public function __construct(
         string $MaThanhToan,
         float $SoTien,
         \DateTimeInterface $ThoiGianThanhToan,
+        string $HinhThuc,
         string $TrangThaiThanhToan,
         string $MaHD
     ) {
         $this->MaThanhToan = $MaThanhToan;
         $this->SoTien = $SoTien;
         $this->ThoiGianThanhToan = $ThoiGianThanhToan;
+        $this->HinhThuc = $HinhThuc;
         $this->TrangThaiThanhToan = $TrangThaiThanhToan;
         $this->MaHD = $MaHD;
     }
@@ -46,6 +40,11 @@ class ThanhToan
     public function getThoiGianThanhToan(): \DateTimeInterface
     {
         return $this->ThoiGianThanhToan;
+    }
+
+    public function getHinhThuc(): string
+    {
+        return $this->HinhThuc;
     }
 
     public function getTrangThaiThanhToan(): string
@@ -73,6 +72,11 @@ class ThanhToan
         $this->ThoiGianThanhToan = $ThoiGianThanhToan;
     }
 
+    public function setHinhThuc(string $HinhThuc): void
+    {
+        $this->HinhThuc = $HinhThuc;
+    }
+
     public function setTrangThaiThanhToan(string $TrangThaiThanhToan): void
     {
         $this->TrangThaiThanhToan = $TrangThaiThanhToan;
@@ -89,6 +93,7 @@ class ThanhToan
             'MaThanhToan' => $this->MaThanhToan,
             'SoTien' => $this->SoTien,
             'ThoiGianThanhToan' => $this->ThoiGianThanhToan,
+            'HinhThuc' => $this->HinhThuc,
             'TrangThaiThanhToan' => $this->TrangThaiThanhToan,
             'MaHD' => $this->MaHD,
         ];

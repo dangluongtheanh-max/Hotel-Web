@@ -2,59 +2,32 @@
 
 namespace App\DatPhong\Models;
 
-/**
- * Model PhieuNhanPhong
- * Sinh ra tu so do lop (class diagram) - module DatPhong.
- */
 class PhieuNhanPhong
 {
-    /** @var string (PK) */
     private string $MaPhieu;
-    /** @var \DateTimeInterface */
     private \DateTimeInterface $NgayLap;
-    /** @var \DateTimeInterface */
-    private \DateTimeInterface $ThoiGianNhanPhong;
-    /** @var \DateTimeInterface */
-    private \DateTimeInterface $ThoiGianTraPhong;
-    /** @var int */
-    private int $SoNguoi;
-    /** @var string */
+    private string $KenhDat;
     private string $TrangThai;
-    /** @var string (FK) */
     private string $MaKH;
-    /** @var string (FK) */
-    private string $MaPhong;
-    /** @var string (FK) */
-    private string $MaLeTan;
-    /** @var string (FK) */
-    private string $MaKM;
-    /** @var string (FK) */
-    private string $MaChiNhanh;
+    private ?string $MaLeTan;
+    private ?string $MaKM;
 
     public function __construct(
         string $MaPhieu,
         \DateTimeInterface $NgayLap,
-        \DateTimeInterface $ThoiGianNhanPhong,
-        \DateTimeInterface $ThoiGianTraPhong,
-        int $SoNguoi,
+        string $KenhDat,
         string $TrangThai,
         string $MaKH,
-        string $MaPhong,
-        string $MaLeTan,
-        string $MaKM,
-        string $MaChiNhanh
+        ?string $MaLeTan = null,
+        ?string $MaKM = null
     ) {
         $this->MaPhieu = $MaPhieu;
         $this->NgayLap = $NgayLap;
-        $this->ThoiGianNhanPhong = $ThoiGianNhanPhong;
-        $this->ThoiGianTraPhong = $ThoiGianTraPhong;
-        $this->SoNguoi = $SoNguoi;
+        $this->KenhDat = $KenhDat;
         $this->TrangThai = $TrangThai;
         $this->MaKH = $MaKH;
-        $this->MaPhong = $MaPhong;
         $this->MaLeTan = $MaLeTan;
         $this->MaKM = $MaKM;
-        $this->MaChiNhanh = $MaChiNhanh;
     }
 
     public function getMaPhieu(): string
@@ -67,19 +40,9 @@ class PhieuNhanPhong
         return $this->NgayLap;
     }
 
-    public function getThoiGianNhanPhong(): \DateTimeInterface
+    public function getKenhDat(): string
     {
-        return $this->ThoiGianNhanPhong;
-    }
-
-    public function getThoiGianTraPhong(): \DateTimeInterface
-    {
-        return $this->ThoiGianTraPhong;
-    }
-
-    public function getSoNguoi(): int
-    {
-        return $this->SoNguoi;
+        return $this->KenhDat;
     }
 
     public function getTrangThai(): string
@@ -92,24 +55,14 @@ class PhieuNhanPhong
         return $this->MaKH;
     }
 
-    public function getMaPhong(): string
-    {
-        return $this->MaPhong;
-    }
-
-    public function getMaLeTan(): string
+    public function getMaLeTan(): ?string
     {
         return $this->MaLeTan;
     }
 
-    public function getMaKM(): string
+    public function getMaKM(): ?string
     {
         return $this->MaKM;
-    }
-
-    public function getMaChiNhanh(): string
-    {
-        return $this->MaChiNhanh;
     }
 
     public function setMaPhieu(string $MaPhieu): void
@@ -122,19 +75,9 @@ class PhieuNhanPhong
         $this->NgayLap = $NgayLap;
     }
 
-    public function setThoiGianNhanPhong(\DateTimeInterface $ThoiGianNhanPhong): void
+    public function setKenhDat(string $KenhDat): void
     {
-        $this->ThoiGianNhanPhong = $ThoiGianNhanPhong;
-    }
-
-    public function setThoiGianTraPhong(\DateTimeInterface $ThoiGianTraPhong): void
-    {
-        $this->ThoiGianTraPhong = $ThoiGianTraPhong;
-    }
-
-    public function setSoNguoi(int $SoNguoi): void
-    {
-        $this->SoNguoi = $SoNguoi;
+        $this->KenhDat = $KenhDat;
     }
 
     public function setTrangThai(string $TrangThai): void
@@ -147,24 +90,14 @@ class PhieuNhanPhong
         $this->MaKH = $MaKH;
     }
 
-    public function setMaPhong(string $MaPhong): void
-    {
-        $this->MaPhong = $MaPhong;
-    }
-
-    public function setMaLeTan(string $MaLeTan): void
+    public function setMaLeTan(?string $MaLeTan): void
     {
         $this->MaLeTan = $MaLeTan;
     }
 
-    public function setMaKM(string $MaKM): void
+    public function setMaKM(?string $MaKM): void
     {
         $this->MaKM = $MaKM;
-    }
-
-    public function setMaChiNhanh(string $MaChiNhanh): void
-    {
-        $this->MaChiNhanh = $MaChiNhanh;
     }
 
     public function toArray(): array
@@ -172,15 +105,11 @@ class PhieuNhanPhong
         return [
             'MaPhieu' => $this->MaPhieu,
             'NgayLap' => $this->NgayLap,
-            'ThoiGianNhanPhong' => $this->ThoiGianNhanPhong,
-            'ThoiGianTraPhong' => $this->ThoiGianTraPhong,
-            'SoNguoi' => $this->SoNguoi,
+            'KenhDat' => $this->KenhDat,
             'TrangThai' => $this->TrangThai,
             'MaKH' => $this->MaKH,
-            'MaPhong' => $this->MaPhong,
             'MaLeTan' => $this->MaLeTan,
             'MaKM' => $this->MaKM,
-            'MaChiNhanh' => $this->MaChiNhanh,
         ];
     }
 }

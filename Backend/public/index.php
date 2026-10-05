@@ -92,10 +92,6 @@ $router = new class {
 
 \App\Phong\Routes\PhongRoute::register($router);
 
-\App\ChiNhanh\Routes\ChiNhanhRoute::register($router);
-
-\App\QuanLy\Routes\QuanLyRoute::register($router);
-
 \App\ThanhToan\Routes\ThanhToanRoute::register($router);
 
 \App\HoaDon\Routes\HoaDonRoute::register($router);

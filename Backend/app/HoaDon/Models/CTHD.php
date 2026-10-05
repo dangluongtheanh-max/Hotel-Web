@@ -2,38 +2,34 @@
 
 namespace App\HoaDon\Models;
 
-/**
- * Model CTHD
- * Sinh ra tu so do lop (class diagram) - module HoaDon.
- */
 class CTHD
 {
-    /** @var int (PK) */
     private int $MaCTHD;
-    /** @var string (FK) */
     private string $MaHD;
-    /** @var string (FK) */
-    private string $MaChiNhanh;
-    /** @var string (FK) */
-    private string $MaPhong;
-    /** @var int */
+    private string $MaPhieu;
+    private ?string $MaPhong;
+    private ?string $MaDV;
     private int $SoDem;
-    /** @var float */
+    private int $SoLuong;
     private float $DonGia;
 
     public function __construct(
         int $MaCTHD,
         string $MaHD,
-        string $MaChiNhanh,
-        string $MaPhong,
+        string $MaPhieu,
+        ?string $MaPhong,
+        ?string $MaDV,
         int $SoDem,
+        int $SoLuong,
         float $DonGia
     ) {
         $this->MaCTHD = $MaCTHD;
         $this->MaHD = $MaHD;
-        $this->MaChiNhanh = $MaChiNhanh;
+        $this->MaPhieu = $MaPhieu;
         $this->MaPhong = $MaPhong;
+        $this->MaDV = $MaDV;
         $this->SoDem = $SoDem;
+        $this->SoLuong = $SoLuong;
         $this->DonGia = $DonGia;
     }
 
@@ -47,19 +43,29 @@ class CTHD
         return $this->MaHD;
     }
 
-    public function getMaChiNhanh(): string
+    public function getMaPhieu(): string
     {
-        return $this->MaChiNhanh;
+        return $this->MaPhieu;
     }
 
-    public function getMaPhong(): string
+    public function getMaPhong(): ?string
     {
         return $this->MaPhong;
+    }
+
+    public function getMaDV(): ?string
+    {
+        return $this->MaDV;
     }
 
     public function getSoDem(): int
     {
         return $this->SoDem;
+    }
+
+    public function getSoLuong(): int
+    {
+        return $this->SoLuong;
     }
 
     public function getDonGia(): float
@@ -77,19 +83,29 @@ class CTHD
         $this->MaHD = $MaHD;
     }
 
-    public function setMaChiNhanh(string $MaChiNhanh): void
+    public function setMaPhieu(string $MaPhieu): void
     {
-        $this->MaChiNhanh = $MaChiNhanh;
+        $this->MaPhieu = $MaPhieu;
     }
 
-    public function setMaPhong(string $MaPhong): void
+    public function setMaPhong(?string $MaPhong): void
     {
         $this->MaPhong = $MaPhong;
+    }
+
+    public function setMaDV(?string $MaDV): void
+    {
+        $this->MaDV = $MaDV;
     }
 
     public function setSoDem(int $SoDem): void
     {
         $this->SoDem = $SoDem;
+    }
+
+    public function setSoLuong(int $SoLuong): void
+    {
+        $this->SoLuong = $SoLuong;
     }
 
     public function setDonGia(float $DonGia): void
@@ -102,9 +118,11 @@ class CTHD
         return [
             'MaCTHD' => $this->MaCTHD,
             'MaHD' => $this->MaHD,
-            'MaChiNhanh' => $this->MaChiNhanh,
+            'MaPhieu' => $this->MaPhieu,
             'MaPhong' => $this->MaPhong,
+            'MaDV' => $this->MaDV,
             'SoDem' => $this->SoDem,
+            'SoLuong' => $this->SoLuong,
             'DonGia' => $this->DonGia,
         ];
     }

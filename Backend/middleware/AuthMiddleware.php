@@ -4,7 +4,7 @@ namespace Middleware;
 
 /**
  * Kiem tra nguoi dung da dang nhap (co token/session hop le) hay chua.
- * Ap dung cho cac route can dang nhap: KhachHang, LeTan, QuanLy, Admin.
+ * Ap dung cho cac route can dang nhap: KhachHang, LeTan, Admin.
  */
 class AuthMiddleware
 {

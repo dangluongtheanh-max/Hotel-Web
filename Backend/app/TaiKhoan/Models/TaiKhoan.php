@@ -102,7 +102,6 @@ class TaiKhoan
         return [
             'MaTK' => $this->MaTK,
             'TenDangNhap' => $this->TenDangNhap,
-            'MatKhau' => $this->MatKhau,
             'Email' => $this->Email,
             'TrangThaiTaiKhoan' => $this->TrangThaiTaiKhoan,
             'VaiTro' => $this->VaiTro,

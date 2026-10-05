@@ -15,26 +15,21 @@ class LeTan
     /** @var string */
     private string $SDT;
     /** @var string */
-    private string $Email;
+    private ?string $Email;
     /** @var string (FK) */
     private string $MaTK;
-    /** @var string (FK) */
-    private string $MaChiNhanh;
-
     public function __construct(
         string $MaLeTan,
         string $HoTen,
         string $SDT,
-        string $Email,
-        string $MaTK,
-        string $MaChiNhanh
+        ?string $Email,
+        string $MaTK
     ) {
         $this->MaLeTan = $MaLeTan;
         $this->HoTen = $HoTen;
         $this->SDT = $SDT;
         $this->Email = $Email;
         $this->MaTK = $MaTK;
-        $this->MaChiNhanh = $MaChiNhanh;
     }
 
     public function getMaLeTan(): string
@@ -52,7 +47,7 @@ class LeTan
         return $this->SDT;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->Email;
     }
@@ -60,11 +55,6 @@ class LeTan
     public function getMaTK(): string
     {
         return $this->MaTK;
-    }
-
-    public function getMaChiNhanh(): string
-    {
-        return $this->MaChiNhanh;
     }
 
     public function setMaLeTan(string $MaLeTan): void
@@ -82,7 +72,7 @@ class LeTan
         $this->SDT = $SDT;
     }
 
-    public function setEmail(string $Email): void
+    public function setEmail(?string $Email): void
     {
         $this->Email = $Email;
     }
@@ -90,11 +80,6 @@ class LeTan
     public function setMaTK(string $MaTK): void
     {
         $this->MaTK = $MaTK;
-    }
-
-    public function setMaChiNhanh(string $MaChiNhanh): void
-    {
-        $this->MaChiNhanh = $MaChiNhanh;
     }
 
     public function toArray(): array
@@ -105,7 +90,6 @@ class LeTan
             'SDT' => $this->SDT,
             'Email' => $this->Email,
             'MaTK' => $this->MaTK,
-            'MaChiNhanh' => $this->MaChiNhanh,
         ];
     }
 }

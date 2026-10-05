@@ -1,18 +1,12 @@
 -- =========================================================
 -- DATABASE: HOTEL BOOKING
--- File: Database/hotel_booking.sql
 -- =========================================================
 
 CREATE DATABASE IF NOT EXISTS hotel_booking
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
 USE hotel_booking;
-
-
--- =========================================================
--- 1. TAI KHOAN
--- =========================================================
 
 CREATE TABLE TaiKhoan (
     MaTK VARCHAR(50) PRIMARY KEY,
@@ -20,13 +14,9 @@ CREATE TABLE TaiKhoan (
     MatKhau VARCHAR(255) NOT NULL,
     Email VARCHAR(255) NOT NULL UNIQUE,
     TrangThaiTaiKhoan VARCHAR(50) NOT NULL,
-    VaiTro VARCHAR(50) NOT NULL
+    VaiTro VARCHAR(50) NOT NULL,
+    CHECK (VaiTro IN ('Admin', 'LeTan', 'KhachHang'))
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 2. ADMIN
--- =========================================================
 
 CREATE TABLE Admin (
     MaAdmin VARCHAR(50) PRIMARY KEY,
@@ -34,101 +24,29 @@ CREATE TABLE Admin (
     SDT VARCHAR(20),
     Email VARCHAR(255),
     MaTK VARCHAR(50) NOT NULL UNIQUE,
-
-    FOREIGN KEY (MaTK)
-        REFERENCES TaiKhoan(MaTK)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    FOREIGN KEY (MaTK) REFERENCES TaiKhoan(MaTK)
+        ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 3. CHI NHANH
--- =========================================================
-
-CREATE TABLE ChiNhanh (
-    MaChiNhanh VARCHAR(50) PRIMARY KEY,
-    TenChiNhanh VARCHAR(150) NOT NULL,
-    KhuVuc VARCHAR(100),
-    DiaChi VARCHAR(255),
-    MaAdmin VARCHAR(50) NOT NULL UNIQUE,
-
-    FOREIGN KEY (MaAdmin)
-        REFERENCES Admin(MaAdmin)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
-
--- =========================================================
--- 4. KHACH HANG
--- =========================================================
-
-CREATE TABLE KhachHang (
-    MaKH VARCHAR(50) PRIMARY KEY,
-    HoTen VARCHAR(100) NOT NULL,
-    SDT VARCHAR(20),
-    Email VARCHAR(255),
-    MaTK VARCHAR(50) NOT NULL UNIQUE,
-
-    FOREIGN KEY (MaTK)
-        REFERENCES TaiKhoan(MaTK)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
-
--- =========================================================
--- 5. LE TAN
--- =========================================================
 
 CREATE TABLE LeTan (
     MaLeTan VARCHAR(50) PRIMARY KEY,
     HoTen VARCHAR(100) NOT NULL,
-    SDT VARCHAR(20),
+    SDT VARCHAR(20) NOT NULL,
     Email VARCHAR(255),
     MaTK VARCHAR(50) NOT NULL UNIQUE,
-    MaChiNhanh VARCHAR(50) NOT NULL,
-
-    FOREIGN KEY (MaTK)
-        REFERENCES TaiKhoan(MaTK)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaChiNhanh)
-        REFERENCES ChiNhanh(MaChiNhanh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    FOREIGN KEY (MaTK) REFERENCES TaiKhoan(MaTK)
+        ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
--- =========================================================
--- 6. QUAN LY
--- =========================================================
-
-CREATE TABLE QuanLy (
-    MaQuanLy VARCHAR(50) PRIMARY KEY,
+CREATE TABLE KhachHang (
+    MaKH VARCHAR(50) PRIMARY KEY,
     HoTen VARCHAR(100) NOT NULL,
-    SDT VARCHAR(20),
+    SDT VARCHAR(20) NOT NULL,
     Email VARCHAR(255),
-    MaTK VARCHAR(50) NOT NULL UNIQUE,
-    MaChiNhanh VARCHAR(50) NOT NULL,
-
-    FOREIGN KEY (MaTK)
-        REFERENCES TaiKhoan(MaTK)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaChiNhanh)
-        REFERENCES ChiNhanh(MaChiNhanh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    MaTK VARCHAR(50) UNIQUE,
+    FOREIGN KEY (MaTK) REFERENCES TaiKhoan(MaTK)
+        ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 7. LOAI PHONG
--- =========================================================
 
 CREATE TABLE LoaiPhong (
     MaLoaiPhong VARCHAR(50) PRIMARY KEY,
@@ -136,90 +54,114 @@ CREATE TABLE LoaiPhong (
     Gia DECIMAL(15,2) NOT NULL,
     SoNguoiToiDa INT NOT NULL,
     MoTa TEXT,
-    TienNghi TEXT
+    TienNghi TEXT,
+    CHECK (Gia >= 0),
+    CHECK (SoNguoiToiDa > 0)
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 8. PHONG
--- =========================================================
 
 CREATE TABLE Phong (
-    MaPhong VARCHAR(50) NOT NULL,
+    MaPhong VARCHAR(50) PRIMARY KEY,
     TrangThaiPhong VARCHAR(50) NOT NULL,
     MaLoaiPhong VARCHAR(50) NOT NULL,
-    MaChiNhanh VARCHAR(50) NOT NULL,
-
-    PRIMARY KEY (MaPhong, MaChiNhanh),
-
-    FOREIGN KEY (MaLoaiPhong)
-        REFERENCES LoaiPhong(MaLoaiPhong)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaChiNhanh)
-        REFERENCES ChiNhanh(MaChiNhanh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    FOREIGN KEY (MaLoaiPhong) REFERENCES LoaiPhong(MaLoaiPhong)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CHECK (TrangThaiPhong IN ('Trong', 'DaDat', 'DangSuDung', 'BaoTri'))
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 9. KHUYEN MAI
--- =========================================================
 
 CREATE TABLE KhuyenMai (
     MaKM VARCHAR(50) PRIMARY KEY,
     TenKM VARCHAR(150) NOT NULL,
     LoaiKM VARCHAR(50) NOT NULL,
     GiaTriGiam DECIMAL(15,2) NOT NULL,
-    SoDemToiThieu INT NOT NULL
+    SoDemToiThieu INT NOT NULL DEFAULT 0,
+    NgayBatDau DATE NOT NULL,
+    NgayKetThuc DATE NOT NULL,
+    TrangThai VARCHAR(50) NOT NULL DEFAULT 'HoatDong',
+    CHECK (GiaTriGiam >= 0),
+    CHECK (SoDemToiThieu >= 0),
+    CHECK (NgayKetThuc >= NgayBatDau)
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 10. PHIEU NHAN PHONG
--- =========================================================
 
 CREATE TABLE PhieuNhanPhong (
     MaPhieu VARCHAR(50) PRIMARY KEY,
     NgayLap DATE NOT NULL,
+    KenhDat VARCHAR(20) NOT NULL,
+    TrangThai VARCHAR(50) NOT NULL,
+    MaKH VARCHAR(50) NOT NULL,
+    MaLeTan VARCHAR(50),
+    MaKM VARCHAR(50),
+    FOREIGN KEY (MaKH) REFERENCES KhachHang(MaKH)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (MaLeTan) REFERENCES LeTan(MaLeTan)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CHECK (KenhDat IN ('TrucTuyen', 'TrucTiep')),
+    CHECK (TrangThai IN ('ChoXacNhan', 'DaDat', 'DaNhanPhong', 'DangLuuTru', 'DaTraPhong', 'DaHuy', 'TuChoi')),
+    CHECK (
+        (KenhDat = 'TrucTuyen' AND MaLeTan IS NULL)
+        OR (KenhDat = 'TrucTiep' AND MaLeTan IS NOT NULL)
+    ),
+    UNIQUE (MaPhieu, MaKH)
+) ENGINE=InnoDB;
+
+CREATE TABLE ChiTietPhieuNhanPhong (
+    MaPhieu VARCHAR(50) NOT NULL,
+    MaPhong VARCHAR(50) NOT NULL,
     ThoiGianNhanPhong DATETIME NOT NULL,
     ThoiGianTraPhong DATETIME NOT NULL,
     SoNguoi INT NOT NULL,
     TrangThai VARCHAR(50) NOT NULL,
-
-    MaKH VARCHAR(50) NOT NULL,
-    MaPhong VARCHAR(50) NOT NULL,
-    MaLeTan VARCHAR(50),
-    MaKM VARCHAR(50),
-    MaChiNhanh VARCHAR(50) NOT NULL,
-
-    FOREIGN KEY (MaKH)
-        REFERENCES KhachHang(MaKH)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaPhong, MaChiNhanh)
-        REFERENCES Phong(MaPhong, MaChiNhanh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaLeTan)
-        REFERENCES LeTan(MaLeTan)
-        ON UPDATE CASCADE
-        ON DELETE SET NULL,
-
-    FOREIGN KEY (MaKM)
-        REFERENCES KhuyenMai(MaKM)
-        ON UPDATE CASCADE
-        ON DELETE SET NULL
+    PRIMARY KEY (MaPhieu, MaPhong),
+    FOREIGN KEY (MaPhieu) REFERENCES PhieuNhanPhong(MaPhieu)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (MaPhong) REFERENCES Phong(MaPhong)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CHECK (ThoiGianTraPhong > ThoiGianNhanPhong),
+    CHECK (SoNguoi > 0),
+    CHECK (TrangThai IN ('DaDat', 'DaNhanPhong', 'DangLuuTru', 'DaTraPhong', 'TuChoi'))
 ) ENGINE=InnoDB;
 
+CREATE TABLE DichVu (
+    MaDV VARCHAR(50) PRIMARY KEY,
+    TenDV VARCHAR(150) NOT NULL,
+    MoTa TEXT,
+    DonGia DECIMAL(15,2) NOT NULL,
+    TrangThai VARCHAR(50) NOT NULL DEFAULT 'DangCungCap',
+    CHECK (DonGia >= 0)
+) ENGINE=InnoDB;
 
--- =========================================================
--- 11. DANH GIA
--- =========================================================
+CREATE TABLE HoaDon (
+    MaHD VARCHAR(50) PRIMARY KEY,
+    MaPhieu VARCHAR(50) NOT NULL UNIQUE,
+    TongTienSauVAT DECIMAL(15,2) NOT NULL,
+    FOREIGN KEY (MaPhieu) REFERENCES PhieuNhanPhong(MaPhieu)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    UNIQUE (MaHD, MaPhieu),
+    CHECK (TongTienSauVAT >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE CTHD (
+    MaCTHD INT AUTO_INCREMENT PRIMARY KEY,
+    MaHD VARCHAR(50) NOT NULL,
+    MaPhieu VARCHAR(50) NOT NULL,
+    MaPhong VARCHAR(50),
+    MaDV VARCHAR(50),
+    SoDem INT NOT NULL DEFAULT 0,
+    SoLuong INT NOT NULL DEFAULT 1,
+    DonGia DECIMAL(15,2) NOT NULL,
+    FOREIGN KEY (MaHD, MaPhieu) REFERENCES HoaDon(MaHD, MaPhieu)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (MaPhieu, MaPhong) REFERENCES ChiTietPhieuNhanPhong(MaPhieu, MaPhong)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (MaDV) REFERENCES DichVu(MaDV)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CHECK (DonGia >= 0),
+    CHECK (
+        (MaPhong IS NOT NULL AND MaDV IS NULL AND SoDem > 0)
+        OR (MaPhong IS NULL AND MaDV IS NOT NULL AND SoLuong > 0)
+    )
+) ENGINE=InnoDB;
 
 CREATE TABLE DanhGia (
     MaDanhGia VARCHAR(50) PRIMARY KEY,
@@ -227,80 +169,23 @@ CREATE TABLE DanhGia (
     NoiDung TEXT,
     NgayDanhGia DATE NOT NULL,
     MaKH VARCHAR(50) NOT NULL,
-    MaPhieu VARCHAR(50) NOT NULL,
-
-    FOREIGN KEY (MaKH)
-        REFERENCES KhachHang(MaKH)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-
-    FOREIGN KEY (MaPhieu)
-        REFERENCES PhieuNhanPhong(MaPhieu)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    MaPhieu VARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (MaPhieu, MaKH) REFERENCES PhieuNhanPhong(MaPhieu, MaKH)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CHECK (SoSao BETWEEN 1 AND 5)
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- 12. HOA DON
--- =========================================================
-
-CREATE TABLE HoaDon (
-    MaHD VARCHAR(50) PRIMARY KEY,
-    MaKH VARCHAR(50) NOT NULL,
-    TongTienSauVAT DECIMAL(15,2) NOT NULL,
-
-    FOREIGN KEY (MaKH)
-        REFERENCES KhachHang(MaKH)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
-
--- =========================================================
--- 13. CHI TIET HOA DON
--- =========================================================
-
-CREATE TABLE CTHD (
-    MaCTHD INT AUTO_INCREMENT PRIMARY KEY,
-    MaHD VARCHAR(50) NOT NULL,
-    MaChiNhanh VARCHAR(50) NOT NULL,
-    MaPhong VARCHAR(50) NOT NULL,
-    SoDem INT NOT NULL,
-    DonGia DECIMAL(15,2) NOT NULL,
-
-    FOREIGN KEY (MaHD)
-        REFERENCES HoaDon(MaHD)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-
-    FOREIGN KEY (MaPhong, MaChiNhanh)
-        REFERENCES Phong(MaPhong, MaChiNhanh)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
-
--- =========================================================
--- 14. THANH TOAN
--- =========================================================
 
 CREATE TABLE ThanhToan (
     MaThanhToan VARCHAR(50) PRIMARY KEY,
     SoTien DECIMAL(15,2) NOT NULL,
     ThoiGianThanhToan DATETIME NOT NULL,
+    HinhThuc VARCHAR(30) NOT NULL,
     TrangThaiThanhToan VARCHAR(50) NOT NULL,
     MaHD VARCHAR(50) NOT NULL,
-
-    FOREIGN KEY (MaHD)
-        REFERENCES HoaDon(MaHD)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+    FOREIGN KEY (MaHD) REFERENCES HoaDon(MaHD)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CHECK (SoTien > 0),
+    CHECK (HinhThuc IN ('ChuyenKhoan', 'TienMat'))
 ) ENGINE=InnoDB;
-
-
--- =========================================================
--- KIEM TRA
--- =========================================================
 
 SHOW TABLES;

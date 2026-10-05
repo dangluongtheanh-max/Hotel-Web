@@ -2,26 +2,19 @@
 
 namespace App\HoaDon\Models;
 
-/**
- * Model HoaDon
- * Sinh ra tu so do lop (class diagram) - module HoaDon.
- */
 class HoaDon
 {
-    /** @var string (PK) */
     private string $MaHD;
-    /** @var string (FK) */
-    private string $MaKH;
-    /** @var float */
+    private string $MaPhieu;
     private float $TongTienSauVAT;
 
     public function __construct(
         string $MaHD,
-        string $MaKH,
+        string $MaPhieu,
         float $TongTienSauVAT
     ) {
         $this->MaHD = $MaHD;
-        $this->MaKH = $MaKH;
+        $this->MaPhieu = $MaPhieu;
         $this->TongTienSauVAT = $TongTienSauVAT;
     }
 
@@ -30,9 +23,9 @@ class HoaDon
         return $this->MaHD;
     }
 
-    public function getMaKH(): string
+    public function getMaPhieu(): string
     {
-        return $this->MaKH;
+        return $this->MaPhieu;
     }
 
     public function getTongTienSauVAT(): float
@@ -45,9 +38,9 @@ class HoaDon
         $this->MaHD = $MaHD;
     }
 
-    public function setMaKH(string $MaKH): void
+    public function setMaPhieu(string $MaPhieu): void
     {
-        $this->MaKH = $MaKH;
+        $this->MaPhieu = $MaPhieu;
     }
 
     public function setTongTienSauVAT(float $TongTienSauVAT): void
@@ -59,7 +52,7 @@ class HoaDon
     {
         return [
             'MaHD' => $this->MaHD,
-            'MaKH' => $this->MaKH,
+            'MaPhieu' => $this->MaPhieu,
             'TongTienSauVAT' => $this->TongTienSauVAT,
         ];
     }
