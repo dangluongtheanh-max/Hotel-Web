@@ -188,4 +188,9 @@ CREATE TABLE ThanhToan (
     CHECK (HinhThuc IN ('ChuyenKhoan', 'TienMat'))
 ) ENGINE=InnoDB;
 
+
+-- =========================================================
+-- KIEM TRA
+-- =========================================================
+
 SHOW TABLES;
