@@ -65,6 +65,16 @@ INSERT INTO DichVu (MaDV, TenDV, MoTa, DonGia, TrangThai) VALUES
 ('DV002', 'Giat ui', 'Dich vu giat ui theo lan', 50000, 'DangCungCap'),
 ('DV003', 'Dua don san bay', 'Dich vu dua don mot chieu', 250000, 'DangCungCap');
 
+-- 10.1 ChiTietDichVu
+INSERT INTO ChiTietDichVu (MaCTDV, MaDV, TenCTDV, DonGia, SoLuongTon) VALUES
+('CTDV01', 'DV001', 'Buffet sang', 120000, 100),
+('CTDV02', 'DV002', 'Giat ao somi', 50000, 0),
+('CTDV03', 'DV003', 'Xe 4 cho', 250000, 0);
+
+-- 10.2 CTSuDungDichVu
+INSERT INTO CTSuDungDichVu (MaCTDV, MaPhieu, MaPhong, DonGia, MoTa, SoLuong, TrangThai) VALUES
+('CTDV01', 'PP001', 'P001', 120000, 'Khach an buffet', 2, 'HoanThanh'),
+('CTDV02', 'PP001', 'P001', 50000, 'Giat 1 ao somi', 1, 'HoanThanh');
 -- 11. HoaDon
 INSERT INTO HoaDon (MaHD, MaPhieu, TongTienSauVAT) VALUES
 ('HD001', 'PP001', 2519000),
@@ -72,13 +82,13 @@ INSERT INTO HoaDon (MaHD, MaPhieu, TongTienSauVAT) VALUES
 ('HD003', 'PP003', 11220000);
 
 -- 12. CTHD
-INSERT INTO CTHD (MaHD, MaPhieu, MaPhong, MaDV, SoDem, SoLuong, DonGia) VALUES
+INSERT INTO CTHD (MaHD, MaPhieu, MaPhong, MaCTDV, SoDem, SoLuong, DonGia) VALUES
 ('HD001', 'PP001', 'P001', NULL, 2, 1, 500000),
 ('HD001', 'PP001', 'P004', NULL, 2, 1, 500000),
-('HD001', 'PP001', NULL, 'DV001', 0, 2, 120000),
-('HD001', 'PP001', NULL, 'DV002', 0, 1, 50000),
+('HD001', 'PP001', NULL, 'CTDV01', 0, 2, 120000),
+('HD001', 'PP001', NULL, 'CTDV02', 0, 1, 50000),
 ('HD002', 'PP002', 'P002', NULL, 2, 1, 800000),
-('HD002', 'PP002', NULL, 'DV001', 0, 2, 120000),
+('HD002', 'PP002', NULL, 'CTDV01', 0, 2, 120000),
 ('HD003', 'PP003', 'P003', NULL, 10, 1, 1200000);
 
 -- 13. DanhGia
