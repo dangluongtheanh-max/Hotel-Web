@@ -92,7 +92,9 @@ class ThanhToan
         return [
             'MaThanhToan' => $this->MaThanhToan,
             'SoTien' => $this->SoTien,
-            'ThoiGianThanhToan' => $this->ThoiGianThanhToan,
+            'ThoiGianThanhToan' => $this->ThoiGianThanhToan instanceof \DateTimeInterface
+                ? $this->ThoiGianThanhToan->format('Y-m-d H:i:s')
+                : (string) $this->ThoiGianThanhToan,
             'HinhThuc' => $this->HinhThuc,
             'TrangThaiThanhToan' => $this->TrangThaiThanhToan,
             'MaHD' => $this->MaHD,

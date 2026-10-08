@@ -4,6 +4,7 @@ namespace App\HoaDon\Controllers;
 
 use App\HoaDon\Services\HoaDonService;
 use Shared\Response;
+use Throwable;
 
 /**
  * Controller cho module HoaDon.
@@ -18,28 +19,66 @@ class HoaDonController
         $this->service = $service;
     }
 
-    public function taoHoaDon($request, $response)
+    private function getParams($request): array
     {
-        $result = $this->service->taoHoaDon($request->all());
-        return Response::json($response, $result);
+        if (is_array($request)) {
+            return $request;
+        }
+        if (is_object($request) && method_exists($request, 'all')) {
+            return $request->all();
+        }
+        $body = file_get_contents('php://input');
+        $json = json_decode($body, true);
+        if (is_array($json)) {
+            return array_merge($_GET, $_POST, $json);
+        }
+        return array_merge($_GET, $_POST);
     }
 
-    public function xemHoaDon($request, $response)
+    public function taoHoaDon($request = null, $response = null)
     {
-        $result = $this->service->xemHoaDon($request->all());
-        return Response::json($response, $result);
+        try {
+            $params = $this->getParams($request);
+            $result = $this->service->taoHoaDon($params);
+            return Response::json($response, $result, 201);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function xemCTHD($request, $response)
+    public function xemHoaDon($request = null, $response = null)
     {
-        $result = $this->service->xemCTHD($request->all());
-        return Response::json($response, $result);
+        try {
+            $params = $this->getParams($request);
+            $result = $this->service->xemHoaDon($params);
+            if ($result === null) {
+                return Response::error($response, 'Không tìm thấy hóa đơn.', 404);
+            }
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function timHoaDon($request, $response)
+    public function xemCTHD($request = null, $response = null)
     {
-        $result = $this->service->timHoaDon($request->all());
-        return Response::json($response, $result);
+        try {
+            $params = $this->getParams($request);
+            $result = $this->service->xemCTHD($params);
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
+    public function timHoaDon($request = null, $response = null)
+    {
+        try {
+            $params = $this->getParams($request);
+            $result = $this->service->timHoaDon($params);
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
+    }
 }

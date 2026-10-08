@@ -4,21 +4,21 @@ namespace App\HoaDon\Models;
 
 class CTHD
 {
-    private int $MaCTHD;
+    private ?int $MaCTHD;
     private string $MaHD;
     private string $MaPhieu;
     private ?string $MaPhong;
-    private ?string $MaDV;
+    private ?string $MaCTDV;
     private int $SoDem;
     private int $SoLuong;
     private float $DonGia;
 
     public function __construct(
-        int $MaCTHD,
+        ?int $MaCTHD,
         string $MaHD,
         string $MaPhieu,
         ?string $MaPhong,
-        ?string $MaDV,
+        ?string $MaCTDV,
         int $SoDem,
         int $SoLuong,
         float $DonGia
@@ -27,13 +27,13 @@ class CTHD
         $this->MaHD = $MaHD;
         $this->MaPhieu = $MaPhieu;
         $this->MaPhong = $MaPhong;
-        $this->MaDV = $MaDV;
+        $this->MaCTDV = $MaCTDV;
         $this->SoDem = $SoDem;
         $this->SoLuong = $SoLuong;
         $this->DonGia = $DonGia;
     }
 
-    public function getMaCTHD(): int
+    public function getMaCTHD(): ?int
     {
         return $this->MaCTHD;
     }
@@ -53,9 +53,14 @@ class CTHD
         return $this->MaPhong;
     }
 
+    public function getMaCTDV(): ?string
+    {
+        return $this->MaCTDV;
+    }
+
     public function getMaDV(): ?string
     {
-        return $this->MaDV;
+        return $this->MaCTDV;
     }
 
     public function getSoDem(): int
@@ -73,7 +78,7 @@ class CTHD
         return $this->DonGia;
     }
 
-    public function setMaCTHD(int $MaCTHD): void
+    public function setMaCTHD(?int $MaCTHD): void
     {
         $this->MaCTHD = $MaCTHD;
     }
@@ -93,9 +98,14 @@ class CTHD
         $this->MaPhong = $MaPhong;
     }
 
+    public function setMaCTDV(?string $MaCTDV): void
+    {
+        $this->MaCTDV = $MaCTDV;
+    }
+
     public function setMaDV(?string $MaDV): void
     {
-        $this->MaDV = $MaDV;
+        $this->MaCTDV = $MaDV;
     }
 
     public function setSoDem(int $SoDem): void
@@ -120,10 +130,13 @@ class CTHD
             'MaHD' => $this->MaHD,
             'MaPhieu' => $this->MaPhieu,
             'MaPhong' => $this->MaPhong,
-            'MaDV' => $this->MaDV,
+            'MaCTDV' => $this->MaCTDV,
             'SoDem' => $this->SoDem,
             'SoLuong' => $this->SoLuong,
             'DonGia' => $this->DonGia,
+            'ThanhTien' => $this->MaPhong !== null
+                ? ($this->SoDem * $this->DonGia)
+                : ($this->SoLuong * $this->DonGia),
         ];
     }
 }

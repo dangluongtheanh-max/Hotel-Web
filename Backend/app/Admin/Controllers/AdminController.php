@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Services\AdminService;
 use Shared\Response;
+use Throwable;
 
 /**
  * Controller cho module Admin.
@@ -18,106 +19,157 @@ class AdminController
         $this->service = $service;
     }
 
-    public function xemDSNhanVien($request, $response)
+    private function getParams($request): array
     {
-        $result = $this->service->xemDSNhanVien($request->all());
-        return Response::json($response, $result);
+        if (is_array($request)) {
+            return $request;
+        }
+        if (is_object($request) && method_exists($request, 'all')) {
+            return $request->all();
+        }
+        $body = file_get_contents('php://input');
+        $json = json_decode($body, true);
+        if (is_array($json)) {
+            return array_merge($_GET, $_POST, $json);
+        }
+        return array_merge($_GET, $_POST);
     }
 
-    public function xemDSLeTan($request, $response)
+    public function xemDSNhanVien($request = null, $response = null)
     {
-        $result = $this->service->xemDSNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->xemDSNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function timKiemNhanVien($request, $response)
+    public function xemDSLeTan($request = null, $response = null)
     {
-        $result = $this->service->timKiemNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->xemDSNhanVien($request, $response);
     }
 
-    public function timKiemLeTan($request, $response)
+    public function timKiemNhanVien($request = null, $response = null)
     {
-        $result = $this->service->timKiemNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->timKiemNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function xemCTNhanVien($request, $response)
+    public function timKiemLeTan($request = null, $response = null)
     {
-        $result = $this->service->xemCTNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->timKiemNhanVien($request, $response);
     }
 
-    public function xemCTLeTan($request, $response)
+    public function xemCTNhanVien($request = null, $response = null)
     {
-        $result = $this->service->xemCTNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->xemCTNhanVien($this->getParams($request));
+            if ($result === null) {
+                return Response::error($response, 'Không tìm thấy thông tin nhân viên.', 404);
+            }
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function capNhatThongTinNhanVien($request, $response)
+    public function xemCTLeTan($request = null, $response = null)
     {
-        $result = $this->service->capNhatThongTinNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->xemCTNhanVien($request, $response);
     }
 
-    public function capNhatThongTinLeTan($request, $response)
+    public function capNhatThongTinNhanVien($request = null, $response = null)
     {
-        $result = $this->service->capNhatThongTinNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->capNhatThongTinNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function themNhanVien($request, $response)
+    public function capNhatThongTinLeTan($request = null, $response = null)
     {
-        $result = $this->service->themNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->capNhatThongTinNhanVien($request, $response);
     }
 
-    public function themLeTan($request, $response)
+    public function themNhanVien($request = null, $response = null)
     {
-        $result = $this->service->themNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->themNhanVien($this->getParams($request));
+            return Response::json($response, $result, 201);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function moTaiKhoanNhanVien($request, $response)
+    public function themLeTan($request = null, $response = null)
     {
-        $result = $this->service->moTaiKhoanNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->themNhanVien($request, $response);
     }
 
-    public function moTaiKhoanLeTan($request, $response)
+    public function moTaiKhoanNhanVien($request = null, $response = null)
     {
-        $result = $this->service->moTaiKhoanNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->moTaiKhoanNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function khoaTaiKhoanNhanVien($request, $response)
+    public function moTaiKhoanLeTan($request = null, $response = null)
     {
-        $result = $this->service->khoaTaiKhoanNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->moTaiKhoanNhanVien($request, $response);
     }
 
-    public function khoaTaiKhoanLeTan($request, $response)
+    public function khoaTaiKhoanNhanVien($request = null, $response = null)
     {
-        $result = $this->service->khoaTaiKhoanNhanVien($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->khoaTaiKhoanNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function thongKeSoLuongNhanVien($request, $response)
+    public function khoaTaiKhoanLeTan($request = null, $response = null)
     {
-        $result = $this->service->thongKeSoLuongNhanVien($request->all());
-        return Response::json($response, $result);
+        return $this->khoaTaiKhoanNhanVien($request, $response);
     }
 
-    public function thongKeDoanhThu($request, $response)
+    public function thongKeSoLuongNhanVien($request = null, $response = null)
     {
-        $result = $this->service->thongKeDoanhThuChiNhanh($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->thongKeSoLuongNhanVien($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
-    public function thongKeSoLuongPhong($request, $response)
+    public function thongKeDoanhThu($request = null, $response = null)
     {
-        $result = $this->service->thongKeSoLuongPhong($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->thongKeDoanhThuChiNhanh($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
+    public function thongKeSoLuongPhong($request = null, $response = null)
+    {
+        try {
+            $result = $this->service->thongKeSoLuongPhong($this->getParams($request));
+            return Response::json($response, $result);
+        } catch (Throwable $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
+    }
 }
