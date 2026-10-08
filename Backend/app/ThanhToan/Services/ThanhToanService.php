@@ -23,6 +23,12 @@ class ThanhToanService
         $this->repository = $repository;
     }
 
+    /**
+     * Danh sach trang thai hop le cho ThanhToan.
+     * Phai khop voi data.sql va DB.
+     */
+    private const TRANG_THAI_HOP_LE = ['ChoXacNhan', 'HoanTat', 'ThatBai', 'HoanTien'];
+
     public function taoThanhToan(array $params = []): array
     {
         if (empty($params['MaHD'])) {
@@ -38,8 +44,15 @@ class ThanhToanService
             throw new InvalidArgumentException('Hình thức thanh toán phải là ChuyenKhoan hoặc TienMat.');
         }
 
+        // FIX: default 'HoanTat' khop voi data.sql (truoc la 'ThanhCong' — sai)
+        $trangThai = $params['TrangThaiThanhToan'] ?? 'HoanTat';
+        if (!in_array($trangThai, self::TRANG_THAI_HOP_LE, true)) {
+            throw new InvalidArgumentException(
+                'TrangThaiThanhToan không hợp lệ. Chấp nhận: ' . implode(', ', self::TRANG_THAI_HOP_LE)
+            );
+        }
+
         $maTT = !empty($params['MaThanhToan']) ? $params['MaThanhToan'] : Helper::generateId('TT');
-        $trangThai = $params['TrangThaiThanhToan'] ?? 'ThanhCong';
         $thoiGianStr = $params['ThoiGianThanhToan'] ?? Helper::now();
         $thoiGian = new DateTimeImmutable($thoiGianStr);
 

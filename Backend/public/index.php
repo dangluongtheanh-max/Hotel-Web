@@ -7,7 +7,6 @@ require __DIR__ . '/../vendor/autoload.php';
 use Dotenv\Dotenv;
 use Database\Database;
 
-
 /*
 |--------------------------------------------------------------------------
 | Load file .env
@@ -17,7 +16,6 @@ use Database\Database;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-
 /*
 |--------------------------------------------------------------------------
 | Load cấu hình ứng dụng
@@ -26,53 +24,112 @@ $dotenv->load();
 
 $config = require __DIR__ . '/../config/App.php';
 
-date_default_timezone_set($config['timezone']);
-
+date_default_timezone_set($config['timezone'] ?? 'Asia/Ho_Chi_Minh');
 
 /*
 |--------------------------------------------------------------------------
-| Router đơn giản
+| Router & DI Container
 |--------------------------------------------------------------------------
 */
 
 $router = new class {
 
     public array $routes = [];
+    private array $container = [];
 
-    public function post(string $path, array $handler): void
+    public function post(string $path, array|callable $handler): void
     {
         $this->routes['POST'][$path] = $handler;
     }
 
-    public function get(string $path, array $handler): void
+    public function get(string $path, array|callable $handler): void
     {
         $this->routes['GET'][$path] = $handler;
     }
 
+    /**
+     * Auto-wiring Dependency Injection container
+     */
+    public function resolve(string $className): object
+    {
+        if (isset($this->container[$className])) {
+            return $this->container[$className];
+        }
+
+        if (!class_exists($className)) {
+            throw new RuntimeException("Class {$className} does not exist");
+        }
+
+        $ref = new ReflectionClass($className);
+        $ctor = $ref->getConstructor();
+
+        if (!$ctor || $ctor->getNumberOfParameters() === 0) {
+            $instance = new $className();
+            $this->container[$className] = $instance;
+            return $instance;
+        }
+
+        $dependencies = [];
+        foreach ($ctor->getParameters() as $param) {
+            $paramType = $param->getType();
+            if ($paramType instanceof ReflectionNamedType && !$paramType->isBuiltin()) {
+                $dependencies[] = $this->resolve($paramType->getName());
+            } elseif ($param->isDefaultValueAvailable()) {
+                $dependencies[] = $param->getDefaultValue();
+            } else {
+                $dependencies[] = null;
+            }
+        }
+
+        $instance = $ref->newInstanceArgs($dependencies);
+        $this->container[$className] = $instance;
+        return $instance;
+    }
+
     public function dispatch(string $method, string $uri): void
     {
-        $handler = $this->routes[$method][$uri] ?? null;
+        $normalizedUri = rtrim($uri, '/') ?: '/';
+        $handler = $this->routes[$method][$uri] ?? $this->routes[$method][$normalizedUri] ?? null;
 
         if (!$handler) {
             http_response_code(404);
-
             header('Content-Type: application/json; charset=utf-8');
-
             echo json_encode([
-                'error' => 'Route not found'
-            ]);
-
+                'success' => false,
+                'error' => "Route not found: {$method} {$uri}"
+            ], JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        /*
-         * TODO:
-         * Resolve controller từ container DI
-         * và gọi method tương ứng.
-         */
+        try {
+            if (is_callable($handler)) {
+                $handler();
+                return;
+            }
+
+            if (is_array($handler) && count($handler) === 2) {
+                [$controllerClass, $action] = $handler;
+                $controller = $this->resolve($controllerClass);
+
+                if (!method_exists($controller, $action)) {
+                    throw new RuntimeException("Action '{$action}' does not exist in {$controllerClass}");
+                }
+
+                $controller->$action();
+                return;
+            }
+
+            throw new RuntimeException("Invalid route handler format");
+        } catch (Throwable $e) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE);
+        }
     }
 };
-
 
 /*
 |--------------------------------------------------------------------------
@@ -80,35 +137,24 @@ $router = new class {
 |--------------------------------------------------------------------------
 */
 
+$router->get('/', function () {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'success' => true,
+        'message' => 'Hotel-Web Backend API is active',
+        'time' => date('Y-m-d H:i:s'),
+    ], JSON_UNESCAPED_UNICODE);
+});
+
 \App\TaiKhoan\Routes\TaiKhoanRoute::register($router);
-
 \App\KhachHang\Routes\KhachHangRoute::register($router);
-
 \App\DatPhong\Routes\DatPhongRoute::register($router);
-
 \App\DanhGia\Routes\DanhGiaRoute::register($router);
-
 \App\LeTan\Routes\LeTanRoute::register($router);
-
 \App\Phong\Routes\PhongRoute::register($router);
-
 \App\ThanhToan\Routes\ThanhToanRoute::register($router);
-
 \App\HoaDon\Routes\HoaDonRoute::register($router);
-
 \App\Admin\Routes\AdminRoute::register($router);
-
-
-/*
-|--------------------------------------------------------------------------
-| Kết nối Database
-|--------------------------------------------------------------------------
-*/
-
-$db = Database::getConnection();
-echo "KẾT NỐI MYSQL THÀNH CÔNG!";
-exit;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -117,10 +163,6 @@ exit;
 */
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
-$uri = parse_url(
-    $_SERVER['REQUEST_URI'] ?? '/',
-    PHP_URL_PATH
-);
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
 $router->dispatch($method, $uri);

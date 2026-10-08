@@ -195,14 +195,27 @@ class HoaDonRepository
     }
 
     /**
+     * Kiem tra su ton tai va lay thong tin trang thai cua PhieuNhanPhong.
+     */
+    public function kiemTraPhieuNhanPhong(string $maPhieu): ?array
+    {
+        $stmt = $this->db->prepare("SELECT MaPhieu, TrangThai, KenhDat, MaKH FROM PhieuNhanPhong WHERE MaPhieu = ?");
+        $stmt->execute([$maPhieu]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /**
      * Lay chi tiet phong va dich vu cua phieu dat phong de tinh tien tu dong
      */
     public function layChiPhiTuPhieu(string $maPhieu): array
     {
-        // 1. Tien phong
+        // 1. Tien phong — tra ve DATETIME thu thay vi tinh DATEDIFF trong SQL
+        // (DATEDIFF chi tinh so ngay, khong tinh gio → sai khi checkout truoc 12h)
+        // PHP se tu tinh SoDem chinh xac hon bang DateInterval
         $sqlPhong = "
             SELECT ct.MaPhieu, ct.MaPhong, lp.Gia as DonGia,
-                   GREATEST(1, DATEDIFF(ct.ThoiGianTraPhong, ct.ThoiGianNhanPhong)) as SoDem
+                   ct.ThoiGianNhanPhong, ct.ThoiGianTraPhong
             FROM ChiTietPhieuNhanPhong ct
             JOIN Phong p ON ct.MaPhong = p.MaPhong
             JOIN LoaiPhong lp ON p.MaLoaiPhong = lp.MaLoaiPhong

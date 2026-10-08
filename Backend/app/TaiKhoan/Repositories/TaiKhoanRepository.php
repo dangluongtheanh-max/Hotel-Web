@@ -4,6 +4,7 @@ namespace App\TaiKhoan\Repositories;
 
 use App\TaiKhoan\Models\TaiKhoan;
 use Database\Database;
+use PDO;
 
 /**
  * Repository cho module TaiKhoan.
@@ -13,9 +14,9 @@ class TaiKhoanRepository
 {
     private $db;
 
-    public function __construct(Database $db)
+    public function __construct(?Database $db = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? Database::getConnection();
     }
 
     public function findByTenDangNhap(string $tenDangNhap): ?TaiKhoan

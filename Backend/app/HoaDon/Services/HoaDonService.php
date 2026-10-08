@@ -31,6 +31,16 @@ class HoaDonService
 
         $maPhieu = $params['MaPhieu'];
 
+        // Kiểm tra phiếu nhận phòng có tồn tại không
+        $thongTinPhieu = $this->repository->kiemTraPhieuNhanPhong($maPhieu);
+        if (!$thongTinPhieu) {
+            throw new InvalidArgumentException("Phiếu đặt phòng '{$maPhieu}' không tồn tại trong hệ thống.");
+        }
+
+        if (in_array($thongTinPhieu['TrangThai'], ['DaHuy', 'TuChoi'], true)) {
+            throw new InvalidArgumentException("Không thể tạo hóa đơn cho phiếu có trạng thái '{$thongTinPhieu['TrangThai']}'.");
+        }
+
         // Kiểm tra xem phiếu này đã tạo hóa đơn trước đó chưa
         $daCoHoaDon = $this->repository->findByMaPhieu($maPhieu);
         if ($daCoHoaDon) {
@@ -80,9 +90,23 @@ class HoaDonService
             // Trường hợp 2: Tự động trích xuất chi phí từ phiếu đặt phòng & dịch vụ đã dùng
             $duLieuPhieu = $this->repository->layChiPhiTuPhieu($maPhieu);
 
-            // Xử lý tiền phòng
+            // Xử lý tiền phòng — tính số đêm bằng DateTime PHP chính xác
             foreach ($duLieuPhieu['phong'] as $p) {
-                $soDem = (int) ($p['SoDem'] ?? 1);
+                $soDem = (int) ($p['SoDem'] ?? 0);
+                if ($soDem <= 0) {
+                    if (!empty($p['ThoiGianNhanPhong']) && !empty($p['ThoiGianTraPhong'])) {
+                        try {
+                            $nhan = new \DateTime($p['ThoiGianNhanPhong']);
+                            $tra = new \DateTime($p['ThoiGianTraPhong']);
+                            $diff = $nhan->diff($tra);
+                            $soDem = max(1, (int) $diff->days);
+                        } catch (\Throwable $e) {
+                            $soDem = 1;
+                        }
+                    } else {
+                        $soDem = 1;
+                    }
+                }
                 $donGia = (float) ($p['DonGia'] ?? 0);
                 $tongTienTruocThue += $soDem * $donGia;
 
