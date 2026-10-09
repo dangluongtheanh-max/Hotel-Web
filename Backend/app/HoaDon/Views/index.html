@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BE4 — Quản Lý & Xuất Hóa Đơn Khách Sạn (HoaDon & CTHD)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-sub: #1a243d;
+            --bg-hover: #223052;
+            --border: #223254;
+            --border-highlight: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 24px 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-link {
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .badge-link:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        /* Layout Grid */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:hover { background: #1d4ed8; }
+        .btn-accent { background: var(--accent); }
+        .btn-accent:hover { background: #059669; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* Folio Bill Receipt Mockup */
+        .folio-paper {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: var(--radius-md);
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .folio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .hotel-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .folio-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2563eb;
+            text-align: right;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+
+        .info-col p {
+            margin-bottom: 4px;
+            color: #475569;
+        }
+
+        .info-col b {
+            color: #0f172a;
+        }
+
+        /* Folio Table */
+        .folio-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+
+        .folio-table th {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 8px 10px;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+            text-align: left;
+        }
+
+        .folio-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        .tag-khoan {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .tag-phong { background: #dbeafe; color: #1e40af; }
+        .tag-dv { background: #fef3c7; color: #92400e; }
+
+        /* Calculation Summary in Bill */
+        .calc-summary {
+            margin-left: auto;
+            width: 320px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 10px;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .calc-row.discount {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .calc-row.grand-total {
+            border-top: 2px solid #0f172a;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        /* Table Dark for Admin */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        table.dark-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        table.dark-table th {
+            background: var(--bg-card-sub);
+            color: var(--text-muted);
+            padding: 12px 14px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        table.dark-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-unpaid { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+        .alert-box.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            display: block;
+        }
+        .alert-box.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div>
+            <div class="brand-title">
+                <span>🧾</span> BE4 — Quản Lý & Xuất Hóa Đơn Khách Sạn (HoaDon & CTHD)
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                Tự động gom Tiền phòng + Dịch vụ minibar/giặt ủi - Chiết khấu Khuyến mãi + Thuế VAT 10%
+            </p>
+        </div>
+        <div class="header-nav">
+            <a href="/khuyenmai" class="badge-link">🎟️ Quản lý Khuyến Mãi</a>
+            <a href="/dichvu" class="badge-link">🛎️ Quản lý Dịch Vụ</a>
+            <span class="badge-link" style="border-color: var(--accent); color: var(--accent);">🟢 Server Online (:8000)</span>
+        </div>
+    </header>
+
+    <!-- Content Layout -->
+    <div class="layout-grid">
+        <!-- Cột trái: Bảng điều khiển Lập hóa đơn -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <span>⚡</span> Thao Tác Lập Hóa Đơn Check-Out
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Chọn Phiếu Nhận Phòng cần thanh toán:</label>
+                    <select id="selectPhieu" class="form-select" onchange="onSelectPhieuChange()">
+                        <option value="PP001">Phiếu PP001 — Khách Trần Thị Mai (2 Phòng + 2 Dịch Vụ)</option>
+                        <option value="PP002">Phiếu PP002 — Khách Lê Văn Cường (1 Phòng + 1 Dịch Vụ)</option>
+                        <option value="PP003">Phiếu PP003 — Khách Phạm Thị Dung (10 đêm + Khuyến Mãi KM002 giảm 15%)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Hoặc nhập mã phiếu nhận phòng tùy ý:</label>
+                    <input type="text" id="customMaPhieu" class="form-input" placeholder="VD: PP001, PP002..." style="font-weight: 700; text-transform: uppercase;">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 18px;">
+                    <button class="btn" style="flex: 1;" onclick="previewFolio()">
+                        <span>👁️</span> Xem Trước Bảng Kê (Preview)
+                    </button>
+                    <button class="btn btn-accent" style="flex: 1.2;" onclick="createOfficialInvoice()">
+                        <span>💾</span> Xuất Hóa Đơn Chính Thức
+                    </button>
+                </div>
+
+                <div id="alertInvoice" class="alert-box"></div>
+            </div>
+
+            <!-- Card giải thích công thức tính tiền -->
+            <div class="card" style="background: rgba(30, 41, 59, 0.5); border-style: dashed;">
+                <div class="card-title" style="font-size: 14px; color: #94a3b8;">
+                    <span>📐</span> Công Thức Quyết Toán Chuẩn BE4
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.8;">
+                    <p>• <b>Tiền phòng:</b> Số đêm lưu trú × Đơn giá loại phòng</p>
+                    <p>• <b>Tiền dịch vụ:</b> Số lượng × Đơn giá mặt hàng đã dùng</p>
+                    <p>• <b>Giảm trừ KM:</b> Trừ theo % hoặc tiền cố định nếu phiếu có gắn mã</p>
+                    <p>• <b>Thuế VAT (10%):</b> (Tiền phòng sau giảm + Dịch vụ) × 10%</p>
+                    <p style="color: var(--primary); font-weight: 700; margin-top: 4px;">
+                        ➔ Tổng cộng = Tiền trước VAT + Thuế VAT (10%)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Phiếu Hóa Đơn / Folio Mockup -->
+        <div>
+            <div class="folio-paper" id="folioPaper">
+                <div class="folio-header">
+                    <div>
+                        <div class="hotel-name">Khách Sạn Luxury Hotel</div>
+                        <div style="color: #64748b; font-size: 11px;">123 Nguyễn Văn Cừ, Quận 5, TP. Hồ Chí Minh</div>
+                        <div style="color: #64748b; font-size: 11px;">Hotline: (028) 3835 4444 • contact@luxuryhotel.vn</div>
+                    </div>
+                    <div>
+                        <div class="folio-title">HÓA ĐƠN THANH TOÁN</div>
+                        <div style="font-size: 12px; color: #64748b; text-align: right;" id="billMaHD">MÃ HĐ: [XEM TRƯỚC]</div>
+                        <div style="font-size: 11px; color: #64748b; text-align: right;" id="billDate">Ngày in: 2026-10-10</div>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-col">
+                        <p>Khách hàng: <b id="billTenKH">Trần Thị Mai</b></p>
+                        <p>Số điện thoại: <span id="billSDT">0901234567</span></p>
+                        <p>Email: <span id="billEmail">mai.tran@gmail.com</span></p>
+                    </div>
+                    <div class="info-col" style="text-align: right;">
+                        <p>Mã phiếu phòng: <b id="billMaPhieu">PP001</b></p>
+                        <p>Kênh đặt: <span id="billKenhDat">Trực Tuyến</span></p>
+                        <p>Trạng thái phiếu: <b id="billTrangThaiPhieu" style="color: #2563eb;">Đã Trả Phòng</b></p>
+                    </div>
+                </div>
+
+                <!-- Bảng kê chi tiết -->
+                <table class="folio-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Khoản Mục Chi Tiết</th>
+                            <th>Số Lượng / Đêm</th>
+                            <th>Đơn Giá</th>
+                            <th style="text-align: right;">Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billItemsBody">
+                        <tr><td colspan="5" style="text-align: center; color: #94a3b8;">Đang tải dữ liệu bảng kê...</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Tổng kết tài chính -->
+                <div class="calc-summary">
+                    <div class="calc-row">
+                        <span>Tiền phòng:</span>
+                        <span id="billTongPhong">0 đ</span>
+                    </div>
+                    <div class="calc-row">
+                        <span>Tiền dịch vụ:</span>
+                        <span id="billTongDV">0 đ</span>
+                    </div>
+                    <div class="calc-row discount" id="billRowDiscount" style="display: none;">
+                        <span>Khuyến mãi (<span id="billCodeKM">KM</span>):</span>
+                        <span id="billTienGiamKM">-0 đ</span>
+                    </div>
+                    <div class="calc-row" style="border-top: 1px dashed #cbd5e1; margin-top: 4px; padding-top: 4px;">
+                        <span>Tiền trước VAT:</span>
+                        <span id="billTruocVAT">0 đ</span>
+                    </div>
+                    <div class="calc-row">
+                        <span>Thuế VAT (10%):</span>
+                        <span id="billVAT">0 đ</span>
+                    </div>
+                    <div class="calc-row grand-total">
+                        <span>TỔNG THANH TOÁN:</span>
+                        <span id="billGrandTotal">0 đ</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-sm" style="background: #475569;" onclick="window.print()">
+                        🖨️ In Hóa Đơn (Print)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách toàn bộ Hóa Đơn trong CSDL -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-title" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span>📋</span> Danh Sách Tất Cả Hóa Đơn Trong Hệ Thống
+            </div>
+            <button class="btn btn-sm" onclick="loadAllInvoices()">🔄 Tải lại danh sách</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th>Mã HĐ</th>
+                        <th>Mã Phiếu</th>
+                        <th>Khách Hàng</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Tổng Tiền Sau VAT</th>
+                        <th>Hình Thức</th>
+                        <th>Trạng Thái Thanh Toán</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getSelectedMaPhieu() {
+        const custom = document.getElementById('customMaPhieu').value.trim();
+        if (custom) return custom;
+        return document.getElementById('selectPhieu').value;
+    }
+
+    function onSelectPhieuChange() {
+        document.getElementById('customMaPhieu').value = '';
+        previewFolio();
+    }
+
+    // Xem trước bảng kê (Preview)
+    async function previewFolio() {
+        const maPhieu = getSelectedMaPhieu();
+        const alertBox = document.getElementById('alertInvoice');
+        alertBox.style.display = 'none';
+
+        try {
+            const res = await fetch(`/hoadon/preview?MaPhieu=${maPhieu}`);
+            const json = await res.json();
+            const data = json.data || json;
+
+            if (data.success) {
+                renderFolioBill(data.data, `DỰ THẢO (${maPhieu})`);
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = `❌ ${data.error || 'Không tìm thấy dữ liệu phiếu!'}`;
+            }
+        } catch (err) {
+            console.error('Lỗi preview hóa đơn:', err);
+        }
+    }
+
+    // Xuất hóa đơn chính thức
+    async function createOfficialInvoice() {
+        const maPhieu = getSelectedMaPhieu();
+        const alertBox = document.getElementById('alertInvoice');
+
+        try {
+            const res = await fetch('/hoadon/tao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ MaPhieu: maPhieu })
+            });
+            const json = await res.json();
+            const resPayload = json.data || json;
+
+            if (resPayload.success) {
+                alertBox.className = 'alert-box success';
+                alertBox.innerText = `✅ ${resPayload.message}`;
+                // Xem chi tiết hóa đơn vừa tạo
+                viewInvoiceDetail(resPayload.data.MaHD || resPayload.data.MaPhieu);
+                loadAllInvoices();
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = `❌ ${resPayload.error || 'Lập hóa đơn thất bại!'}`;
+            }
+        } catch (err) {
+            alertBox.className = 'alert-box error';
+            alertBox.innerText = 'Lỗi kết nối máy chủ khi tạo hóa đơn!';
+        }
+    }
+
+    // Xem chi tiết một hóa đơn đã lưu
+    async function viewInvoiceDetail(maHD) {
+        try {
+            const res = await fetch(`/hoadon/xem?MaHD=${maHD}`);
+            const json = await res.json();
+            const resPayload = json.data || json;
+
+            if (resPayload.success) {
+                const info = resPayload.data;
+                renderFolioFromSavedInvoice(info);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } catch (err) {
+            console.error('Lỗi xem hóa đơn:', err);
+        }
+    }
+
+    function renderFolioBill(calcData, maHDLabel) {
+        document.getElementById('billMaHD').innerText = `MÃ HĐ: ${maHDLabel}`;
+        document.getElementById('billDate').innerText = `Ngày: ${calcData.NgayLap || '2026-10-10'}`;
+        document.getElementById('billMaPhieu').innerText = calcData.MaPhieu;
+        document.getElementById('billTrangThaiPhieu').innerText = calcData.TrangThaiPhieu;
+        
+        if (calcData.KhachHang) {
+            document.getElementById('billTenKH').innerText = calcData.KhachHang.TenKhachHang;
+            document.getElementById('billSDT').innerText = calcData.KhachHang.SDT || '—';
+            document.getElementById('billEmail').innerText = calcData.KhachHang.Email || '—';
+        }
+
+        // Render table rows
+        const tbody = document.getElementById('billItemsBody');
+        let rowsHtml = '';
+        calcData.BangKeChiTiet.forEach((item, index) => {
+            const tag = item.LoaiKhoan === 'Phong' ? '<span class="tag-khoan tag-phong">PHÒNG</span>' : '<span class="tag-khoan tag-dv">DỊCH VỤ</span>';
+            const slText = item.LoaiKhoan === 'Phong' ? `${item.SoDem} đêm` : `${item.SoLuong} cái/lượt`;
+            rowsHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${tag} <b>${item.TenKhoan}</b></td>
+                    <td>${slText}</td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(item.DonGia)} đ</td>
+                    <td style="text-align: right; font-weight: 700;">${new Intl.NumberFormat('vi-VN').format(item.ThanhTien)} đ</td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rowsHtml;
+
+        // Render Summary
+        document.getElementById('billTongPhong').innerText = new Intl.NumberFormat('vi-VN').format(calcData.TongTienPhong) + ' đ';
+        document.getElementById('billTongDV').innerText = new Intl.NumberFormat('vi-VN').format(calcData.TongTienDichVu) + ' đ';
+        
+        const rowDiscount = document.getElementById('billRowDiscount');
+        if (calcData.TienGiamKM > 0) {
+            rowDiscount.style.display = 'flex';
+            document.getElementById('billCodeKM').innerText = calcData.KhuyenMai ? calcData.KhuyenMai.MaKM : 'KM';
+            document.getElementById('billTienGiamKM').innerText = '-' + new Intl.NumberFormat('vi-VN').format(calcData.TienGiamKM) + ' đ';
+        } else {
+            rowDiscount.style.display = 'none';
+        }
+
+        document.getElementById('billTruocVAT').innerText = new Intl.NumberFormat('vi-VN').format(calcData.TongTienTruocVAT) + ' đ';
+        document.getElementById('billVAT').innerText = new Intl.NumberFormat('vi-VN').format(calcData.ThueVAT) + ' đ';
+        document.getElementById('billGrandTotal').innerText = new Intl.NumberFormat('vi-VN').format(calcData.TongTienSauVAT) + ' đ';
+    }
+
+    function renderFolioFromSavedInvoice(inv) {
+        document.getElementById('billMaHD').innerText = `MÃ HĐ: ${inv.MaHD}`;
+        document.getElementById('billDate').innerText = `Ngày: ${inv.NgayLapPhieu}`;
+        document.getElementById('billMaPhieu').innerText = inv.MaPhieu;
+        document.getElementById('billKenhDat').innerText = inv.KenhDat;
+        document.getElementById('billTrangThaiPhieu').innerText = inv.TrangThaiPhieu;
+
+        if (inv.KhachHang) {
+            document.getElementById('billTenKH').innerText = inv.KhachHang.TenKhachHang;
+            document.getElementById('billSDT').innerText = inv.KhachHang.SDT || '—';
+            document.getElementById('billEmail').innerText = inv.KhachHang.Email || '—';
+        }
+
+        const tbody = document.getElementById('billItemsBody');
+        let rowsHtml = '';
+        inv.ChiTietCacKhoan.forEach((item, index) => {
+            const isPhong = item.MaPhong !== null;
+            const tag = isPhong ? '<span class="tag-khoan tag-phong">PHÒNG</span>' : '<span class="tag-khoan tag-dv">DỊCH VỤ</span>';
+            const name = isPhong ? `Phòng ${item.MaPhong} (${item.TenLoaiPhong || ''})` : item.TenCTDV;
+            const slText = isPhong ? `${item.SoDem} đêm` : `${item.SoLuong} lượt`;
+
+            rowsHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${tag} <b>${name}</b></td>
+                    <td>${slText}</td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(item.DonGia)} đ</td>
+                    <td style="text-align: right; font-weight: 700;">${new Intl.NumberFormat('vi-VN').format(item.ThanhTien)} đ</td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rowsHtml;
+
+        document.getElementById('billTongPhong').innerText = new Intl.NumberFormat('vi-VN').format(inv.TongTienPhong) + ' đ';
+        document.getElementById('billTongDV').innerText = new Intl.NumberFormat('vi-VN').format(inv.TongTienDichVu) + ' đ';
+
+        // Grand Total
+        document.getElementById('billGrandTotal').innerText = new Intl.NumberFormat('vi-VN').format(inv.TongTienSauVAT) + ' đ';
+        const truocVat = Math.round(inv.TongTienSauVAT / 1.10);
+        document.getElementById('billTruocVAT').innerText = new Intl.NumberFormat('vi-VN').format(truocVat) + ' đ';
+        document.getElementById('billVAT').innerText = new Intl.NumberFormat('vi-VN').format(inv.TongTienSauVAT - truocVat) + ' đ';
+
+        const rowDiscount = document.getElementById('billRowDiscount');
+        if (inv.KhuyenMai) {
+            rowDiscount.style.display = 'flex';
+            document.getElementById('billCodeKM').innerText = inv.KhuyenMai.MaKM;
+            document.getElementById('billTienGiamKM').innerText = 'Đã áp dụng ' + inv.KhuyenMai.TenKM;
+        } else {
+            rowDiscount.style.display = 'none';
+        }
+    }
+
+    // Load tất cả hóa đơn vào bảng bên dưới
+    async function loadAllInvoices() {
+        try {
+            const res = await fetch('/hoadon/danhsach');
+            const json = await res.json();
+            const resPayload = json.data || json;
+            const tbody = document.getElementById('invoiceTableBody');
+
+            if (resPayload.data && resPayload.data.length > 0) {
+                tbody.innerHTML = resPayload.data.map(item => {
+                    const isPaid = item.TrangThaiThanhToan === 'DaThanhToan';
+                    const payBadge = isPaid ? '<span class="status-badge status-paid">Đã thanh toán</span>' : '<span class="status-badge status-unpaid">Chờ thanh toán</span>';
+                    const hinhThuc = item.HinhThuc ? item.HinhThuc : 'Chưa chọn';
+
+                    return `
+                        <tr>
+                            <td><b style="color: var(--primary);">${item.MaHD}</b></td>
+                            <td><span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px;">${item.MaPhieu}</span></td>
+                            <td><b>${item.TenKhachHang}</b></td>
+                            <td>${item.SDT || '—'}</td>
+                            <td><b style="color: var(--accent);">${new Intl.NumberFormat('vi-VN').format(item.TongTienSauVAT)} đ</b></td>
+                            <td>${hinhThuc}</td>
+                            <td>${payBadge}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="viewInvoiceDetail('${item.MaHD}')">
+                                    👁️ Xem Bill
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Chưa có hóa đơn nào được lập.</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Lỗi load danh sách hóa đơn:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        previewFolio();
+        loadAllInvoices();
+    });
+</script>
+
+</body>
+</html>
