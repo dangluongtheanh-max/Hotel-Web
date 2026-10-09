@@ -3,7 +3,7 @@
 namespace Shared;
 
 /**
- * Helper chuan hoa response JSON tra ve cho client.
+ * Helper chuan hoa response JSON tra ve cho client, ho tro pretty print dep mat.
  */
 class Response
 {
@@ -14,7 +14,7 @@ class Response
         echo json_encode([
             'success' => $status < 400,
             'data' => $data,
-        ]);
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         return $response;
     }
 
@@ -25,7 +25,7 @@ class Response
         echo json_encode([
             'success' => false,
             'message' => $message,
-        ]);
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         return $response;
     }
 }

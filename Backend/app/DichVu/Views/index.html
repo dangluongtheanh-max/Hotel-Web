@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BE4 — Bảng Điều Khiển & Test API Dịch Vụ Khách Sạn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 30px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge-be4 {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .group-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.15s;
+        }
+
+        .item-row:hover {
+            background-color: #1e293b;
+            border-color: var(--primary);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .item-code {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .item-meta {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .item-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stock-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .stock-tag.unlimited {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Test Box Sidebar */
+        .test-box h3 {
+            font-size: 17px;
+            margin-bottom: 14px;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 65px;
+        }
+
+        .response-preview {
+            background-color: #090d16;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #38bdf8;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <span class="badge-be4">Hệ thống BE4 — Hotel Booking</span>
+            <h1>Danh Mục Dịch Vụ Khách Sạn (Phương án A)</h1>
+            <p class="subtitle">Đã nạp 6 nhóm lớn & 26 dịch vụ chi tiết — Tích hợp sẵn bộ test API trực tiếp</p>
+        </div>
+        <div class="quick-actions">
+            <a href="/dichvu/xemds" target="_blank" class="btn btn-outline">🔗 Xem JSON Raw</a>
+            <button onclick="location.reload()" class="btn">🔄 Tải lại dữ liệu</button>
+        </div>
+    </header>
+
+    <div class="grid-layout">
+        <!-- Cột trái: Hiển thị 26 dịch vụ trực quan -->
+        <div class="main-content">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nhập từ khóa để lọc dịch vụ (ví dụ: nước, giặt, xe, massage, pizza...)" oninput="filterServices()">
+            </div>
+
+            <div id="serviceContainer">
+                <!-- Javascript sẽ nạp 6 nhóm tại đây -->
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">Đang tải dữ liệu từ CSDL MySQL...</div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Hộp công cụ Test Đặt dịch vụ trực tiếp -->
+        <div class="sidebar">
+            <div class="card test-box">
+                <h3>⚡ Test Đặt Dịch Vụ (Phương Án A)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Mô phỏng khách đặt xe đưa đón, ăn uống hoặc minibar trong phòng.</p>
+                
+                <form id="orderForm" onsubmit="handleOrder(event)">
+                    <div class="form-group">
+                        <label>Chọn món dịch vụ:</label>
+                        <select id="selectService" required>
+                            <option value="">-- Đang nạp danh sách --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số lượng:</label>
+                        <input type="number" id="orderQty" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả / Giờ giấc & Chuyến bay (Phương án A):</label>
+                        <textarea id="orderNote" placeholder="Ví dụ: Đón tại Sân bay lúc 14:30 - Chuyến bay VN123"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%; justify-content: center;">🚀 Gửi API Đặt Dịch Vụ</button>
+                </form>
+
+                <div id="responseBox" class="response-preview" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allServices = [];
+
+    // Tự động tải dữ liệu từ API /dichvu/xemds
+    async function fetchServices() {
+        try {
+            const res = await fetch('/dichvu/xemds');
+            const result = await res.json();
+            if (result.success && result.data && result.data.services) {
+                allServices = result.data.services;
+                renderServices(allServices);
+                populateDropdown(allServices);
+            }
+        } catch (err) {
+            document.getElementById('serviceContainer').innerHTML = `
+                <div style="color: #ef4444; padding: 20px; background: rgba(239,68,68,0.1); border-radius: 8px;">
+                    ❌ Không thể kết nối API. Hãy đảm bảo MySQL và Backend đã được bật!
+                </div>`;
+        }
+    }
+
+    function formatVND(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+
+    function renderServices(groups) {
+        const container = document.getElementById('serviceContainer');
+        container.innerHTML = '';
+
+        if (groups.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-muted);">Không tìm thấy dịch vụ nào phù hợp!</div>';
+            return;
+        }
+
+        groups.forEach(group => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            let itemsHtml = '';
+            (group.items || []).forEach(item => {
+                const isUnlimited = item.SoLuongTon >= 9999;
+                const stockText = isUnlimited ? 'Không giới hạn' : `Tồn kho: ${item.SoLuongTon}`;
+                const stockClass = isUnlimited ? 'stock-tag unlimited' : 'stock-tag';
+
+                itemsHtml += `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <span class="item-name">${item.TenCTDV}</span>
+                            <span class="item-code">Mã: ${item.MaCTDV}</span>
+                        </div>
+                        <div class="item-meta">
+                            <span class="item-price">${formatVND(item.DonGia)}</span>
+                            <span class="${stockClass}">${stockText}</span>
+                        </div>
+                    </div>`;
+            });
+
+            card.innerHTML = `
+                <div class="group-header">
+                    <span class="group-title">📂 ${group.MaDV} — ${group.TenDV}</span>
+                    <span style="font-size: 12px; color: var(--text-muted);">${(group.items || []).length} mục</span>
+                </div>
+                <div class="item-list">${itemsHtml}</div>`;
+
+            container.appendChild(card);
+        });
+    }
+
+    function populateDropdown(groups) {
+        const select = document.getElementById('selectService');
+        select.innerHTML = '';
+        groups.forEach(g => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = g.TenDV;
+            (g.items || []).forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.MaCTDV;
+                opt.textContent = `${item.TenCTDV} (${formatVND(item.DonGia)})`;
+                optgroup.appendChild(opt);
+            });
+            select.appendChild(optgroup);
+        });
+    }
+
+    function filterServices() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (!query) {
+            renderServices(allServices);
+            return;
+        }
+
+        const filtered = allServices.map(group => {
+            const matchedItems = (group.items || []).filter(item => 
+                item.TenCTDV.toLowerCase().includes(query) || 
+                item.MaCTDV.toLowerCase().includes(query) ||
+                group.TenDV.toLowerCase().includes(query)
+            );
+            return { ...group, items: matchedItems };
+        }).filter(group => group.items.length > 0);
+
+        renderServices(filtered);
+    }
+
+    async function handleOrder(e) {
+        e.preventDefault();
+        const box = document.getElementById('responseBox');
+        box.style.display = 'block';
+        box.textContent = '⏳ Đang gửi API POST /dichvu/dat...';
+
+        const payload = {
+            MaCTDV: document.getElementById('selectService').value,
+            SoLuong: parseInt(document.getElementById('orderQty').value, 10),
+            MoTa: document.getElementById('orderNote').value.trim()
+        };
+
+        try {
+            const res = await fetch('/dichvu/dat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            box.textContent = JSON.stringify(data, null, 2);
+            fetchServices(); // Cập nhật lại tồn kho nếu có trừ
+        } catch (err) {
+            box.textContent = '❌ Lỗi kết nối: ' + err.message;
+        }
+    }
+
+    window.onload = fetchServices;
+</script>
+
+</body>
+</html>

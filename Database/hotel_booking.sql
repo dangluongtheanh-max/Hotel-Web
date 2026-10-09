@@ -74,11 +74,13 @@ CREATE TABLE KhuyenMai (
     LoaiKM VARCHAR(50) NOT NULL,
     GiaTriGiam DECIMAL(15,2) NOT NULL,
     SoDemToiThieu INT NOT NULL DEFAULT 0,
+    SoNguoiToiThieu INT NOT NULL DEFAULT 0,
     NgayBatDau DATE NOT NULL,
     NgayKetThuc DATE NOT NULL,
     TrangThai VARCHAR(50) NOT NULL DEFAULT 'HoatDong',
     CHECK (GiaTriGiam >= 0),
     CHECK (SoDemToiThieu >= 0),
+    CHECK (SoNguoiToiThieu >= 0),
     CHECK (NgayKetThuc >= NgayBatDau)
 ) ENGINE=InnoDB;
 

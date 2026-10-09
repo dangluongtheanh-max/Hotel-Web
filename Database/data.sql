@@ -41,10 +41,14 @@ INSERT INTO Phong (MaPhong, TrangThaiPhong, MaLoaiPhong) VALUES
 ('P004', 'Trong', 'LP001');
 
 -- 7. KhuyenMai
-INSERT INTO KhuyenMai (MaKM, TenKM, LoaiKM, GiaTriGiam, SoDemToiThieu, NgayBatDau, NgayKetThuc, TrangThai) VALUES
-('KM001', 'Khuyen mai khach hang moi', 'PhanTram', 10, 0, '2026-01-01', '2026-12-31', 'HoatDong'),
-('KM002', 'Khuyen mai luu tru dai ngay', 'PhanTram', 15, 5, '2026-01-01', '2026-12-31', 'HoatDong'),
-('KM003', 'Khuyen mai mua he', 'SoTien', 200000, 2, '2026-06-01', '2026-08-31', 'NgungHoatDong');
+INSERT INTO KhuyenMai (MaKM, TenKM, LoaiKM, GiaTriGiam, SoDemToiThieu, SoNguoiToiThieu, NgayBatDau, NgayKetThuc, TrangThai) VALUES
+('KM001', 'Khuyen mai khach hang moi', 'PhanTram', 10, 0, 0, '2026-01-01', '2026-12-31', 'HoatDong'),
+('KM002', 'Khuyen mai luu tru dai ngay (>=5 dem)', 'PhanTram', 15, 5, 0, '2026-01-01', '2026-12-31', 'HoatDong'),
+('KM003', 'Khuyen mai mua he da ket thuc', 'SoTien', 200000, 2, 0, '2025-06-01', '2025-08-31', 'NgungHoatDong'),
+('KM_FLASH1212', 'Sieu Sale Flash 12/12 (Admin set rieng ngay 12/12)', 'PhanTram', 30, 1, 0, '2026-12-12', '2026-12-12', 'HoatDong'),
+('KM_WEEKEND', 'Uu dai nghi duong cuoi tuan (>=2 dem)', 'SoTien', 150000, 2, 0, '2026-01-01', '2026-12-31', 'HoatDong'),
+('KM_VIP500', 'Voucher Tri An Khach VIP (>=3 dem)', 'SoTien', 500000, 3, 0, '2026-01-01', '2026-12-31', 'HoatDong'),
+('KM_GROUP', 'Uu dai di theo doan (Tu 4 nguoi tro len)', 'PhanTram', 20, 1, 4, '2026-01-01', '2026-12-31', 'HoatDong');
 
 -- 8. PhieuNhanPhong
 INSERT INTO PhieuNhanPhong (MaPhieu, NgayLap, KenhDat, TrangThai, MaKH, MaLeTan, MaKM) VALUES
@@ -59,17 +63,54 @@ INSERT INTO ChiTietPhieuNhanPhong (MaPhieu, MaPhong, ThoiGianNhanPhong, ThoiGian
 ('PP002', 'P002', '2026-10-04 14:00:00', '2026-10-06 12:00:00', 2, 'DangLuuTru'),
 ('PP003', 'P003', '2026-10-10 14:00:00', '2026-10-20 12:00:00', 3, 'DaDat');
 
--- 10. DichVu
+-- 10. DichVu (6 Nhom dich vu tieu chuan khach san)
 INSERT INTO DichVu (MaDV, TenDV, MoTa, DonGia, TrangThai) VALUES
-('DV001', 'Bua sang', 'Suat an sang tai khach san', 120000, 'DangCungCap'),
-('DV002', 'Giat ui', 'Dich vu giat ui theo lan', 50000, 'DangCungCap'),
-('DV003', 'Dua don san bay', 'Dich vu dua don mot chieu', 250000, 'DangCungCap');
+('DV01', 'Minibar & Do uong tai phong', 'Do uong va do an nhe trong tu lanh phong nghi', 0, 'DangCungCap'),
+('DV02', 'Giat ui & La hoi', 'Dich vu giat say, la hoi, giat kho chuyen nghiep', 0, 'DangCungCap'),
+('DV03', 'Am thuc tai phong (Room Service)', 'Cac suat an nong, do an nhanh phuc vu tan phong', 0, 'DangCungCap'),
+('DV04', 'Spa & Massage thu gian', 'Dich vu tri lieu, xong hoi, massage thu gian', 0, 'DangCungCap'),
+('DV05', 'Van chuyen & Thue phuong tien', 'Xe dua don san bay tron goi, thue xe may, xe dap', 0, 'DangCungCap'),
+('DV06', 'Tien ich bo sung & Su kien phong', 'Giuong phu, trang tri phong, phong hop mini', 0, 'DangCungCap');
 
--- 10.1 ChiTietDichVu
+-- 10.1 ChiTietDichVu (26 Mat hang chi tiet theo 6 nhom)
 INSERT INTO ChiTietDichVu (MaCTDV, MaDV, TenCTDV, DonGia, SoLuongTon) VALUES
-('CTDV01', 'DV001', 'Buffet sang', 120000, 100),
-('CTDV02', 'DV002', 'Giat ao somi', 50000, 0),
-('CTDV03', 'DV003', 'Xe 4 cho', 250000, 0);
+-- Nhom DV01: Minibar & Do uong tai phong
+('CTDV01', 'DV01', 'Nuoc suoi tinh khiet Aquafina 500ml', 20000, 200),
+('CTDV02', 'DV01', 'Nuoc ngot Coca-Cola / Pepsi lon 330ml', 30000, 100),
+('CTDV03', 'DV01', 'Bia Heineken / Tiger Silver lon 330ml', 45000, 100),
+('CTDV04', 'DV01', 'Snack khoai tay Lays lon 110g', 35000, 80),
+('CTDV05', 'DV01', 'Hat dieu rang muoi / Macca say 150g', 80000, 50),
+('CTDV06', 'DV01', 'Ruou vang do nhap khau Chile 750ml', 450000, 30),
+
+-- Nhom DV02: Giat ui & La hoi
+('CTDV07', 'DV02', 'Giat say quan ao thuong (theo kg)', 40000, 9999),
+('CTDV08', 'DV02', 'La hoi / Ui phang ao somi, quan tay', 30000, 9999),
+('CTDV09', 'DV02', 'Giat kho / Giat hap bo vest, dam da hoi', 120000, 9999),
+('CTDV10', 'DV02', 'Phu thu giat hoa toc nhan trong 3 gio', 80000, 9999),
+
+-- Nhom DV03: Am thuc tai phong (Room Service)
+('CTDV11', 'DV03', 'Bua sang kieu Au (Banh mi, trung, xuc xich, cafe)', 120000, 50),
+('CTDV12', 'DV03', 'Bua sang truyen thong (Pho bo dac biet / Bun bo Hue)', 95000, 50),
+('CTDV13', 'DV03', 'Set com nieu gia dinh (Com nieu, suon ram, canh cua)', 180000, 40),
+('CTDV14', 'DV03', 'Pizza hai san pho mai co vua 20cm', 160000, 30),
+('CTDV15', 'DV03', 'Dia trai cay tuoi nhiet doi 4 mua', 85000, 40),
+
+-- Nhom DV04: Spa & Massage thu gian
+('CTDV16', 'DV04', 'Xong hoi da muoi Himalaya (45 phut)', 150000, 20),
+('CTDV17', 'DV04', 'Massage toan than tinh dau sa chanh (60 phut)', 350000, 15),
+('CTDV18', 'DV04', 'Massage tri lieu co vai gay chuyen sau (45 phut)', 250000, 15),
+('CTDV19', 'DV04', 'Cham soc da mat thu gian bun khoang (60 phut)', 300000, 10),
+
+-- Nhom DV05: Van chuyen & Thue phuong tien (Phuong an A - tron goi & theo ngay/gio)
+('CTDV20', 'DV05', 'Thue xe may tay ga Honda AirBlade (theo ngay)', 150000, 15),
+('CTDV21', 'DV05', 'Thue xe dap doi dao pho (theo gio)', 50000, 10),
+('CTDV22', 'DV05', 'Xe 4 cho dua don san bay tron goi (1 chieu)', 250000, 10),
+('CTDV23', 'DV05', 'Xe 7 cho dua don san bay tron goi (1 chieu)', 350000, 8),
+
+-- Nhom DV06: Tien ich bo sung & Su kien phong
+('CTDV24', 'DV06', 'Ke them giuong phu Extra Bed (theo dem)', 200000, 10),
+('CTDV25', 'DV06', 'Set trang tri phong sinh nhat / tinh yeu lang man', 350000, 10),
+('CTDV26', 'DV06', 'Thue phong hop hoi nghi mini < 15 nguoi (theo gio)', 500000, 5);
 
 -- 10.2 CTSuDungDichVu
 INSERT INTO CTSuDungDichVu (MaCTDV, MaPhieu, MaPhong, DonGia, MoTa, SoLuong, TrangThai) VALUES
