@@ -58,7 +58,33 @@ class ThanhToanController
     }
 
     /**
-     * API: Nhận Webhook biến động số dư từ Ngân Hàng Napas 247 (MBBank).
+     * API: Hủy thanh toán giao dịch (Nút Hủy thanh toán).
+     * Endpoint: POST /thanhtoan/huy
+     */
+    public function huyThanhToan($request = null, $response = null)
+    {
+        $params = $this->getParams($request);
+        $result = $this->service->huyThanhToan($params);
+        $status = ($result['success'] ?? false) ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    /**
+     * API: Kiểm tra và Đồng bộ biến động số dư Ngân Hàng Thật (MBBank qua SePay).
+     * Endpoint: POST /thanhtoan/kiemtra-that hoặc GET /thanhtoan/kiemtra-that?MaHD=...
+     */
+    public function dongBoNganHangThat($request = null, $response = null)
+    {
+        $params = $this->getParams($request);
+        $maHD = $params['MaHD'] ?? '';
+        $apiKey = $params['apiKey'] ?? null;
+        $result = $this->service->dongBoNganHangThat($maHD, $apiKey);
+        $status = ($result['success'] ?? false) ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    /**
+     * API: Nhận Webhook biến động số dư từ Ngân Hàng Napas 247.
      * Endpoint: POST /thanhtoan/webhook
      */
     public function xuLyWebhook($request = null, $response = null)
