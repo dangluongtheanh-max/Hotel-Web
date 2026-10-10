@@ -32,8 +32,8 @@ class ThanhToanService
      */
     public function taoThanhToan(array $params): array
     {
-        $maHD = trim($params['MaHD'] ?? '');
-        $hinhThuc = $params['HinhThuc'] ?? 'ChuyenKhoan';
+        $maHD = trim($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? '')));
+        $hinhThuc = $params['HinhThuc'] ?? ($params['hinhThuc'] ?? 'ChuyenKhoan');
 
         if (empty($maHD)) {
             return ['success' => false, 'error' => 'Vui lòng cung cấp mã hóa đơn (MaHD).'];
@@ -114,8 +114,8 @@ class ThanhToanService
      */
     public function xemThanhToan(array $params): array
     {
-        $maHD = trim($params['MaHD'] ?? '');
-        $maTT = trim($params['MaThanhToan'] ?? '');
+        $maHD = trim($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? '')));
+        $maTT = trim($params['MaThanhToan'] ?? ($params['maThanhToan'] ?? ($params['maTT'] ?? '')));
 
         $tt = null;
         if (!empty($maTT)) {
@@ -172,7 +172,7 @@ class ThanhToanService
      */
     public function huyThanhToan(array $params): array
     {
-        $maHD = trim($params['MaHD'] ?? '');
+        $maHD = trim($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? '')));
         if (empty($maHD)) {
             return ['success' => false, 'error' => 'Vui lòng cung cấp mã hóa đơn (MaHD) cần hủy.'];
         }
@@ -379,7 +379,7 @@ class ThanhToanService
      */
     public function yeuCauHoanTien(array $params): array
     {
-        $maHD = trim($params['MaHD'] ?? '');
+        $maHD = trim($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? '')));
         $nganHangHoan = trim($params['NganHangHoan'] ?? '');
         $stkHoan = trim($params['STKHoan'] ?? '');
         $tenChuTKHoan = strtoupper(trim($params['TenChuTKHoan'] ?? ''));

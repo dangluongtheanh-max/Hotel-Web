@@ -69,10 +69,10 @@ INSERT INTO DichVu (MaDV, TenDV, MoTa, DonGia, TrangThai) VALUES
 ('DV02', 'Giat ui & La hoi', 'Dich vu giat say, la hoi, giat kho chuyen nghiep', 0, 'DangCungCap'),
 ('DV03', 'Am thuc tai phong (Room Service)', 'Cac suat an nong, do an nhanh phuc vu tan phong', 0, 'DangCungCap'),
 ('DV04', 'Spa & Massage thu gian', 'Dich vu tri lieu, xong hoi, massage thu gian', 0, 'DangCungCap'),
-('DV05', 'Van chuyen & Thue phuong tien', 'Xe dua don san bay tron goi, thue xe may, xe dap', 0, 'DangCungCap'),
+('DV05', 'Van chuyen & Thue phuong tien', 'Dich vu thue xe may theo ngay, thue xe dap doi theo gio tu lai', 0, 'DangCungCap'),
 ('DV06', 'Tien ich bo sung & Su kien phong', 'Giuong phu, trang tri phong, phong hop mini', 0, 'DangCungCap');
 
--- 10.1 ChiTietDichVu (26 Mat hang chi tiet theo 6 nhom)
+-- 10.1 ChiTietDichVu (24 Mat hang chi tiet theo 6 nhom)
 INSERT INTO ChiTietDichVu (MaCTDV, MaDV, TenCTDV, DonGia, SoLuongTon) VALUES
 -- Nhom DV01: Minibar & Do uong tai phong
 ('CTDV01', 'DV01', 'Nuoc suoi tinh khiet Aquafina 500ml', 20000, 200),
@@ -101,11 +101,9 @@ INSERT INTO ChiTietDichVu (MaCTDV, MaDV, TenCTDV, DonGia, SoLuongTon) VALUES
 ('CTDV18', 'DV04', 'Massage tri lieu co vai gay chuyen sau (45 phut)', 250000, 15),
 ('CTDV19', 'DV04', 'Cham soc da mat thu gian bun khoang (60 phut)', 300000, 10),
 
--- Nhom DV05: Van chuyen & Thue phuong tien (Phuong an A - tron goi & theo ngay/gio)
+-- Nhom DV05: Van chuyen & Thue phuong tien (Thue xe tu lai theo ngay / gio)
 ('CTDV20', 'DV05', 'Thue xe may tay ga Honda AirBlade (theo ngay)', 150000, 15),
 ('CTDV21', 'DV05', 'Thue xe dap doi dao pho (theo gio)', 50000, 10),
-('CTDV22', 'DV05', 'Xe 4 cho dua don san bay tron goi (1 chieu)', 250000, 10),
-('CTDV23', 'DV05', 'Xe 7 cho dua don san bay tron goi (1 chieu)', 350000, 8),
 
 -- Nhom DV06: Tien ich bo sung & Su kien phong
 ('CTDV24', 'DV06', 'Ke them giuong phu Extra Bed (theo dem)', 200000, 10),

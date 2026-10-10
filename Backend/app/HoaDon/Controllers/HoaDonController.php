@@ -52,7 +52,7 @@ class HoaDonController
     public function xemHoaDon($request = null, $response = null)
     {
         $params = $this->getParams($request);
-        $maHD = $params['MaHD'] ?? ($params['id'] ?? '');
+        $maHD = $params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? ($params['id'] ?? '')));
         $result = $this->service->xemChiTietHoaDon($maHD);
         $status = ($result['success'] ?? false) ? 200 : 404;
         return Response::json($response, $result, $status);
@@ -65,7 +65,7 @@ class HoaDonController
     public function previewHoaDon($request = null, $response = null)
     {
         $params = $this->getParams($request);
-        $maPhieu = $params['MaPhieu'] ?? '';
+        $maPhieu = $params['MaPhieu'] ?? ($params['maPhieu'] ?? ($params['ma_phieu'] ?? ''));
         $result = $this->service->tinhToanChiPhi($maPhieu);
         $status = ($result['success'] ?? false) ? 200 : 400;
         return Response::json($response, $result, $status);

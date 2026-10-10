@@ -102,9 +102,9 @@ class ThanhToanController
     public function moPhongChuyenKhoan($request = null, $response = null)
     {
         $params = $this->getParams($request);
-        $maHD = $params['MaHD'] ?? '';
-        $soTien = (float)($params['SoTien'] ?? 0);
-        $noiDung = $params['NoiDung'] ?? "THANH TOAN {$maHD}";
+        $maHD = $params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? ''));
+        $soTien = (float)($params['SoTien'] ?? ($params['soTien'] ?? ($params['amount'] ?? 0)));
+        $noiDung = $params['NoiDung'] ?? ($params['noiDung'] ?? ($params['content'] ?? "THANH TOAN {$maHD}"));
 
         $result = $this->service->xuLyWebhook([
             'content' => $noiDung,
