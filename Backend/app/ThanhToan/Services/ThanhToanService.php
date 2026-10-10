@@ -312,7 +312,7 @@ class ThanhToanService
     public function xuLyWebhook(array $payload): array
     {
         $content = strtoupper(trim($payload['content'] ?? ($payload['description'] ?? ($payload['transaction_content'] ?? ''))));
-        $soTienChuyen = (float)($payload['amount'] ?? ($payload['amount_in'] ?? 0));
+        $soTienChuyen = (float)($payload['transferAmount'] ?? ($payload['amount'] ?? ($payload['amount_in'] ?? 0)));
 
         if (empty($content)) {
             return [
