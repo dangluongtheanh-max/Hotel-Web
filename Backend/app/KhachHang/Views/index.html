@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyHotel - Cổng Đặt Phòng & Dịch Vụ Khách Hàng (Customer Portal)</title>
+    <!-- Google Fonts: Cinzel (Display) & Be Vietnam Pro (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           TYPOGRAPHY SYSTEM & LUXURY RESORT DESIGN TOKENS
+           ========================================================================== */
+        :root {
+            /* Typography Scale */
+            --font-display: 'Cinzel', Georgia, serif;
+            --font-body: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --fs-xs: 12px;
+            --fs-sm: 14px;
+            --fs-base: 16px;
+            --fs-md: 20px;
+            --fs-lg: 24px;
+            --fs-xl: 32px;
+            --fs-2xl: 48px;
+
+            /* Luxury Navy & Gold Color Palette */
+            --bg-base: #070B14;
+            --bg-surface: #0E1626;
+            --bg-card: rgba(14, 22, 38, 0.85);
+            --bg-card-hover: rgba(22, 34, 58, 0.95);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(245, 158, 11, 0.45);
+
+            --primary: #38BDF8;
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --accent: #F59E0B;
+            --accent-glow: rgba(245, 158, 11, 0.25);
+            --success: #10B981;
+            --success-glow: rgba(16, 185, 129, 0.25);
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --danger-glow: rgba(239, 68, 68, 0.25);
+
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --text-dim: #64748B;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 90% 90%, rgba(56, 189, 248, 0.06) 0%, transparent 45%);
+            background-attachment: fixed;
+            font-size: var(--fs-base);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .luxury-font {
+            font-family: var(--font-display);
+            letter-spacing: -0.5px;
+        }
+
+        /* Top Navigation Header */
+        .topbar {
+            background: rgba(14, 22, 38, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--accent), #D97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: var(--fs-lg);
+            font-weight: 800;
+            color: var(--text-main);
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(22, 34, 58, 0.8), rgba(14, 22, 38, 0.95));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 40%;
+            background: radial-gradient(circle at center, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-text h1 {
+            font-size: var(--fs-2xl);
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: var(--fs-base);
+            max-width: 600px;
+        }
+
+        /* Bento Room Cards Grid */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .room-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .room-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .room-card.selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .room-badge-top {
+            padding: 16px 18px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-body {
+            padding: 14px 18px;
+        }
+
+        .room-title {
+            font-size: var(--fs-md);
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .room-features {
+            font-size: var(--fs-xs);
+            color: var(--text-dim);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .room-price {
+            font-size: var(--fs-xl);
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .room-footer {
+            padding: 14px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Booking Form Card */
+        .booking-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: var(--fs-lg);
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: var(--fs-sm);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+        }
+
+        /* Order Calculation Box */
+        .summary-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: var(--fs-sm);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total {
+            font-size: var(--fs-md);
+            font-weight: 800;
+            color: var(--accent);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: var(--fs-sm);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #D97706);
+            color: var(--text-main);
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: var(--text-main);
+            box-shadow: 0 4px 16px var(--success-glow);
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--success-glow);
+        }
+
+        .btn-outline {
+            background: var(--bg-surface);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: var(--fs-xs);
+            font-weight: 600;
+        }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-primary { background: rgba(56, 189, 248, 0.15); color: var(--primary); }
+
+        /* VietQR Component */
+        .qr-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .qr-img {
+            max-width: 260px;
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        /* Toast Component */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tabs Content */
+        .tab-section {
+            display: none;
+        }
+        .tab-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+        }
+        th {
+            text-align: left;
+            padding: 12px 14px;
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+        }
+        td {
+            padding: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <a href="/client" class="brand-logo">
+            <div class="brand-badge">S</div>
+            <div>
+                <h1 style="font-size: var(--fs-md); color: var(--text-main);">SkyHotel</h1>
+                <span style="font-size: var(--fs-xs); color: var(--accent); font-weight: 600;">Customer Portal • Đặt Phòng & Dịch Vụ</span>
+            </div>
+        </a>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchClientTab('booking')">🏨 Đặt Phòng Trực Tuyến</button>
+            <button class="tab-btn" onclick="switchClientTab('services')">🛎️ Đặt Dịch Vụ Phòng</button>
+            <button class="tab-btn" onclick="switchClientTab('payment')">💳 Thanh Toán & VietQR</button>
+            <button class="tab-btn" onclick="switchClientTab('history')">📜 Lịch Sử & Tra Cứu</button>
+            <a href="/admin" class="btn btn-outline" style="padding: 8px 16px; font-size: var(--fs-xs);" target="_blank">
+                ⚙️ Admin Hub ↗
+            </a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Hero Header -->
+        <div class="hero-banner">
+            <div class="hero-text">
+                <h1>Kỳ Nghỉ Thượng Lưu Tại SkyHotel</h1>
+                <p>Hệ thống tự động lưu trữ thông tin đặt phòng, hóa đơn và giao dịch trực tiếp vào CSDL MariaDB thời gian thực.</p>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 20px; font-size: var(--fs-xs);">
+                <div>🟢 Máy chủ API: <strong>Port 8000</strong></div>
+                <div>💾 CSDL: <strong>hotel_booking (MySQL)</strong></div>
+                <div>⚡ Thanh toán: <strong>VietQR Napas 247 MBBank</strong></div>
+            </div>
+        </div>
+
+        <!-- =====================================================================
+             TAB 1: ĐẶT PHÒNG TRỰC TUYẾN
+             ===================================================================== -->
+        <section id="tab-booking" class="tab-section active">
+            <!-- Room Selection -->
+            <h2 class="section-title">1. Chọn Phòng Khách Sạn</h2>
+            <div class="rooms-grid" id="rooms-list-grid">
+                <!-- Loaded dynamically -->
+            </div>
+
+            <!-- Booking Input Form -->
+            <div class="booking-card">
+                <h2 class="section-title">2. Thông Tin Khách Hàng & Xác Nhận Đặt Phòng</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Họ và Tên Khách Hàng (*):</label>
+                        <input type="text" id="cust-name" class="form-control" value="Đặng Lương Thế Anh" placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="form-group">
+                        <label>Số Điện Thoại (*):</label>
+                        <input type="text" id="cust-phone" class="form-control" value="0988776655" placeholder="0911000001">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Liên Hệ:</label>
+                        <input type="email" id="cust-email" class="form-control" value="theanh@skyhotel.vn" placeholder="email@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phòng Đã Chọn:</label>
+                        <input type="text" id="selected-room-code" class="form-control" value="P002" readonly style="font-weight: 700; color: var(--accent);">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Ngày Nhận Phòng:</label>
+                        <input type="date" id="cust-checkin-date" class="form-control" onchange="calculateBookingCost()">
+                    </div>
+                    <div class="form-group">
+                        <label>Số Đêm Lưu Trú:</label>
+                        <input type="number" id="cust-nights" class="form-control" value="2" min="1" onchange="calculateBookingCost()">
+                    </div>
+                    <div class="form-group">
+                        <label>Số Khách:</label>
+                        <input type="number" id="cust-guests" class="form-control" value="2" min="1" onchange="calculateBookingCost()">
+                    </div>
+                    <div class="form-group">
+                        <label>Mã Khuyến Mãi (Nếu có):</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="cust-voucher" class="form-control" value="SUMMER2026" placeholder="SUMMER2026">
+                            <button class="btn btn-outline" style="padding: 8px 12px;" onclick="applyVoucherInBooking()">Thử Mã</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Cost Breakdown -->
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Giá phòng mỗi đêm:</span>
+                        <strong id="cost-room-unit">800.000 đ</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tiền phòng gốc (<span id="cost-nights-label">2 đêm</span>):</span>
+                        <strong id="cost-room-base">1.600.000 đ</strong>
+                    </div>
+                    <div class="summary-row" style="color: var(--accent);">
+                        <span>Giảm giá khuyến mãi:</span>
+                        <strong id="cost-discount">-0 đ</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Thuế VAT (10%):</span>
+                        <strong id="cost-vat">+160.000 đ</strong>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>TỔNG CỘNG THANH TOÁN DỰ KIẾN:</span>
+                        <strong id="cost-grand-total">1.760.000 đ</strong>
+                    </div>
+                </div>
+
+                <button class="btn btn-accent" style="width: 100%; justify-content: center; font-size: var(--fs-md); padding: 16px;" onclick="submitCustomerBooking()">
+                    🚀 XÁC NHẬN ĐẶT PHÒNG & LƯU CSDL
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 2: ĐẶT DỊCH VỤ PHÒNG (ROOM SERVICES)
+             ===================================================================== -->
+        <section id="tab-services" class="tab-section">
+            <div class="booking-card">
+                <h2 class="section-title">🛎️ Đặt Dịch Vụ Cho Phiếu Lưu Trú</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã Phiếu Hoặc Số Phòng Đang Ở:</label>
+                        <input type="text" id="order-service-phieu" class="form-control" value="PP002" placeholder="VD: PP001, PP002">
+                    </div>
+                    <div class="form-group">
+                        <label>Chọn Mặt Hàng Dịch Vụ:</label>
+                        <select id="cust-service-item" class="form-control">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Số Lượng:</label>
+                        <input type="number" id="cust-service-qty" class="form-control" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Ghi Chú / Thời Gian Nhận Xe (Nếu thuê xe máy, xe đạp):</label>
+                    <textarea id="cust-service-note" class="form-control" rows="2" placeholder="Ví dụ: Giao lên phòng lúc 08:30 hoặc Nhận xe máy Honda AirBlade tại sảnh"></textarea>
+                </div>
+                <button class="btn btn-accent" onclick="submitClientServiceOrder()">
+                    🛎️ Gửi Đặt Dịch Vụ (Trừ Tồn Kho Thật)
+                </button>
+            </div>
+
+            <!-- List of Services Grid -->
+            <h2 class="section-title">Danh Mục Dịch Vụ Phục Vụ Tại Chỗ (24 Món)</h2>
+            <div class="rooms-grid" id="client-services-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 3: THANH TOÁN & QUÉT VIETQR NAPAS 247
+             ===================================================================== -->
+        <section id="tab-payment" class="tab-section">
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; margin-bottom: 32px;">
+                <!-- QR Code Box -->
+                <div class="booking-card" style="text-align: center;">
+                    <h3 style="font-size: var(--fs-md); color: var(--accent); margin-bottom: 16px;">📱 Quét Mã VietQR MBBank</h3>
+                    <div class="qr-card">
+                        <img id="client-qr-img" class="qr-img" src="https://img.vietqr.io/image/MB-0589822346-compact2.png?amount=2024000&addInfo=HD002&accountName=NGUYEN+HOANG+ANH" alt="VietQR">
+                        <div style="margin-top: 10px; font-size: var(--fs-xs); color: #333; font-weight: 700;">
+                            NGUYEN HOANG ANH • MBBank: 0589822346
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <span id="client-payment-badge" class="badge badge-warning">⏳ Chờ Chuyển Khoản</span>
+                    </div>
+                </div>
+
+                <!-- Payment Details & Test Button -->
+                <div class="booking-card">
+                    <h3 style="font-size: var(--fs-md); color: var(--text-main); margin-bottom: 16px;">📋 Chi Tiết Đơn Thanh Toán</h3>
+                    <div style="font-size: var(--fs-sm); line-height: 2;">
+                        <div>Mã Hóa Đơn: <strong id="pay-box-mahd" style="color: var(--primary);">HD002</strong></div>
+                        <div>Mã Phiếu Đặt: <strong id="pay-box-maphieu">PP002</strong></div>
+                        <div>Khách Hàng: <strong id="pay-box-guest">Trần Thị Bình</strong></div>
+                        <div>Tổng Tiền Cần Thu: <strong id="pay-box-total" style="font-size: var(--fs-lg); color: var(--accent);">2.024.000 đ</strong></div>
+                        <div>Nội Dung Chuyển Khoản: <code style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;" id="pay-box-memo">HD002</code></div>
+                    </div>
+
+                    <div style="margin-top: 24px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm);">
+                        <div style="font-size: var(--fs-xs); color: var(--success); font-weight: 700; margin-bottom: 8px;">
+                            💡 MÔ PHỎNG NỘI BỘ (KHÔNG CẦN CHUYỂN TIỀN THẬT)
+                        </div>
+                        <p style="font-size: var(--fs-xs); color: var(--text-muted); margin-bottom: 14px;">
+                            Bấm nút bên dưới để hệ thống giả lập Ngân hàng MBBank báo Có thành công, lập tức cập nhật CSDL sang Hoàn Tất!
+                        </p>
+                        <button class="btn btn-success" style="width: 100%; justify-content: center;" onclick="simulateCustomerPayment()">
+                            ⚡ [KHÁCH TEST] XÁC NHẬN ĐÃ CHUYỂN TIỀN THÀNH CÔNG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 4: LỊCH SỬ & TRA CỨU ĐẶT PHÒNG
+             ===================================================================== -->
+        <section id="tab-history" class="tab-section">
+            <div class="booking-card">
+                <h2 class="section-title">🔍 Tra Cứu Đơn Đặt Phòng Của Bạn</h2>
+                <div style="display: flex; gap: 12px; max-width: 600px; margin-bottom: 24px;">
+                    <input type="text" id="lookup-keyword" class="form-control" value="0988776655" placeholder="Nhập Số điện thoại, Mã phiếu (PP001) hoặc Mã HĐ (HD001)">
+                    <button class="btn btn-accent" onclick="lookupCustomerBookings()">Tìm Kiếm</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã Phiếu</th>
+                                <th>Khách Hàng</th>
+                                <th>SĐT</th>
+                                <th>Phòng Thuê</th>
+                                <th>Thời Gian</th>
+                                <th>Hóa Đơn</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Nhập SĐT hoặc Mã phiếu để tra cứu dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <span id="toast-icon">✅</span>
+        <span id="toast-text">Thao tác thành công!</span>
+    </div>
+
+    <!-- Script Controller -->
+    <script>
+        let clientRooms = [];
+        let clientServices = [];
+        let currentBookingData = null;
+
+        function showToast(text, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-icon').innerText = isError ? '❌' : '✅';
+            document.getElementById('toast-text').innerText = text;
+            toast.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        function switchClientTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // --- 1. Load Rooms for Booking ---
+        async function loadRooms() {
+            try {
+                const res = await fetch('/khachhang/danhsachphong');
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                    clientRooms = json.data;
+                    renderRoomsGrid(clientRooms);
+                }
+            } catch (e) {
+                console.error("Lỗi tải phòng:", e);
+            }
+        }
+
+        function renderRoomsGrid(rooms) {
+            const grid = document.getElementById('rooms-list-grid');
+            grid.innerHTML = rooms.map(r => `
+                <div class="room-card ${r.MaPhong === 'P002' ? 'selected' : ''}" id="room-card-${r.MaPhong}" onclick="selectRoom('${r.MaPhong}', ${r.Gia})">
+                    <div>
+                        <div class="room-badge-top">
+                            <span class="badge ${r.TrangThaiPhong === 'Trong' ? 'badge-success' : 'badge-warning'}">
+                                ${r.TrangThaiPhong === 'Trong' ? 'Phòng Trống' : r.TrangThaiPhong}
+                            </span>
+                            <span style="font-size: var(--fs-xs); color: var(--text-dim); font-weight: 600;">Mã: ${r.MaPhong}</span>
+                        </div>
+                        <div class="room-body">
+                            <div class="room-title">${r.TenLoaiPhong}</div>
+                            <div class="room-features">
+                                ${r.MoTa || 'Phòng tiện nghi cao cấp, giường đôi, view biển'} • Tối đa ${r.SoNguoiToiDa} người
+                            </div>
+                            <div class="room-price">${Number(r.Gia).toLocaleString('vi-VN')} đ <span style="font-size: var(--fs-xs); color: var(--text-muted); font-weight: normal;">/ đêm</span></div>
+                        </div>
+                    </div>
+                    <div class="room-footer">
+                        <span style="font-size: var(--fs-xs); color: var(--accent); font-weight: 600;">Bấm để chọn phòng</span>
+                        <span class="badge badge-primary">Chọn ➔</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectRoom(maPhong, gia) {
+            document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+            const card = document.getElementById('room-card-' + maPhong);
+            if (card) card.classList.add('selected');
+
+            document.getElementById('selected-room-code').value = maPhong;
+            calculateBookingCost(gia);
+            showToast(`Đã chọn phòng ${maPhong}!`);
+        }
+
+        function calculateBookingCost(unitPrice = null) {
+            const maPhong = document.getElementById('selected-room-code').value;
+            const r = clientRooms.find(x => x.MaPhong === maPhong);
+            const price = unitPrice || (r ? parseFloat(r.Gia) : 800000);
+
+            const nights = parseInt(document.getElementById('cust-nights').value) || 1;
+            const baseCost = price * nights;
+            const vat = Math.round(baseCost * 0.1);
+            const total = baseCost + vat;
+
+            document.getElementById('cost-room-unit').innerText = price.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('cost-nights-label').innerText = nights + ' đêm';
+            document.getElementById('cost-room-base').innerText = baseCost.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('cost-vat').innerText = '+' + vat.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('cost-grand-total').innerText = total.toLocaleString('vi-VN') + ' đ';
+        }
+
+        async function applyVoucherInBooking() {
+            const code = document.getElementById('cust-voucher').value;
+            const nights = parseInt(document.getElementById('cust-nights').value) || 1;
+            const guests = parseInt(document.getElementById('cust-guests').value) || 2;
+            const maPhong = document.getElementById('selected-room-code').value;
+            const r = clientRooms.find(x => x.MaPhong === maPhong);
+            const price = r ? parseFloat(r.Gia) : 800000;
+            const baseCost = price * nights;
+
+            try {
+                const res = await fetch('/khuyenmai/apdung', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ MaKM: code, TienPhong: baseCost, SoDem: nights, SoNguoi: guests })
+                });
+                const json = await res.json();
+                if (json.success && json.data) {
+                    const discount = parseFloat(json.data.TienGiam) || 0;
+                    const afterDiscount = Math.max(0, baseCost - discount);
+                    const vat = Math.round(afterDiscount * 0.1);
+                    const total = afterDiscount + vat;
+
+                    document.getElementById('cost-discount').innerText = '-' + discount.toLocaleString('vi-VN') + ' đ';
+                    document.getElementById('cost-grand-total').innerText = total.toLocaleString('vi-VN') + ' đ';
+                    showToast(`Áp dụng voucher ${code} thành công (-${discount.toLocaleString()} đ)!`);
+                } else {
+                    showToast(json.error || 'Voucher không đủ điều kiện', true);
+                }
+            } catch (e) {
+                showToast('Lỗi áp dụng voucher', true);
+            }
+        }
+
+        // --- Submit Booking (Persists to Database!) ---
+        async function submitCustomerBooking() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const email = document.getElementById('cust-email').value;
+            const maPhong = document.getElementById('selected-room-code').value;
+            const checkin = document.getElementById('cust-checkin-date').value || new Date().toISOString().split('T')[0];
+            const nights = parseInt(document.getElementById('cust-nights').value) || 1;
+            const guests = parseInt(document.getElementById('cust-guests').value) || 2;
+            const voucher = document.getElementById('cust-voucher').value;
+
+            try {
+                const res = await fetch('/khachhang/datphong', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        HoTen: name,
+                        SDT: phone,
+                        Email: email,
+                        MaPhong: maPhong,
+                        NgayNhanPhong: checkin,
+                        SoDem: nights,
+                        SoNguoi: guests,
+                        MaKM: voucher
+                    })
+                });
+                const json = await res.json();
+                if (json.success && json.data) {
+                    currentBookingData = json.data;
+                    showToast(`🎉 Đặt phòng thành công! Phiếu: ${json.data.MaPhieu}, HĐ: ${json.data.MaHD}`);
+
+                    // Fill into Payment tab
+                    document.getElementById('pay-box-mahd').innerText = json.data.MaHD;
+                    document.getElementById('pay-box-maphieu').innerText = json.data.MaPhieu;
+                    document.getElementById('pay-box-guest').innerText = json.data.KhachHang.HoTen;
+                    document.getElementById('pay-box-total').innerText = Number(json.data.ChiPhi.TongTienSauVAT).toLocaleString('vi-VN') + ' đ';
+                    document.getElementById('pay-box-memo').innerText = json.data.MaHD;
+                    document.getElementById('client-qr-img').src = json.data.ThanhToan.VietQrUrl;
+                    document.getElementById('order-service-phieu').value = json.data.MaPhieu;
+
+                    // Switch to Payment Tab
+                    switchClientTab('payment');
+                    loadRooms(); // Refresh rooms status
+                } else {
+                    showToast(json.error || 'Lỗi khi lưu đặt phòng', true);
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối máy chủ', true);
+            }
+        }
+
+        // --- 2. Load Services Hub for Guest ---
+        async function loadServices() {
+            try {
+                const res = await fetch('/dichvu/xemds');
+                const json = await res.json();
+                if (json.success && json.data) {
+                    clientServices = [];
+                    const select = document.getElementById('cust-service-item');
+                    select.innerHTML = '';
+
+                    json.data.services.forEach(group => {
+                        if (group.items && Array.isArray(group.items)) {
+                            group.items.forEach(it => {
+                                clientServices.push({ ...it, Nhom: group.TenDV, MaDV: group.MaDV });
+                                select.innerHTML += `<option value="${it.MaCTDV}">${it.TenCTDV} (${Number(it.DonGia).toLocaleString('vi-VN')} đ)</option>`;
+                            });
+                        }
+                    });
+
+                    renderClientServicesGrid(clientServices);
+                }
+            } catch (e) {
+                console.error("Lỗi tải dịch vụ:", e);
+            }
+        }
+
+        function renderClientServicesGrid(list) {
+            const grid = document.getElementById('client-services-grid');
+            grid.innerHTML = list.map(item => `
+                <div class="room-card">
+                    <div class="room-badge-top">
+                        <span class="badge ${item.MaDV === 'DV05' ? 'badge-warning' : 'badge-primary'}">${item.Nhom}</span>
+                        <span class="badge badge-success">Còn ${item.SoLuongTon}</span>
+                    </div>
+                    <div class="room-body">
+                        <div class="room-title" style="font-size: var(--fs-sm);">${item.TenCTDV}</div>
+                        <div class="room-price" style="font-size: var(--fs-md);">${Number(item.DonGia).toLocaleString('vi-VN')} đ</div>
+                    </div>
+                    <div class="room-footer">
+                        <span style="font-size: var(--fs-xs); color: var(--text-dim);">Mã: ${item.MaCTDV}</span>
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: var(--fs-xs);" onclick="selectServiceToOrder('${item.MaCTDV}')">
+                            Chọn Món ➔
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectServiceToOrder(maCTDV) {
+            document.getElementById('cust-service-item').value = maCTDV;
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+            showToast(`Đã chọn dịch vụ ${maCTDV}!`);
+        }
+
+        async function submitClientServiceOrder() {
+            const maCTDV = document.getElementById('cust-service-item').value;
+            const qty = parseInt(document.getElementById('cust-service-qty').value) || 1;
+            const note = document.getElementById('cust-service-note').value;
+
+            try {
+                const res = await fetch('/dichvu/dat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ MaCTDV: maCTDV, SoLuong: qty, MoTa: note })
+                });
+                const json = await res.json();
+                if (json.status === 'success' || json.success) {
+                    showToast('Đã gửi đặt dịch vụ & trừ kho CSDL thành công!');
+                    loadServices();
+                } else {
+                    showToast(json.message || 'Lỗi đặt dịch vụ', true);
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối đặt dịch vụ', true);
+            }
+        }
+
+        // --- 3. Simulate Payment ---
+        async function simulateCustomerPayment() {
+            const maHD = document.getElementById('pay-box-mahd').innerText;
+            const totalText = document.getElementById('pay-box-total').innerText.replace(/[^\d]/g, '');
+            const amount = parseFloat(totalText) || 2024000;
+
+            try {
+                const res = await fetch('/thanhtoan/mophong', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        MaHD: maHD,
+                        SoTien: amount,
+                        NoiDung: `THANH TOAN ${maHD}`
+                    })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    showToast(`🎉 Xác nhận chuyển khoản thành công ${amount.toLocaleString('vi-VN')} đ!`);
+                    document.getElementById('client-payment-badge').className = 'badge badge-success';
+                    document.getElementById('client-payment-badge').innerText = '✅ Đã Thanh Toán Hoàn Tất!';
+                } else {
+                    showToast(json.error || 'Lỗi xác nhận chuyển khoản', true);
+                }
+            } catch (e) {
+                showToast('Lỗi gửi xác nhận thanh toán', true);
+            }
+        }
+
+        // --- 4. Lookup Bookings ---
+        async function lookupCustomerBookings() {
+            const kw = document.getElementById('lookup-keyword').value;
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Đang tra cứu CSDL...</td></tr>';
+
+            try {
+                const res = await fetch(`/khachhang/tracuu?sdt=${encodeURIComponent(kw)}`);
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+                    tbody.innerHTML = json.data.map(b => `
+                        <tr>
+                            <td><strong>${b.MaPhieu}</strong></td>
+                            <td>${b.TenKhachHang}</td>
+                            <td>${b.SDT}</td>
+                            <td>${b.TenLoaiPhong || 'Phòng'} (<strong>${b.MaPhong}</strong>)</td>
+                            <td>${b.ThoiGianNhanPhong ? b.ThoiGianNhanPhong.substring(0, 10) : b.NgayLap}</td>
+                            <td><code>${b.MaHD || '-'}</code></td>
+                            <td style="color: var(--accent); font-weight: 700;">${b.TongTienSauVAT ? Number(b.TongTienSauVAT).toLocaleString('vi-VN') + ' đ' : '-'}</td>
+                            <td>
+                                <span class="badge ${b.TrangThaiThanhToan === 'HoanTat' ? 'badge-success' : 'badge-warning'}">
+                                    ${b.TrangThaiThanhToan || b.TrangThaiPhieu}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                    showToast(`Tìm thấy ${json.data.length} đơn đặt phòng!`);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger);">Không tìm thấy đơn đặt phòng nào với từ khóa này.</td></tr>';
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger);">Lỗi tra cứu CSDL</td></tr>';
+            }
+        }
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('cust-checkin-date').value = today;
+            loadRooms();
+            loadServices();
+        });
+    </script>
+</body>
+</html>

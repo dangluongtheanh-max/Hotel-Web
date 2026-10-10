@@ -4,96 +4,97 @@ namespace App\KhachHang\Controllers;
 
 use App\KhachHang\Services\KhachHangService;
 use Shared\Response;
+use Shared\Request;
 
 /**
- * Controller cho module KhachHang.
- * Chi nhan request, goi Service xu ly, tra ve response - khong chua business logic.
+ * Controller cho module KhachHang (Khách Hàng Đặt Phòng & Dịch Vụ).
  */
 class KhachHangController
 {
     private KhachHangService $service;
 
-    public function __construct(KhachHangService $service)
+    public function __construct(?KhachHangService $service = null)
     {
-        $this->service = $service;
+        $this->service = $service ?? new KhachHangService();
     }
 
-    public function dangKy($request, $response)
+    private function getParams($request): array
     {
-        $result = $this->service->dangKy($request->all());
-        return Response::json($response, $result);
+        if ($request instanceof Request) {
+            return $request->all();
+        }
+        if (is_array($request)) {
+            return $request;
+        }
+        if (is_object($request) && method_exists($request, 'all')) {
+            return $request->all();
+        }
+        return Request::capture()->all();
     }
 
-    public function xemDSPhong($request, $response)
+    /**
+     * Giao diện Cổng Khách Hàng Thao Tác Trực Tuyến (Customer Portal).
+     * Endpoint: GET /client hoặc GET /khachhang
+     */
+    public function viewPortal($request = null, $response = null)
     {
-        $result = $this->service->xemDSPhong($request->all());
-        return Response::json($response, $result);
+        $viewFile = __DIR__ . '/../Views/index.html';
+        if (file_exists($viewFile)) {
+            header('Content-Type: text/html; charset=utf-8');
+            readfile($viewFile);
+            exit;
+        }
+
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "Giao diện Khách Hàng đang được khởi tạo...";
+        exit;
     }
 
-    public function xemCTPhong($request, $response)
+    /**
+     * API: Lấy danh sách các phòng và loại phòng.
+     * Endpoint: GET /khachhang/danhsachphong hoặc POST /khachhang/xemdsphong
+     */
+    public function xemDSPhong($request = null, $response = null)
     {
-        $result = $this->service->xemCTPhong($request->all());
-        return Response::json($response, $result);
+        $params = $this->getParams($request);
+        $result = $this->service->xemDSPhong($params);
+        return Response::json($response, $result, 200);
     }
 
-    public function datPhong($request, $response)
+    /**
+     * API: Khách hàng đặt phòng trực tuyến (Lưu CSDL thật).
+     * Endpoint: POST /khachhang/datphong
+     */
+    public function datPhong($request = null, $response = null)
     {
-        $result = $this->service->datPhong($request->all());
-        return Response::json($response, $result);
+        $params = $this->getParams($request);
+        $result = $this->service->datPhong($params);
+        $status = ($result['success'] ?? false) ? 200 : 400;
+        return Response::json($response, $result, $status);
     }
 
-    public function thanhToan($request, $response)
+    /**
+     * API: Tra cứu đơn đặt phòng theo SĐT hoặc mã phiếu.
+     * Endpoint: GET /khachhang/tracuu hoặc POST /khachhang/tracuu
+     */
+    public function traCuu($request = null, $response = null)
     {
-        $result = $this->service->thanhToan($request->all());
-        return Response::json($response, $result);
+        $params = $this->getParams($request);
+        $keyword = $params['sdt'] ?? ($params['keyword'] ?? ($params['MaPhieu'] ?? ''));
+        $result = $this->service->traCuu($keyword);
+        $status = ($result['success'] ?? false) ? 200 : 400;
+        return Response::json($response, $result, $status);
     }
 
-    public function huyDatPhong($request, $response)
+    /**
+     * API: Xem lịch sử đặt phòng của khách hàng.
+     * Endpoint: POST /khachhang/xemlichsudatphong hoặc GET /khachhang/lichsu
+     */
+    public function xemLichSuDatPhong($request = null, $response = null)
     {
-        $result = $this->service->huyDatPhong($request->all());
-        return Response::json($response, $result);
+        $params = $this->getParams($request);
+        $keyword = $params['sdt'] ?? ($params['SDT'] ?? ($params['MaKH'] ?? ''));
+        $result = $this->service->traCuu($keyword);
+        return Response::json($response, $result, 200);
     }
-
-    public function xemLichSuDatPhong($request, $response)
-    {
-        $result = $this->service->xemLichSuDatPhong($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function xemHoaDon($request, $response)
-    {
-        $result = $this->service->xemHoaDon($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function xemCTHD($request, $response)
-    {
-        $result = $this->service->xemCTHD($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function xemThongTinCaNhan($request, $response)
-    {
-        $result = $this->service->xemThongTinCaNhan($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function capNhatThongTinCaNhan($request, $response)
-    {
-        $result = $this->service->capNhatThongTinCaNhan($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function themDanhGia($request, $response)
-    {
-        $result = $this->service->themDanhGia($request->all());
-        return Response::json($response, $result);
-    }
-
-    public function xoaDanhGia($request, $response)
-    {
-        $result = $this->service->xoaDanhGia($request->all());
-        return Response::json($response, $result);
-    }
-
 }
