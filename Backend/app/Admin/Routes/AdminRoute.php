@@ -15,6 +15,8 @@ class AdminRoute
         // Giao diện trực quan Dashboard Thống Kê & Báo Cáo (BE4)
         $router->get('/admin', [AdminController::class, 'viewDashboard']);
         $router->get('/admin/dashboard', [AdminController::class, 'viewDashboard']);
+        $router->get('/gui', [AdminController::class, 'viewDashboard']);
+        $router->get('/dashboard', [AdminController::class, 'viewDashboard']);
 
         // 1. Thống kê tổng quan KPI
         $router->get('/admin/thongketongquan', [AdminController::class, 'thongKeTongQuan']);

@@ -61,13 +61,18 @@ $router = new class {
         }
         $uri = '/' . ltrim($uri, '/');
 
-        // Route trang chu kiem tra trang thai
+        // Route trang chu kiem tra trang thai hoac chuyen huong GUI tren trinh duyet
         if ($uri === '/' || $uri === '/index.php') {
+            if (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'text/html')) {
+                header('Location: /admin');
+                exit;
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'status' => 'online',
                 'message' => 'Hotel Booking API Server is running!',
-                'time' => date('Y-m-d H:i:s')
+                'time' => date('Y-m-d H:i:s'),
+                'gui_dashboard' => 'http://localhost:8000/admin'
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             return;
         }
