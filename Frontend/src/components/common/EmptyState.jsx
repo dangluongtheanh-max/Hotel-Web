@@ -1,0 +1,18 @@
+import React from 'react';
+import { Clock } from 'lucide-react';
+
+export const EmptyState = ({
+  title = 'Chưa có chuyến đi',
+  subtitle = 'Các đặt phòng thuộc trạng thái này sẽ xuất hiện tại đây'
+}) => {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div className="w-16 h-16 rounded-full bg-[#f4ede2] flex items-center justify-center mb-4 text-[#865e26] border border-[#e6dbc8]">
+        <Clock className="w-8 h-8 stroke-[1.5]" />
+      </div>
+      <h3 className="font-serif text-xl font-semibold text-[#1c2920] mb-2">{title}</h3>
+      <p className="text-sm text-[#6C756B] max-w-sm leading-relaxed">{subtitle}</p>
+    </div>
+  );
+};
+
