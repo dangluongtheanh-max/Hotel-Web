@@ -92,8 +92,16 @@ export const Header = () => {
           </button>
         </nav>
 
-        {/* Right Section: Language & User */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Right Section: Language, Receptionist Portal & Auth */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          {/* Direct shortcut to Receptionist Front Office */}
+          <Link
+            to="/admin"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-sm bg-[#f6f1e8] text-[#865e26] hover:bg-[#ebdfcc] border border-[#dfc28d] transition-all shadow-2xs"
+            title="Chuyển sang màn hình quản lý quầy Lễ tân"
+          >
+            <span>Quầy Lễ tân</span>
+          </Link>
           {/* Language Selector */}
           <div className="relative">
             <button

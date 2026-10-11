@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, Phone, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Lock, Mail, User, Phone, ArrowRight, ShieldCheck, KeyRound, UserCheck } from 'lucide-react';
 import { useBooking } from '../../context/BookingContext';
 
 export const AuthModal = () => {
-  const { authModal, closeAuthModal, login } = useBooking();
+  const { authModal, closeAuthModal, login, showToast } = useBooking();
+  const navigate = useNavigate();
   const [tab, setTab] = useState(authModal.tab || 'login');
 
   // Login form states
@@ -27,12 +29,29 @@ export const AuthModal = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    login({
-      name: loginEmail.includes('admin') ? 'Admin' : 'Minh Anh',
-      fullName: loginEmail.includes('admin') ? 'Quản trị viên' : 'Nguyễn Minh Anh',
-      email: loginEmail,
-      phone: '090 123 4567'
-    });
+    const isReceptionist =
+      loginEmail.toLowerCase().includes('letan') ||
+      loginEmail.toLowerCase().includes('reception') ||
+      loginEmail.toLowerCase().includes('linh');
+
+    if (isReceptionist) {
+      login({
+        name: 'Linh Trần',
+        fullName: 'Trần Mỹ Linh',
+        role: 'LeTan',
+        email: 'letan01@hotelbooking.com',
+        phone: '0922 000 001'
+      });
+      navigate('/admin');
+    } else {
+      login({
+        name: loginEmail.includes('admin') ? 'Admin' : 'Minh Anh',
+        fullName: loginEmail.includes('admin') ? 'Quản trị viên' : 'Nguyễn Minh Anh',
+        role: 'KhachHang',
+        email: loginEmail,
+        phone: '090 123 4567'
+      });
+    }
   };
 
   const handleRegisterSubmit = (e) => {
@@ -154,11 +173,50 @@ export const AuthModal = () => {
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            {/* Quick autofill sample */}
-            <div className="pt-2 text-center">
-              <span className="text-[11px] text-[#6C756B]">
-                Tài khoản mẫu: <strong className="text-[#1a3e2d]">minhanh@gmail.com</strong> (mk: 123456)
+            {/* Quick Demo Accounts Selection */}
+            <div className="pt-3 border-t border-gray-100">
+              <span className="block text-[10px] font-bold text-[#865e26] mb-2 text-center uppercase tracking-wider">
+                Chọn tài khoản mẫu để thử nghiệm nhanh:
               </span>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginEmail('minhanh@gmail.com');
+                    setLoginPassword('123456');
+                  }}
+                  className={`p-2 rounded border text-left transition-colors flex items-center gap-2 ${
+                    loginEmail === 'minhanh@gmail.com'
+                      ? 'border-[#1a3e2d] bg-[#f0f6f2] font-semibold text-[#1a3e2d]'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <UserCheck className="w-4 h-4 text-[#1a3e2d] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[11px]">Khách hàng</div>
+                    <div className="text-[10px] text-gray-500">Minh Anh</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginEmail('letan01@hotelbooking.com');
+                    setLoginPassword('123456');
+                  }}
+                  className={`p-2 rounded border text-left transition-colors flex items-center gap-2 ${
+                    loginEmail.includes('letan')
+                      ? 'border-[#865e26] bg-[#fdf8f0] font-semibold text-[#865e26]'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <KeyRound className="w-4 h-4 text-[#865e26] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[11px]">Lễ tân (Quầy)</div>
+                    <div className="text-[10px] text-gray-500">Linh Trần</div>
+                  </div>
+                </button>
+              </div>
             </div>
           </form>
         ) : (
