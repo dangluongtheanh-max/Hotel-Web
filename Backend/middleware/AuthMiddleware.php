@@ -2,21 +2,42 @@
 
 namespace Middleware;
 
+use App\TaiKhoan\Services\TaiKhoanService;
+use Shared\Request;
+
 /**
- * Kiem tra nguoi dung da dang nhap (co token/session hop le) hay chua.
- * Ap dung cho cac route can dang nhap: KhachHang, LeTan, Admin.
+ * Xac thuc Bearer token va gan tai khoan hien hanh vao request.
  */
 class AuthMiddleware
 {
+    private TaiKhoanService $service;
+
+    public function __construct(TaiKhoanService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function authenticate(Request $request): array
+    {
+        $result = $this->service->authenticateToken($request->header('Authorization') ?? '');
+        if ($result['success'] ?? false) {
+            $request->setUser($result['user']);
+        }
+
+        return $result;
+    }
+
     public function handle($request, callable $next)
     {
-        $token = $request->header('Authorization');
-        if (empty($token)) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
-            exit;
+        if (!$request instanceof Request) {
+            return ['success' => false, 'statusCode' => 500, 'error' => 'Invalid request object.'];
         }
-        // TODO: xac thuc token, gan $request->user
+
+        $result = $this->authenticate($request);
+        if (!($result['success'] ?? false)) {
+            return $result;
+        }
+
         return $next($request);
     }
 }

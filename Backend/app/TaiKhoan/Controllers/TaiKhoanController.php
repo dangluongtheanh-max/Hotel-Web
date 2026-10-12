@@ -20,14 +20,49 @@ class TaiKhoanController
 
     public function dangNhap($request, $response)
     {
-        $result = $this->service->dangNhap($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->dangNhap($request->all()));
     }
 
     public function quenMatKhau($request, $response)
     {
-        $result = $this->service->quenMatKhau($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->quenMatKhau($request->all()));
     }
 
+    public function xemDSTaiKhoan($request, $response)
+    {
+        return $this->respond($response, $this->service->xemDSTaiKhoan($request->all()));
+    }
+
+    public function xemCTTaiKhoan($request, $response)
+    {
+        return $this->respond($response, $this->service->xemCTTaiKhoan($request->all()));
+    }
+
+    public function khoaTaiKhoan($request, $response)
+    {
+        return $this->respond($response, $this->service->khoaTaiKhoan($request->all()));
+    }
+
+    public function moTaiKhoan($request, $response)
+    {
+        return $this->respond($response, $this->service->moTaiKhoan($request->all()));
+    }
+
+    public function capNhatVaiTro($request, $response)
+    {
+        return $this->respond($response, $this->service->capNhatVaiTro($request->all()));
+    }
+
+    public function xemVaiTroVaQuyen($request, $response)
+    {
+        return $this->respond($response, $this->service->xemVaiTroVaQuyen());
+    }
+
+    private function respond($response, array $result)
+    {
+        $status = $result['statusCode'] ?? 200;
+        unset($result['statusCode']);
+
+        return Response::json($response, $result, $status);
+    }
 }

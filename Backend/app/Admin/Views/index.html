@@ -721,9 +721,36 @@
             aside.open { transform: translateX(0); }
             main { margin-left: 0; padding: 20px; }
         }
+
+        #auth-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(8, 13, 26, 0.94);
+            backdrop-filter: blur(12px);
+        }
+
+        #auth-gate .modal-container { max-width: 440px; }
+        #auth-error { min-height: 20px; margin: 12px 0; color: var(--danger); font-size: var(--fs-sm); }
     </style>
 </head>
 <body>
+    <div id="auth-gate">
+        <form class="modal-container" id="admin-login-form">
+            <h2>Đăng nhập quản trị</h2>
+            <p style="margin: 12px 0 20px; color: var(--text-muted);">Vui lòng đăng nhập bằng tài khoản Admin để sử dụng dashboard.</p>
+            <label for="admin-username">Tên đăng nhập</label>
+            <input class="form-control" id="admin-username" name="TenDangNhap" autocomplete="username" required>
+            <label for="admin-password" style="display:block; margin-top: 14px;">Mật khẩu</label>
+            <input class="form-control" id="admin-password" name="MatKhau" type="password" autocomplete="current-password" required>
+            <div id="auth-error" role="alert"></div>
+            <button class="btn btn-primary" type="submit" style="width: 100%; justify-content: center;">Đăng nhập</button>
+        </form>
+    </div>
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar">
@@ -778,6 +805,7 @@
                 <p id="page-subtitle">Kiểm tra toàn diện phân hệ Dịch vụ, Khuyến mãi, Hóa đơn & Thanh toán nội bộ (BE4)</p>
             </div>
             <div class="header-actions">
+                <button class="btn btn-outline" onclick="logoutAdmin()">Đăng xuất</button>
                 <button class="btn btn-outline" onclick="reloadCurrentTab()">
                     <span>🔄</span> Làm Mới
                 </button>
@@ -1326,6 +1354,62 @@
          JAVASCRIPT CONTROLLER & API ENGINE
          ========================================================================= -->
     <script>
+        const nativeFetch = window.fetch.bind(window);
+        let adminToken = sessionStorage.getItem('hotel-admin-token');
+        const authGate = document.getElementById('auth-gate');
+        authGate.style.display = adminToken ? 'none' : 'flex';
+
+        window.fetch = async (input, init = {}) => {
+            const requestUrl = typeof input === 'string' ? input : input.url;
+            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+            if (adminToken && !requestUrl.includes('/taikhoan/dangnhap')) {
+                headers.set('Authorization', `Bearer ${adminToken}`);
+            }
+            const response = await nativeFetch(input, { ...init, headers });
+            if (response.status === 401 && !requestUrl.includes('/taikhoan/dangnhap')) {
+                adminToken = null;
+                sessionStorage.removeItem('hotel-admin-token');
+                authGate.style.display = 'flex';
+            }
+            return response;
+        };
+
+        function logoutAdmin() {
+            adminToken = null;
+            sessionStorage.removeItem('hotel-admin-token');
+            authGate.style.display = 'flex';
+        }
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const error = document.getElementById('auth-error');
+            error.textContent = '';
+            const formData = new FormData(event.currentTarget);
+            try {
+                const response = await fetch('/taikhoan/dangnhap', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData.entries()))
+                });
+                const result = await response.json();
+                const login = result.data;
+                if (!response.ok || !login?.success) {
+                    error.textContent = login?.error || 'Đăng nhập không thành công.';
+                    return;
+                }
+                if (login.data?.VaiTro !== 'Admin') {
+                    error.textContent = 'Dashboard này chỉ dành cho tài khoản Admin.';
+                    return;
+                }
+                adminToken = login.access_token;
+                sessionStorage.setItem('hotel-admin-token', adminToken);
+                authGate.style.display = 'none';
+                reloadCurrentTab();
+            } catch (exception) {
+                error.textContent = 'Không thể kết nối máy chủ.';
+            }
+        });
+
         let globalServices = [];
         let globalVouchers = [];
         let globalInvoices = [];

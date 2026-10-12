@@ -7,6 +7,9 @@ require __DIR__ . '/../vendor/autoload.php';
 use Dotenv\Dotenv;
 use Shared\Container;
 use Shared\Request;
+use Shared\Response;
+use Middleware\AuthMiddleware;
+use Middleware\RoleMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +93,21 @@ $router = new class {
         }
 
         [$controllerClass, $methodName] = $handler;
+        $request = Request::capture();
+        $allowedRoles = RoleMiddleware::requiredRoles($method, $uri);
+        if ($allowedRoles !== null) {
+            $authResult = (new Container())->get(AuthMiddleware::class)->authenticate($request);
+            if (!($authResult['success'] ?? false)) {
+                $status = $authResult['statusCode'] ?? 401;
+                unset($authResult['statusCode']);
+                Response::json(null, $authResult, $status);
+                return;
+            }
+            if (!RoleMiddleware::allows($request->user(), $allowedRoles)) {
+                Response::json(null, ['success' => false, 'error' => 'Bạn không có quyền truy cập chức năng này.'], 403);
+                return;
+            }
+        }
 
         if (!class_exists($controllerClass)) {
             http_response_code(500);
@@ -99,7 +117,6 @@ $router = new class {
         }
 
         $controller = (new Container())->get($controllerClass);
-        $request = Request::capture();
         $response = null;
 
         $controller->$methodName($request, $response);

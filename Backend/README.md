@@ -32,9 +32,46 @@ hoa: moi module nghiep vu co du 4 lop `Routes -> Controllers -> Services -> Repo
 
 ```bash
 composer install   # (chua co vendor/, can chay composer de sinh autoload)
-cp .env.example .env  # neu co, hoac chinh sua truc tiep .env
-php -S localhost:8000 -t public
+cp .env.example .env
+php -S localhost:8000 -t public public/index.php
 ```
+
+## Dang nhap va phan quyen
+
+Sao chep `Backend/.env.example` thanh `Backend/.env`, dien cau hinh MySQL va
+dat `AUTH_TOKEN_SECRET` thanh mot chuoi ngau nhien rieng, dai toi thieu 32 byte.
+Co the tao secret bang lenh:
+
+```bash
+php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'
+```
+
+API dang nhap tra ve Bearer access token co hieu luc 1 gio. Cac request duoc
+bao ve gui token qua header `Authorization: Bearer <access_token>`. Moi request
+se kiem tra lai trang thai va vai tro trong database, vi vay khoa tai khoan hoac
+doi vai tro co hieu luc ngay; token het han sau toi da mot gio. Dang xuat tren
+dashboard xoa token khoi session hien tai.
+
+Tai khoan mau (sau khi nap `Database/data.sql`): `admin` / `123456`. Mat khau
+plaintext mau se duoc nang cap sang hash sau lan dang nhap thanh cong dau tien;
+khong su dung tai khoan/mat khau mau trong moi truong that.
+
+| Endpoint | JSON/query | Chuc nang |
+|---|---|---|
+| `POST /taikhoan/dangnhap` | `TenDangNhap`, `MatKhau` | Dang nhap va nhan access token |
+| `GET` hoac `POST /taikhoan/xemds` | tuy chon `keyword`, `VaiTro`, `TrangThaiTaiKhoan` | Admin xem/tim tai khoan |
+| `GET` hoac `POST /taikhoan/xemct` | `MaTK` | Admin xem chi tiet tai khoan, khong tra mat khau |
+| `POST /taikhoan/khoa` | `MaTK` | Admin khoa tai khoan |
+| `POST /taikhoan/mo` | `MaTK` | Admin mo khoa tai khoan |
+| `POST /taikhoan/capnhatvaitro` | `MaTK`, `VaiTro` | Admin doi vai tro; khong the ha cap Admin hoat dong cuoi cung |
+| `GET /taikhoan/vaitroquyen` | — | Admin xem danh sach vai tro va quyen |
+
+Chi Admin duoc quan ly tai khoan, nhan vien, phong, loai phong, khuyen mai va
+bao cao. Admin va LeTan duoc truy cap cac API nghiep vu le tan, dat phong noi
+bo, hoa don va thanh toan quan tri. Cac API xem phong/loai phong, tra phong
+trong, dat phong truc tuyen cua khach (`/khachhang/*`), xem/dung dich vu va
+khuyen mai cong khai, cung cac API khoi tao/tra cuu thanh toan cua khach tiep
+phuc vu khach vang lai; webhook thanh toan khong yeu cau Bearer token.
 
 ## API quan ly phong (BE3)
 
@@ -105,7 +142,7 @@ hien trong danh sach va co the cap nhat ho so, nhung endpoint khoa/mo se tra loi
 
 ## Ghi chu
 
-- Cac module nghiep vu khac van con method **stub (TODO)**; API quan ly phong BE3
-  da ket noi repository voi database.
+- Cac module nghiep vu khac van con method **stub (TODO)**; phan xac thuc tai
+  khoan va phan quyen route da duoc bat.
 - Router trong `public/index.php` la ban toi gian minh hoa; nen thay bang mot
   thu vien routing that (Slim, FastRoute, Laravel...) khi trien khai that.
