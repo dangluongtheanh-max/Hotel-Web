@@ -415,6 +415,153 @@ class AdminRepository
         return $stmt->execute([':trangThai' => $trangThai, ':maTK' => $maTK]);
     }
 
+    public function getAllLeTan(array $filters = []): array
+    {
+        $sql = "SELECT lt.MaLeTan, lt.HoTen, lt.SDT, lt.Email, lt.MaTK, 'LeTan' AS VaiTro,
+                       tk.TenDangNhap, tk.TrangThaiTaiKhoan
+                FROM LeTan lt
+                JOIN TaiKhoan tk ON tk.MaTK = lt.MaTK";
+        $conditions = [];
+        $parameters = [];
+
+        if (!empty($filters['keyword'])) {
+            $conditions[] = '(lt.MaLeTan LIKE :idKeyword
+                OR lt.HoTen LIKE :nameKeyword
+                OR lt.SDT LIKE :phoneKeyword
+                OR lt.Email LIKE :emailKeyword
+                OR tk.TenDangNhap LIKE :usernameKeyword)';
+            $keyword = '%' . $filters['keyword'] . '%';
+            $parameters = [
+                ':idKeyword' => $keyword,
+                ':nameKeyword' => $keyword,
+                ':phoneKeyword' => $keyword,
+                ':emailKeyword' => $keyword,
+                ':usernameKeyword' => $keyword,
+            ];
+        }
+
+        if ($conditions !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+        $sql .= ' ORDER BY lt.MaLeTan';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parameters);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findLeTanById(string $id): ?array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT lt.MaLeTan, lt.HoTen, lt.SDT, lt.Email, lt.MaTK, 'LeTan' AS VaiTro,
+                    tk.TenDangNhap, tk.TrangThaiTaiKhoan
+             FROM LeTan lt
+             JOIN TaiKhoan tk ON tk.MaTK = lt.MaTK
+             WHERE lt.MaLeTan = :id"
+        );
+        $stmt->execute([':id' => $id]);
+        $leTan = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $leTan ?: null;
+    }
+
+    public function leTanAccountValueExists(string $column, string $value): bool
+    {
+        if (!in_array($column, ['TenDangNhap', 'Email'], true)) {
+            throw new \InvalidArgumentException('Unsupported account column.');
+        }
+
+        $stmt = $this->db->prepare("SELECT 1 FROM TaiKhoan WHERE {$column} = :value LIMIT 1");
+        $stmt->execute([':value' => $value]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function createLeTan(array $data): array
+    {
+        $maTK = 'TK' . strtoupper(bin2hex(random_bytes(8)));
+        $maLeTan = 'LT' . strtoupper(bin2hex(random_bytes(8)));
+
+        $this->db->beginTransaction();
+        try {
+            $account = $this->db->prepare(
+                "INSERT INTO TaiKhoan
+                    (MaTK, TenDangNhap, MatKhau, Email, TrangThaiTaiKhoan, VaiTro)
+                 VALUES
+                    (:maTK, :tenDangNhap, :matKhau, :email, 'HoatDong', 'LeTan')"
+            );
+            $account->execute([
+                ':maTK' => $maTK,
+                ':tenDangNhap' => $data['TenDangNhap'],
+                ':matKhau' => $data['MatKhau'],
+                ':email' => $data['Email'],
+            ]);
+
+            $leTan = $this->db->prepare(
+                'INSERT INTO LeTan (MaLeTan, HoTen, SDT, Email, MaTK)
+                 VALUES (:maLeTan, :hoTen, :sdt, :email, :maTK)'
+            );
+            $leTan->execute([
+                ':maLeTan' => $maLeTan,
+                ':hoTen' => $data['HoTen'],
+                ':sdt' => $data['SDT'],
+                ':email' => $data['Email'],
+                ':maTK' => $maTK,
+            ]);
+
+            $this->db->commit();
+        } catch (\Throwable $exception) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $exception;
+        }
+
+        return $this->findLeTanById($maLeTan)
+            ?? throw new \RuntimeException('Created receptionist could not be loaded.');
+    }
+
+    public function updateLeTan(string $id, array $data): bool
+    {
+        $current = $this->findLeTanById($id);
+        if ($current === null) {
+            return false;
+        }
+
+        $email = $data['Email'] ?? $current['Email'];
+        $this->db->beginTransaction();
+        try {
+            $leTan = $this->db->prepare(
+                'UPDATE LeTan
+                 SET HoTen = :hoTen, SDT = :sdt, Email = :email
+                 WHERE MaLeTan = :maLeTan'
+            );
+            $leTan->execute([
+                ':hoTen' => $data['HoTen'] ?? $current['HoTen'],
+                ':sdt' => $data['SDT'] ?? $current['SDT'],
+                ':email' => $email,
+                ':maLeTan' => $id,
+            ]);
+
+            if (array_key_exists('Email', $data)) {
+                $account = $this->db->prepare(
+                    'UPDATE TaiKhoan SET Email = :email WHERE MaTK = :maTK'
+                );
+                $account->execute([':email' => $email, ':maTK' => $current['MaTK']]);
+            }
+
+            $this->db->commit();
+        } catch (\Throwable $exception) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $exception;
+        }
+
+        return true;
+    }
+
     public function findAdminById(string $id): ?Admin
     {
         $stmt = $this->db->prepare("SELECT * FROM Admin WHERE MaAdmin = :id");

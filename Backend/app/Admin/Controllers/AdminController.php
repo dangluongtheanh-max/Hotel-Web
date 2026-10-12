@@ -116,7 +116,7 @@ class AdminController
 
     public function xemDSLeTan($request = null, $response = null)
     {
-        return $this->xemDSNhanVien($request, $response);
+        return $this->respondLeTan($response, $this->service->xemDSLeTan($this->getParams($request)));
     }
 
     public function timKiemNhanVien($request = null, $response = null)
@@ -128,7 +128,7 @@ class AdminController
 
     public function timKiemLeTan($request = null, $response = null)
     {
-        return $this->timKiemNhanVien($request, $response);
+        return $this->respondLeTan($response, $this->service->timKiemLeTan($this->getParams($request)));
     }
 
     public function xemCTNhanVien($request = null, $response = null)
@@ -140,7 +140,7 @@ class AdminController
 
     public function xemCTLeTan($request = null, $response = null)
     {
-        return $this->xemCTNhanVien($request, $response);
+        return $this->respondLeTan($response, $this->service->xemCTLeTan($this->getParams($request)));
     }
 
     public function capNhatThongTinNhanVien($request = null, $response = null)
@@ -152,7 +152,7 @@ class AdminController
 
     public function capNhatThongTinLeTan($request = null, $response = null)
     {
-        return $this->capNhatThongTinNhanVien($request, $response);
+        return $this->respondLeTan($response, $this->service->capNhatThongTinLeTan($this->getParams($request)));
     }
 
     public function themNhanVien($request = null, $response = null)
@@ -164,7 +164,7 @@ class AdminController
 
     public function themLeTan($request = null, $response = null)
     {
-        return $this->themNhanVien($request, $response);
+        return $this->respondLeTan($response, $this->service->themLeTan($this->getParams($request)));
     }
 
     public function moTaiKhoanNhanVien($request = null, $response = null)
@@ -189,6 +189,16 @@ class AdminController
     public function khoaTaiKhoanLeTan($request = null, $response = null)
     {
         return $this->khoaTaiKhoanNhanVien($request, $response);
+    }
+
+    private function respondLeTan($response, array $result)
+    {
+        $statusCode = $result['statusCode'] ?? 200;
+        if (($result['status'] ?? '') !== 'success') {
+            return Response::error($response, $result['message'] ?? 'Không thể xử lý yêu cầu.', $statusCode);
+        }
+
+        return Response::json($response, $result, $statusCode);
     }
 
     /* =========================================================================

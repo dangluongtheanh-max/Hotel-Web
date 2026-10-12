@@ -144,6 +144,137 @@ class AdminService
         ];
     }
 
+    public function xemDSLeTan(array $params = []): array
+    {
+        $keyword = trim((string)($params['keyword'] ?? $params['TuKhoa'] ?? ''));
+        $list = $this->repository->getAllLeTan(
+            $keyword === '' ? [] : ['keyword' => $keyword]
+        );
+
+        return [
+            'status' => 'success',
+            'keyword' => $keyword,
+            'total' => count($list),
+            'data' => $list,
+        ];
+    }
+
+    public function timKiemLeTan(array $params = []): array
+    {
+        return $this->xemDSLeTan($params);
+    }
+
+    public function xemCTLeTan(array $params = []): array
+    {
+        $id = trim((string)($params['MaLeTan'] ?? $params['id'] ?? ''));
+        if ($id === '') {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Vui lòng cung cấp MaLeTan.'];
+        }
+
+        $leTan = $this->repository->findLeTanById($id);
+        if ($leTan === null) {
+            return ['status' => 'error', 'statusCode' => 404, 'message' => "Không tìm thấy lễ tân '{$id}'."];
+        }
+
+        return ['status' => 'success', 'data' => $leTan];
+    }
+
+    public function themLeTan(array $params = []): array
+    {
+        $hoTen = trim((string)($params['HoTen'] ?? ''));
+        $sdt = trim((string)($params['SDT'] ?? ''));
+        $email = trim((string)($params['Email'] ?? ''));
+        $tenDangNhap = trim((string)($params['TenDangNhap'] ?? ''));
+        $matKhau = (string)($params['MatKhau'] ?? '');
+
+        if ($hoTen === '' || $sdt === '' || $email === '' || $tenDangNhap === '' || $matKhau === '') {
+            return [
+                'status' => 'error',
+                'statusCode' => 400,
+                'message' => 'Vui lòng cung cấp HoTen, SDT, Email, TenDangNhap và MatKhau.',
+            ];
+        }
+        if (strlen($hoTen) > 100 || strlen($sdt) > 20 || strlen($email) > 255 || strlen($tenDangNhap) > 100) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Một hoặc nhiều trường vượt quá độ dài cho phép.'];
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Email không hợp lệ.'];
+        }
+        if (strlen($matKhau) < 8) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Mật khẩu phải có ít nhất 8 ký tự.'];
+        }
+        if ($this->repository->leTanAccountValueExists('TenDangNhap', $tenDangNhap)) {
+            return ['status' => 'error', 'statusCode' => 409, 'message' => 'Tên đăng nhập đã tồn tại.'];
+        }
+        if ($this->repository->leTanAccountValueExists('Email', $email)) {
+            return ['status' => 'error', 'statusCode' => 409, 'message' => 'Email đã được sử dụng.'];
+        }
+
+        $leTan = $this->repository->createLeTan([
+            'HoTen' => $hoTen,
+            'SDT' => $sdt,
+            'Email' => $email,
+            'TenDangNhap' => $tenDangNhap,
+            'MatKhau' => password_hash($matKhau, PASSWORD_DEFAULT),
+        ]);
+
+        return [
+            'status' => 'success',
+            'message' => 'Thêm lễ tân và tài khoản thành công.',
+            'data' => $leTan,
+        ];
+    }
+
+    public function capNhatThongTinLeTan(array $params = []): array
+    {
+        $id = trim((string)($params['MaLeTan'] ?? $params['id'] ?? ''));
+        if ($id === '') {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Vui lòng cung cấp MaLeTan.'];
+        }
+
+        $current = $this->repository->findLeTanById($id);
+        if ($current === null) {
+            return ['status' => 'error', 'statusCode' => 404, 'message' => "Không tìm thấy lễ tân '{$id}'."];
+        }
+
+        $fields = ['HoTen', 'SDT', 'Email'];
+        $updates = array_intersect_key($params, array_flip($fields));
+        if ($updates === []) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Vui lòng cung cấp thông tin cần cập nhật.'];
+        }
+
+        foreach ($updates as $field => $value) {
+            if (!is_string($value) || trim($value) === '') {
+                return ['status' => 'error', 'statusCode' => 400, 'message' => "{$field} không được để trống."];
+            }
+            $updates[$field] = trim($value);
+        }
+
+        $hoTen = $updates['HoTen'] ?? $current['HoTen'];
+        $sdt = $updates['SDT'] ?? $current['SDT'];
+        $email = $updates['Email'] ?? $current['Email'];
+        if (strlen($hoTen) > 100 || strlen($sdt) > 20 || strlen($email) > 255) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Một hoặc nhiều trường vượt quá độ dài cho phép.'];
+        }
+        if (array_key_exists('Email', $updates) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return ['status' => 'error', 'statusCode' => 400, 'message' => 'Email không hợp lệ.'];
+        }
+        if (
+            array_key_exists('Email', $updates)
+            && $email !== $current['Email']
+            && $this->repository->leTanAccountValueExists('Email', $email)
+        ) {
+            return ['status' => 'error', 'statusCode' => 409, 'message' => 'Email đã được sử dụng.'];
+        }
+
+        $this->repository->updateLeTan($id, $updates);
+        return [
+            'status' => 'success',
+            'message' => 'Cập nhật thông tin lễ tân thành công.',
+            'data' => $this->repository->findLeTanById($id),
+        ];
+    }
+
     public function timKiemNhanVien(array $params = []): array
     {
         $keyword = strtolower(trim($params['keyword'] ?? ''));

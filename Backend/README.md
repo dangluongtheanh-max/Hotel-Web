@@ -70,6 +70,21 @@ Tat ca endpoint dung `POST`, nhan JSON:
 | `/loaiphong/themloaiphong` | `MaLoaiPhong`, `TenLoaiPhong`, `Gia`, `SoNguoiToiDa`; tuy chon `MoTa`, `TienNghi` | Them loai phong |
 | `/loaiphong/capnhatloaiphong` | `MaLoaiPhong` va it nhat mot thuoc tinh can cap nhat | Cap nhat ten, gia, suc chua, mo ta hoac tien nghi |
 
+## API quan ly le tan (BE3)
+
+API quan tri le tan dung cac endpoint `/admin/*letan`. Danh sach, tim kiem va
+chi tiet chap nhan `GET` hoac `POST`; them va cap nhat dung `POST` voi JSON body.
+Tao moi yeu cau `HoTen`, `SDT`, `Email`, `TenDangNhap`, `MatKhau`; mat khau moi
+phai co it nhat 8 ky tu va duoc hash truoc khi luu.
+
+| Endpoint | JSON body | Chuc nang |
+|---|---|---|
+| `/admin/xemdsletan` | `{}` | Xem danh sach le tan |
+| `/admin/timkiemletan` | `keyword` hoac `TuKhoa` | Tim theo ma, ho ten, SDT, email hoac ten dang nhap |
+| `/admin/xemctletan` | `MaLeTan` | Xem thong tin le tan va trang thai tai khoan |
+| `/admin/themletan` | `HoTen`, `SDT`, `Email`, `TenDangNhap`, `MatKhau` | Tao tai khoan vai tro `LeTan` va ho so trong cung transaction |
+| `/admin/capnhatthongtinletan` | `MaLeTan` va it nhat mot trong `HoTen`, `SDT`, `Email` | Cap nhat thong tin; Email duoc dong bo vao tai khoan |
+
 ## Ghi chu
 
 - Cac module nghiep vu khac van con method **stub (TODO)**; API quan ly phong BE3
