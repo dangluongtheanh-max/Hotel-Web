@@ -19,5 +19,10 @@ class PhongRoute
         $router->post('/phong/timkiemphong', [PhongController::class, 'timKiemPhong']);
         $router->post('/phong/kiemtratrangthaiphong', [PhongController::class, 'kiemTraTrangThaiPhong']);
         $router->post('/phong/kiemtraphongtrong', [PhongController::class, 'kiemTraPhongTrong']);
+
+        $router->post('/loaiphong/xemdsloaiphong', [PhongController::class, 'xemDSLoaiPhong']);
+        $router->post('/loaiphong/xemctloaiphong', [PhongController::class, 'xemCTLoaiPhong']);
+        $router->post('/loaiphong/themloaiphong', [PhongController::class, 'themLoaiPhong']);
+        $router->post('/loaiphong/capnhatloaiphong', [PhongController::class, 'capNhatLoaiPhong']);
     }
 }

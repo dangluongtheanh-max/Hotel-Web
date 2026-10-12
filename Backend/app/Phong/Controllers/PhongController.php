@@ -53,6 +53,26 @@ class PhongController
         return $this->respond($response, $this->service->kiemTraPhongTrong($request->all()));
     }
 
+    public function xemDSLoaiPhong($request, $response)
+    {
+        return $this->respond($response, $this->service->xemDSLoaiPhong($request->all()));
+    }
+
+    public function xemCTLoaiPhong($request, $response)
+    {
+        return $this->respond($response, $this->service->xemCTLoaiPhong($request->all()));
+    }
+
+    public function themLoaiPhong($request, $response)
+    {
+        return $this->respond($response, $this->service->themLoaiPhong($request->all()));
+    }
+
+    public function capNhatLoaiPhong($request, $response)
+    {
+        return $this->respond($response, $this->service->capNhatLoaiPhong($request->all()));
+    }
+
     private function respond($response, array $result)
     {
         if (!($result['success'] ?? false)) {

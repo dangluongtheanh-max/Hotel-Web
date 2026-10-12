@@ -3,6 +3,7 @@
 namespace App\Phong\Repositories;
 
 use App\Phong\Models\Phong;
+use App\Phong\Models\LoaiPhong;
 use Database\Database;
 use PDO;
 
@@ -121,6 +122,83 @@ class PhongRepository
         $stmt->execute([':maLoaiPhong' => $id]);
 
         return $stmt->fetchColumn() !== false;
+    }
+
+    public function findLoaiPhongById(string $id): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT MaLoaiPhong, TenLoaiPhong, Gia, SoNguoiToiDa, MoTa, TienNghi
+             FROM LoaiPhong
+             WHERE MaLoaiPhong = :maLoaiPhong'
+        );
+        $stmt->execute([':maLoaiPhong' => $id]);
+        $roomType = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $roomType ?: null;
+    }
+
+    public function getAllLoaiPhong(array $filters = []): array
+    {
+        $sql = 'SELECT MaLoaiPhong, TenLoaiPhong, Gia, SoNguoiToiDa, MoTa, TienNghi
+                FROM LoaiPhong';
+        $conditions = [];
+        $parameters = [];
+
+        if (!empty($filters['keyword'])) {
+            $conditions[] = '(MaLoaiPhong LIKE :codeKeyword OR TenLoaiPhong LIKE :nameKeyword)';
+            $keyword = '%' . $filters['keyword'] . '%';
+            $parameters[':codeKeyword'] = $keyword;
+            $parameters[':nameKeyword'] = $keyword;
+        }
+
+        if ($conditions !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $sql .= ' ORDER BY MaLoaiPhong ASC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parameters);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createLoaiPhong(LoaiPhong $loaiPhong): bool
+    {
+        $stmt = $this->db->prepare(
+            'INSERT INTO LoaiPhong (MaLoaiPhong, TenLoaiPhong, Gia, SoNguoiToiDa, MoTa, TienNghi)
+             VALUES (:maLoaiPhong, :tenLoaiPhong, :gia, :soNguoiToiDa, :moTa, :tienNghi)'
+        );
+
+        return $stmt->execute([
+            ':maLoaiPhong' => $loaiPhong->getMaLoaiPhong(),
+            ':tenLoaiPhong' => $loaiPhong->getTenLoaiPhong(),
+            ':gia' => $loaiPhong->getGia(),
+            ':soNguoiToiDa' => $loaiPhong->getSoNguoiToiDa(),
+            ':moTa' => $loaiPhong->getMoTa(),
+            ':tienNghi' => $loaiPhong->getTienNghi(),
+        ]);
+    }
+
+    public function updateLoaiPhong(LoaiPhong $loaiPhong): bool
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE LoaiPhong
+             SET TenLoaiPhong = :tenLoaiPhong,
+                 Gia = :gia,
+                 SoNguoiToiDa = :soNguoiToiDa,
+                 MoTa = :moTa,
+                 TienNghi = :tienNghi
+             WHERE MaLoaiPhong = :maLoaiPhong'
+        );
+
+        return $stmt->execute([
+            ':maLoaiPhong' => $loaiPhong->getMaLoaiPhong(),
+            ':tenLoaiPhong' => $loaiPhong->getTenLoaiPhong(),
+            ':gia' => $loaiPhong->getGia(),
+            ':soNguoiToiDa' => $loaiPhong->getSoNguoiToiDa(),
+            ':moTa' => $loaiPhong->getMoTa(),
+            ':tienNghi' => $loaiPhong->getTienNghi(),
+        ]);
     }
 
 }

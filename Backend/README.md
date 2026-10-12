@@ -59,6 +59,17 @@ curl -X POST http://localhost:8000/phong/xemdsphong \
   -d '{}'
 ```
 
+## API quan ly loai phong (BE3)
+
+Tat ca endpoint dung `POST`, nhan JSON:
+
+| Endpoint | JSON body | Chuc nang |
+|---|---|---|
+| `/loaiphong/xemdsloaiphong` | `{}`; tuy chon `keyword` hoac `TuKhoa` | Xem danh sach/tim kiem theo ma hoac ten loai |
+| `/loaiphong/xemctloaiphong` | `MaLoaiPhong` | Xem chi tiet loai phong |
+| `/loaiphong/themloaiphong` | `MaLoaiPhong`, `TenLoaiPhong`, `Gia`, `SoNguoiToiDa`; tuy chon `MoTa`, `TienNghi` | Them loai phong |
+| `/loaiphong/capnhatloaiphong` | `MaLoaiPhong` va it nhat mot thuoc tinh can cap nhat | Cap nhat ten, gia, suc chua, mo ta hoac tien nghi |
+
 ## Ghi chu
 
 - Cac module nghiep vu khac van con method **stub (TODO)**; API quan ly phong BE3
