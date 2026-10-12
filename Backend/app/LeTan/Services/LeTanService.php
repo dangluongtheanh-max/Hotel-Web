@@ -2,7 +2,7 @@
 
 namespace App\LeTan\Services;
 
-use App\LeTan\Repositories\LeTanRepository;
+use App\Phong\Services\PhongService;
 
 /**
  * Service (business logic) cho module LeTan.
@@ -11,29 +11,31 @@ use App\LeTan\Repositories\LeTanRepository;
  */
 class LeTanService
 {
-    private LeTanRepository $repository;
+    private PhongService $phongService;
 
-    public function __construct(LeTanRepository $repository)
+    public function __construct(PhongService $phongService)
     {
-        $this->repository = $repository;
+        $this->phongService = $phongService;
     }
 
     public function xemDSPhong(array $params = [])
     {
-        // TODO: xemDSPhong
-        return null;
+        return $this->phongService->xemDSPhong($params);
     }
 
     public function xemCTPhong(array $params = [])
     {
-        // TODO: xemCTPhong
-        return null;
+        return $this->phongService->xemCTPhong($params);
     }
 
     public function timKiemPhong(array $params = [])
     {
-        // TODO: timKiemPhong
-        return null;
+        return $this->phongService->timKiemPhong($params);
+    }
+
+    public function kiemTraPhongTrong(array $params = [])
+    {
+        return $this->phongService->kiemTraPhongTrong($params);
     }
 
     public function xemDSPhieu(array $params = [])

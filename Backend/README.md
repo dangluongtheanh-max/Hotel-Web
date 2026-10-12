@@ -140,6 +140,22 @@ Khach hang duoc tao tu dat phong co the chua co tai khoan. Cac ban ghi nay van
 hien trong danh sach va co the cap nhat ho so, nhung endpoint khoa/mo se tra loi
 409 cho den khi tai khoan duoc lien ket.
 
+## API phoi hop voi BE1/BE2 (Task 6)
+
+BE1 va BE2 lay du lieu phong qua `PhongService`, cung mot nguon du lieu voi cac
+API BE3. Cac route tiep nhan le tan `/letan/xemdsphong`,
+`/letan/xemctphong`, `/letan/timkiemphong` va `/letan/kiemtraphongtrong`
+duoc noi truc tiep toi service phong BE3 (chi Admin/LeTan duoc goi).
+API khach hang `/khachhang/danhsachphong` va `/khachhang/xemdsphong` cung dung
+service nay de tra danh sach va gia phong hien hanh.
+
+Dat phong online tra 404 neu phong khong ton tai, 409 neu phong khong con trong,
+va 400 neu so khach vuot suc chua loai phong. Khi ghi dat phong, trang thai
+phong duoc chuyen `Trong` -> `DaDat` bang mot cap nhat co dieu kien trong cung
+transaction voi phieu, hoa don va thanh toan; yeu cau canh tranh trung phong
+chi co mot yeu cau thanh cong. Cac nghiep vu dat/check-in/check-out BE1/BE2
+con TODO van nam ngoai pham vi Task 6.
+
 ## Ghi chu
 
 - Cac module nghiep vu khac van con method **stub (TODO)**; phan xac thuc tai

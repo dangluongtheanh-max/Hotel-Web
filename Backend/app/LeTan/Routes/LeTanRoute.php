@@ -15,6 +15,7 @@ class LeTanRoute
     $router->post('/letan/xemdsphong', [LeTanController::class, 'xemDSPhong']);
     $router->post('/letan/xemctphong', [LeTanController::class, 'xemCTPhong']);
     $router->post('/letan/timkiemphong', [LeTanController::class, 'timKiemPhong']);
+    $router->post('/letan/kiemtraphongtrong', [LeTanController::class, 'kiemTraPhongTrong']);
     $router->post('/letan/xemdsphieu', [LeTanController::class, 'xemDSPhieu']);
     $router->post('/letan/xemctphieu', [LeTanController::class, 'xemCTPhieu']);
     $router->post('/letan/timkiemphieu', [LeTanController::class, 'timKiemPhieu']);

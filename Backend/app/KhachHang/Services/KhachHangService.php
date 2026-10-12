@@ -4,6 +4,8 @@ namespace App\KhachHang\Services;
 
 use App\KhachHang\Repositories\KhachHangRepository;
 use App\KhuyenMai\Services\KhuyenMaiService;
+use App\Phong\Repositories\PhongRepository;
+use App\Phong\Services\PhongService;
 
 /**
  * Service (Business Logic) cho module KhachHang & Đặt Phòng Trực Tuyến.
@@ -12,11 +14,16 @@ class KhachHangService
 {
     private KhachHangRepository $repository;
     private KhuyenMaiService $kmService;
+    private PhongService $phongService;
 
-    public function __construct(?KhachHangRepository $repository = null, ?KhuyenMaiService $kmService = null)
-    {
+    public function __construct(
+        ?KhachHangRepository $repository = null,
+        ?KhuyenMaiService $kmService = null,
+        ?PhongService $phongService = null
+    ) {
         $this->repository = $repository ?? new KhachHangRepository();
         $this->kmService = $kmService ?? new KhuyenMaiService();
+        $this->phongService = $phongService ?? new PhongService(new PhongRepository());
     }
 
     /**
@@ -24,12 +31,7 @@ class KhachHangService
      */
     public function xemDSPhong(array $params = []): array
     {
-        $rooms = $this->repository->getAllRoomsWithTypes();
-        return [
-            'success' => true,
-            'total' => count($rooms),
-            'data' => $rooms
-        ];
+        return $this->phongService->xemDSPhong($params);
     }
 
     public function xemDSKhachHang(array $params = []): array
@@ -184,110 +186,144 @@ class KhachHangService
             ];
         }
 
-        // 1. Kiểm tra phòng
-        $room = $this->repository->findRoomById($maPhong);
-        if (!$room) {
+        // Use the BE3 room service as the source of truth for room details and availability.
+        $availability = $this->phongService->kiemTraPhongTrong(['MaPhong' => $maPhong]);
+        if (!($availability['success'] ?? false)) {
             return [
                 'success' => false,
-                'error' => "Phòng '{$maPhong}' không tồn tại trong hệ thống."
+                'error' => $availability['error'] ?? 'Không thể kiểm tra tình trạng phòng.',
+                'statusCode' => $availability['statusCode'] ?? 500,
+            ];
+        }
+        if (!($availability['available'] ?? false)) {
+            return [
+                'success' => false,
+                'error' => "Phòng '{$maPhong}' hiện không còn trống.",
+                'statusCode' => 409,
             ];
         }
 
-        // 2. Tìm hoặc Tạo mới Khách Hàng
-        $customer = $this->repository->findCustomerByPhone($sdt);
-        if ($customer) {
-            $maKH = $customer['MaKH'];
-        } else {
-            $maKH = $this->repository->createCustomer([
-                'HoTen' => $hoTen,
-                'SDT' => $sdt,
-                'Email' => $email,
-            ]);
+        $room = $availability['data'];
+        if ($soNguoi > (int)$room['SoNguoiToiDa']) {
+            return [
+                'success' => false,
+                'error' => "Loại phòng này chỉ cho phép tối đa {$room['SoNguoiToiDa']} người.",
+                'statusCode' => 400,
+            ];
         }
 
-        // 3. Tính toán thời gian nhận & trả phòng
         $thoiGianNhan = $ngayNhan . ' 14:00:00';
         $thoiGianTra = date('Y-m-d 12:00:00', strtotime($ngayNhan . " + {$soDem} days"));
 
-        // 4. Tính tiền phòng & Áp dụng khuyến mãi
-        $giaPhong = (float)$room['Gia'];
-        $tienPhongGoc = $giaPhong * $soDem;
-        $tienGiamKM = 0.0;
-        $thongTinKM = null;
-
-        if (!empty($maKM)) {
-            $checkKM = $this->kmService->apDungKhuyenMai([
-                'MaKM' => $maKM,
-                'TienPhong' => $tienPhongGoc,
-                'SoDem' => $soDem,
-                'SoNguoi' => $soNguoi,
-                'NgayApDung' => $ngayNhan
-            ]);
-            if ($checkKM['success'] && isset($checkKM['data']['TienGiam'])) {
-                $tienGiamKM = (float)$checkKM['data']['TienGiam'];
-                $thongTinKM = $checkKM['data'];
+        // The conditional status update prevents concurrent BE1/BE3 requests from booking the same room.
+        try {
+            $this->repository->beginBookingTransaction();
+            if (!$this->repository->reserveRoomIfAvailable($maPhong)) {
+                $this->repository->rollBackBookingTransaction();
+                return [
+                    'success' => false,
+                    'error' => "Phòng '{$maPhong}' vừa được đặt bởi một yêu cầu khác.",
+                    'statusCode' => 409,
+                ];
             }
+
+            // 2. Tìm hoặc Tạo mới Khách Hàng
+            $customer = $this->repository->findCustomerByPhone($sdt);
+            if ($customer) {
+                $maKH = $customer['MaKH'];
+            } else {
+                $maKH = $this->repository->createCustomer([
+                    'HoTen' => $hoTen,
+                    'SDT' => $sdt,
+                    'Email' => $email,
+                ]);
+            }
+
+            // 3. Tính tiền phòng & Áp dụng khuyến mãi
+            $giaPhong = (float)$room['Gia'];
+            $tienPhongGoc = $giaPhong * $soDem;
+            $tienGiamKM = 0.0;
+            $thongTinKM = null;
+
+            if (!empty($maKM)) {
+                $checkKM = $this->kmService->apDungKhuyenMai([
+                    'MaKM' => $maKM,
+                    'TienPhong' => $tienPhongGoc,
+                    'SoDem' => $soDem,
+                    'SoNguoi' => $soNguoi,
+                    'NgayApDung' => $ngayNhan
+                ]);
+                if ($checkKM['success'] && isset($checkKM['data']['TienGiam'])) {
+                    $tienGiamKM = (float)$checkKM['data']['TienGiam'];
+                    $thongTinKM = $checkKM['data'];
+                }
+            }
+
+            $tienPhongSauGiam = max(0, $tienPhongGoc - $tienGiamKM);
+            $thueVAT = round($tienPhongSauGiam * 0.1);
+            $tongTienSauVAT = $tienPhongSauGiam + $thueVAT;
+
+            // 4. Sinh mã tự động & Lưu dữ liệu vào CSDL
+            $maPhieu = $this->repository->generateNextMaPhieu();
+            $maHD = $this->repository->generateNextMaHD();
+            $maTT = $this->repository->generateNextMaTT();
+
+            $this->repository->createPhieuNhanPhong([
+                'MaPhieu' => $maPhieu,
+                'NgayLap' => date('Y-m-d'),
+                'TrangThai' => 'DaDat',
+                'MaKH' => $maKH,
+                'MaKM' => !empty($thongTinKM['MaKM']) ? $thongTinKM['MaKM'] : null
+            ]);
+
+            $this->repository->createChiTietPhieu([
+                'MaPhieu' => $maPhieu,
+                'MaPhong' => $maPhong,
+                'ThoiGianNhanPhong' => $thoiGianNhan,
+                'ThoiGianTraPhong' => $thoiGianTra,
+                'SoNguoi' => $soNguoi,
+                'TrangThai' => 'DaDat'
+            ]);
+
+            $this->repository->createHoaDon([
+                'MaHD' => $maHD,
+                'MaPhieu' => $maPhieu,
+                'TongTienSauVAT' => $tongTienSauVAT
+            ]);
+
+            $this->repository->createCTHD([
+                'MaHD' => $maHD,
+                'MaPhieu' => $maPhieu,
+                'MaPhong' => $maPhong,
+                'SoDem' => $soDem,
+                'SoLuong' => 1,
+                'DonGia' => $giaPhong
+            ]);
+
+            $this->repository->createThanhToan([
+                'MaThanhToan' => $maTT,
+                'SoTien' => $tongTienSauVAT,
+                'ThoiGianThanhToan' => date('Y-m-d H:i:s'),
+                'HinhThuc' => 'ChuyenKhoan',
+                'TrangThaiThanhToan' => 'ChoThanhToan',
+                'MaHD' => $maHD
+            ]);
+
+            $this->repository->commitBookingTransaction();
+        } catch (\Throwable $exception) {
+            $this->repository->rollBackBookingTransaction();
+            if (!$exception instanceof \PDOException) {
+                throw $exception;
+            }
+            error_log('Online room booking failed: ' . $exception->getMessage());
+
+            return [
+                'success' => false,
+                'error' => 'Không thể hoàn tất đặt phòng; mọi thay đổi đã được hoàn tác.',
+                'statusCode' => 500,
+            ];
         }
 
-        $tienPhongSauGiam = max(0, $tienPhongGoc - $tienGiamKM);
-        $thueVAT = round($tienPhongSauGiam * 0.1);
-        $tongTienSauVAT = $tienPhongSauGiam + $thueVAT;
-
-        // 5. Sinh mã tự động & Lưu dữ liệu vào CSDL
-        $maPhieu = $this->repository->generateNextMaPhieu();
-        $maHD = $this->repository->generateNextMaHD();
-        $maTT = $this->repository->generateNextMaTT();
-
-        // Lưu PhieuNhanPhong
-        $this->repository->createPhieuNhanPhong([
-            'MaPhieu' => $maPhieu,
-            'NgayLap' => date('Y-m-d'),
-            'TrangThai' => 'DaDat',
-            'MaKH' => $maKH,
-            'MaKM' => !empty($thongTinKM['MaKM']) ? $thongTinKM['MaKM'] : null
-        ]);
-
-        // Lưu ChiTietPhieuNhanPhong
-        $this->repository->createChiTietPhieu([
-            'MaPhieu' => $maPhieu,
-            'MaPhong' => $maPhong,
-            'ThoiGianNhanPhong' => $thoiGianNhan,
-            'ThoiGianTraPhong' => $thoiGianTra,
-            'SoNguoi' => $soNguoi,
-            'TrangThai' => 'DaDat'
-        ]);
-
-        // Cập nhật trạng thái phòng
-        $this->repository->updateRoomStatus($maPhong, 'DaDat');
-
-        // Lưu HoaDon
-        $this->repository->createHoaDon([
-            'MaHD' => $maHD,
-            'MaPhieu' => $maPhieu,
-            'TongTienSauVAT' => $tongTienSauVAT
-        ]);
-
-        // Lưu CTHD
-        $this->repository->createCTHD([
-            'MaHD' => $maHD,
-            'MaPhieu' => $maPhieu,
-            'MaPhong' => $maPhong,
-            'SoDem' => $soDem,
-            'SoLuong' => 1,
-            'DonGia' => $giaPhong
-        ]);
-
-        // Tạo sẵn giao dịch ThanhToan
-        $this->repository->createThanhToan([
-            'MaThanhToan' => $maTT,
-            'SoTien' => $tongTienSauVAT,
-            'ThoiGianThanhToan' => date('Y-m-d H:i:s'),
-            'HinhThuc' => 'ChuyenKhoan',
-            'TrangThaiThanhToan' => 'ChoThanhToan',
-            'MaHD' => $maHD
-        ]);
-
-        // Link VietQR Napas 247 MBBank
         $vietQrUrl = "https://img.vietqr.io/image/MB-0589822346-compact2.png"
             . "?amount=" . (int)$tongTienSauVAT
             . "&addInfo=" . urlencode($maHD)

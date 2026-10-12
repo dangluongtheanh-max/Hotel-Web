@@ -19,35 +19,6 @@ class KhachHangRepository
     }
 
     /**
-     * Lấy toàn bộ danh sách phòng kèm thông tin loại phòng và trạng thái.
-     */
-    public function getAllRoomsWithTypes(): array
-    {
-        $sql = "SELECT p.MaPhong, p.TrangThaiPhong, lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia, lp.SoNguoiToiDa, lp.MoTa, lp.TienNghi
-                FROM Phong p
-                JOIN LoaiPhong lp ON p.MaLoaiPhong = lp.MaLoaiPhong
-                ORDER BY p.MaPhong ASC";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Tìm phòng cụ thể theo mã phòng.
-     */
-    public function findRoomById(string $maPhong): ?array
-    {
-        $sql = "SELECT p.MaPhong, p.TrangThaiPhong, lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia, lp.SoNguoiToiDa, lp.MoTa, lp.TienNghi
-                FROM Phong p
-                JOIN LoaiPhong lp ON p.MaLoaiPhong = lp.MaLoaiPhong
-                WHERE p.MaPhong = :maPhong
-                LIMIT 1";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':maPhong' => $maPhong]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
-    }
-
-    /**
      * Tìm khách hàng theo số điện thoại.
      */
     public function findCustomerByPhone(string $sdt): ?array
@@ -211,6 +182,35 @@ class KhachHangRepository
         return true;
     }
 
+    public function beginBookingTransaction(): void
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function reserveRoomIfAvailable(string $maPhong): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE Phong
+             SET TrangThaiPhong = 'DaDat'
+             WHERE MaPhong = :maPhong AND TrangThaiPhong = 'Trong'"
+        );
+        $stmt->execute([':maPhong' => $maPhong]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    public function commitBookingTransaction(): void
+    {
+        $this->db->commit();
+    }
+
+    public function rollBackBookingTransaction(): void
+    {
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
+        }
+    }
+
     /**
      * Sinh mã khách hàng tiếp theo (KH001, KH002...).
      */
@@ -322,16 +322,6 @@ class KhachHangRepository
             ':soNguoi' => $data['SoNguoi'] ?? 2,
             ':trangThai' => $data['TrangThai'] ?? 'DaDat',
         ]);
-    }
-
-    /**
-     * Cập nhật trạng thái phòng.
-     */
-    public function updateRoomStatus(string $maPhong, string $status): void
-    {
-        $sql = "UPDATE Phong SET TrangThaiPhong = :status WHERE MaPhong = :maPhong";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':status' => $status, ':maPhong' => $maPhong]);
     }
 
     /**

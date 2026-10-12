@@ -121,7 +121,8 @@ class KhachHangController
     {
         $params = $this->getParams($request);
         $result = $this->service->datPhong($params);
-        $status = ($result['success'] ?? false) ? 200 : 400;
+        $status = $result['statusCode'] ?? (($result['success'] ?? false) ? 200 : 400);
+        unset($result['statusCode']);
         return Response::json($response, $result, $status);
     }
 
