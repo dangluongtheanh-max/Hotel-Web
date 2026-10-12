@@ -36,10 +36,32 @@ cp .env.example .env  # neu co, hoac chinh sua truc tiep .env
 php -S localhost:8000 -t public
 ```
 
+## API quan ly phong (BE3)
+
+Tat ca endpoint duoi day dung `POST`, nhan JSON. Cac trang thai hop le:
+`Trong`, `DaDat`, `DangSuDung`, `BaoTri`.
+
+| Endpoint | JSON body | Chuc nang |
+|---|---|---|
+| `/phong/xemdsphong` | `{}` hoac `MaLoaiPhong`, `TrangThaiPhong` | Xem danh sach va loc phong |
+| `/phong/xemctphong` | `MaPhong` | Xem chi tiet phong kem thong tin loai phong |
+| `/phong/themphong` | `MaPhong`, `MaLoaiPhong`, tuy chon `TrangThaiPhong` | Them phong; mac dinh la `Trong` |
+| `/phong/capnhatthongtinphong` | `MaPhong`, tuy chon `MaLoaiPhong`, `TrangThaiPhong` | Cap nhat loai phong va/hoac trang thai |
+| `/phong/timkiemphong` | `keyword` hoac `TuKhoa`; tuy chon bo loc | Tim theo ma phong, ma loai hoac ten loai |
+| `/phong/kiemtratrangthaiphong` | `MaPhong` | Tra ve trang thai cua mot phong |
+| `/phong/kiemtraphongtrong` | `{}` hoac `MaPhong`, tuy chon `MaLoaiPhong` | Liet ke phong `Trong`, hoac kiem tra mot phong |
+
+Vi du:
+
+```bash
+curl -X POST http://localhost:8000/phong/xemdsphong \
+  -H 'Content-Type: application/json' \
+  -d '{}'
+```
+
 ## Ghi chu
 
-- Cac method trong Service/Repository/Controller hien la **stub (TODO)** — day la
-  khung xuong (scaffold) khop 1-1 voi cac lop/thuoc tinh/operation trong so do lop,
-  can code phan logic that ben trong.
+- Cac module nghiep vu khac van con method **stub (TODO)**; API quan ly phong BE3
+  da ket noi repository voi database.
 - Router trong `public/index.php` la ban toi gian minh hoa; nen thay bang mot
   thu vien routing that (Slim, FastRoute, Laravel...) khi trien khai that.

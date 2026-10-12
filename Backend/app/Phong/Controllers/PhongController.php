@@ -20,43 +20,49 @@ class PhongController
 
     public function xemDSPhong($request, $response)
     {
-        $result = $this->service->xemDSPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->xemDSPhong($request->all()));
     }
 
     public function xemCTPhong($request, $response)
     {
-        $result = $this->service->xemCTPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->xemCTPhong($request->all()));
     }
 
     public function themPhong($request, $response)
     {
-        $result = $this->service->themPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->themPhong($request->all()));
     }
 
     public function capNhatThongTinPhong($request, $response)
     {
-        $result = $this->service->capNhatThongTinPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->capNhatThongTinPhong($request->all()));
     }
 
     public function timKiemPhong($request, $response)
     {
-        $result = $this->service->timKiemPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->timKiemPhong($request->all()));
     }
 
     public function kiemTraTrangThaiPhong($request, $response)
     {
-        $result = $this->service->kiemTraTrangThaiPhong($request->all());
-        return Response::json($response, $result);
+        return $this->respond($response, $this->service->kiemTraTrangThaiPhong($request->all()));
     }
 
     public function kiemTraPhongTrong($request, $response)
     {
-        $result = $this->service->kiemTraPhongTrong($request->all());
+        return $this->respond($response, $this->service->kiemTraPhongTrong($request->all()));
+    }
+
+    private function respond($response, array $result)
+    {
+        if (!($result['success'] ?? false)) {
+            return Response::error(
+                $response,
+                $result['error'] ?? 'Không thể xử lý yêu cầu.',
+                $result['statusCode'] ?? 400
+            );
+        }
+
         return Response::json($response, $result);
     }
 

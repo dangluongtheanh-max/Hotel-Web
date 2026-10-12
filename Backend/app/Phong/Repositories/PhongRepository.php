@@ -3,7 +3,6 @@
 namespace App\Phong\Repositories;
 
 use App\Phong\Models\Phong;
-use App\Phong\Models\LoaiPhong;
 use Database\Database;
 use PDO;
 
@@ -20,52 +19,108 @@ class PhongRepository
         $this->db = $db ?? Database::getConnection();
     }
 
-    public function findPhongById(string $id): ?Phong
+    public function findPhongById(string $id): ?array
     {
-        // TODO: SELECT * FROM phong WHERE id = :id
-        return null;
+        $stmt = $this->db->prepare(
+            'SELECT p.MaPhong, p.TrangThaiPhong, p.MaLoaiPhong,
+                    lp.TenLoaiPhong, lp.Gia, lp.SoNguoiToiDa, lp.MoTa, lp.TienNghi
+             FROM Phong p
+             JOIN LoaiPhong lp ON lp.MaLoaiPhong = p.MaLoaiPhong
+             WHERE p.MaPhong = :maPhong'
+        );
+        $stmt->execute([':maPhong' => $id]);
+        $room = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $room ?: null;
     }
 
     public function getAllPhong(array $filters = []): array
     {
-        // TODO: SELECT * FROM phong ... apply $filters
-        return [];
+        $sql = 'SELECT p.MaPhong, p.TrangThaiPhong, p.MaLoaiPhong,
+                       lp.TenLoaiPhong, lp.Gia, lp.SoNguoiToiDa, lp.MoTa, lp.TienNghi
+                FROM Phong p
+                JOIN LoaiPhong lp ON lp.MaLoaiPhong = p.MaLoaiPhong';
+        $conditions = [];
+        $parameters = [];
+
+        foreach (['MaLoaiPhong' => 'p.MaLoaiPhong', 'TrangThaiPhong' => 'p.TrangThaiPhong'] as $key => $column) {
+            if (isset($filters[$key]) && $filters[$key] !== '') {
+                $conditions[] = "{$column} = :{$key}";
+                $parameters[":{$key}"] = $filters[$key];
+            }
+        }
+
+        if (!empty($filters['MaPhong'])) {
+            $conditions[] = 'p.MaPhong = :maPhong';
+            $parameters[':maPhong'] = $filters['MaPhong'];
+        }
+
+        if (!empty($filters['keyword'])) {
+            $conditions[] = '(p.MaPhong LIKE :roomKeyword OR p.MaLoaiPhong LIKE :typeKeyword OR lp.TenLoaiPhong LIKE :typeNameKeyword)';
+            $keyword = '%' . $filters['keyword'] . '%';
+            $parameters[':roomKeyword'] = $keyword;
+            $parameters[':typeKeyword'] = $keyword;
+            $parameters[':typeNameKeyword'] = $keyword;
+        }
+
+        if ($conditions !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $sql .= ' ORDER BY p.MaPhong ASC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parameters);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function savePhong(Phong $phong): bool
+    public function createPhong(Phong $phong): bool
     {
-        // TODO: INSERT/UPDATE phong
-        return true;
+        $stmt = $this->db->prepare(
+            'INSERT INTO Phong (MaPhong, TrangThaiPhong, MaLoaiPhong)
+             VALUES (:maPhong, :trangThaiPhong, :maLoaiPhong)'
+        );
+
+        return $stmt->execute([
+            ':maPhong' => $phong->getMaPhong(),
+            ':trangThaiPhong' => $phong->getTrangThaiPhong(),
+            ':maLoaiPhong' => $phong->getMaLoaiPhong(),
+        ]);
     }
 
-    public function deletePhong(string $id): bool
+    public function updatePhong(Phong $phong): bool
     {
-        // TODO: DELETE FROM phong WHERE id = :id
-        return true;
+        $stmt = $this->db->prepare(
+            'UPDATE Phong
+             SET TrangThaiPhong = :trangThaiPhong, MaLoaiPhong = :maLoaiPhong
+             WHERE MaPhong = :maPhong'
+        );
+
+        return $stmt->execute([
+            ':maPhong' => $phong->getMaPhong(),
+            ':trangThaiPhong' => $phong->getTrangThaiPhong(),
+            ':maLoaiPhong' => $phong->getMaLoaiPhong(),
+        ]);
     }
 
-    public function findLoaiPhongById(string $id): ?LoaiPhong
+    public function updateTrangThaiPhong(string $id, string $trangThai): bool
     {
-        // TODO: SELECT * FROM loaiphong WHERE id = :id
-        return null;
+        $stmt = $this->db->prepare(
+            'UPDATE Phong SET TrangThaiPhong = :trangThai WHERE MaPhong = :maPhong'
+        );
+
+        return $stmt->execute([
+            ':trangThai' => $trangThai,
+            ':maPhong' => $id,
+        ]);
     }
 
-    public function getAllLoaiPhong(array $filters = []): array
+    public function existsLoaiPhong(string $id): bool
     {
-        // TODO: SELECT * FROM loaiphong ... apply $filters
-        return [];
-    }
+        $stmt = $this->db->prepare('SELECT 1 FROM LoaiPhong WHERE MaLoaiPhong = :maLoaiPhong');
+        $stmt->execute([':maLoaiPhong' => $id]);
 
-    public function saveLoaiPhong(LoaiPhong $loaiPhong): bool
-    {
-        // TODO: INSERT/UPDATE loaiphong
-        return true;
-    }
-
-    public function deleteLoaiPhong(string $id): bool
-    {
-        // TODO: DELETE FROM loaiphong WHERE id = :id
-        return true;
+        return $stmt->fetchColumn() !== false;
     }
 
 }
