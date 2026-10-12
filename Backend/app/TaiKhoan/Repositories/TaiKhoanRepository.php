@@ -4,6 +4,7 @@ namespace App\TaiKhoan\Repositories;
 
 use App\TaiKhoan\Models\TaiKhoan;
 use Database\Database;
+use PDO;
 
 /**
  * Repository cho module TaiKhoan.
@@ -11,19 +12,17 @@ use Database\Database;
  */
 class TaiKhoanRepository
 {
-    private $db;
+    private PDO $db;
 
-    public function __construct(Database $db)
+    public function __construct(?PDO $db = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? Database::getConnection();
     }
 
     public function findByTenDangNhap(string $tenDangNhap): ?TaiKhoan
 {
     $sql = "SELECT * FROM TaiKhoan WHERE TenDangNhap = ?";
-    $db = Database::getConnection();
-
-    $stmt = $db->prepare($sql);// chuẩn bị 1 câu lệnh để đưa vào SQL, giúp tránh SQL Injection 
+    $stmt = $this->db->prepare($sql);// chuẩn bị 1 câu lệnh để đưa vào SQL, giúp tránh SQL Injection
     $stmt->execute([$tenDangNhap]); // thực thi câu lệnh SQL với tham số truyền vào
 
     $taiKhoan = $stmt->fetch(PDO::FETCH_ASSOC); // lấy kết quả trả về dưới dạng mảng kết hợp (associative array)

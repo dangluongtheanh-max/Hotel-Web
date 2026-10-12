@@ -4,6 +4,7 @@ namespace App\DanhGia\Repositories;
 
 use App\DanhGia\Models\DanhGia;
 use Database\Database;
+use PDO;
 
 /**
  * Repository cho module DanhGia.
@@ -11,11 +12,11 @@ use Database\Database;
  */
 class DanhGiaRepository
 {
-    private $db;
+    private PDO $db;
 
-    public function __construct(Database $db)
+    public function __construct(?PDO $db = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? Database::getConnection();
     }
 
     public function findDanhGiaById(string $id): ?DanhGia

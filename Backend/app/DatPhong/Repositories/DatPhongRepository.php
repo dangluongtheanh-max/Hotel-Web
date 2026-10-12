@@ -5,6 +5,7 @@ namespace App\DatPhong\Repositories;
 use App\DatPhong\Models\PhieuNhanPhong;
 use App\DatPhong\Models\KhuyenMai;
 use Database\Database;
+use PDO;
 
 /**
  * Repository cho module DatPhong.
@@ -12,11 +13,11 @@ use Database\Database;
  */
 class DatPhongRepository
 {
-    private $db;
+    private PDO $db;
 
-    public function __construct(Database $db)
+    public function __construct(?PDO $db = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? Database::getConnection();
     }
 
     public function findPhieuNhanPhongById(string $id): ?PhieuNhanPhong

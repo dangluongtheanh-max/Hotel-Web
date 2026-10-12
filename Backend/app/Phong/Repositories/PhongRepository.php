@@ -5,6 +5,7 @@ namespace App\Phong\Repositories;
 use App\Phong\Models\Phong;
 use App\Phong\Models\LoaiPhong;
 use Database\Database;
+use PDO;
 
 /**
  * Repository cho module Phong.
@@ -12,11 +13,11 @@ use Database\Database;
  */
 class PhongRepository
 {
-    private $db;
+    private PDO $db;
 
-    public function __construct(Database $db)
+    public function __construct(?PDO $db = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? Database::getConnection();
     }
 
     public function findPhongById(string $id): ?Phong

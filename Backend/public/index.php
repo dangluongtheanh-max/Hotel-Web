@@ -5,7 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
-use Database\Database;
+use Shared\Container;
 use Shared\Request;
 
 /*
@@ -98,7 +98,7 @@ $router = new class {
             return;
         }
 
-        $controller = new $controllerClass();
+        $controller = (new Container())->get($controllerClass);
         $request = Request::capture();
         $response = null;
 
