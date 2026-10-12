@@ -71,6 +71,146 @@ class KhachHangRepository
         return $row ?: null;
     }
 
+    public function getAllCustomers(string $keyword = ''): array
+    {
+        $sql = "SELECT kh.MaKH, kh.HoTen, kh.SDT, kh.Email, kh.MaTK,
+                       tk.TenDangNhap, tk.TrangThaiTaiKhoan
+                FROM KhachHang kh
+                LEFT JOIN TaiKhoan tk ON tk.MaTK = kh.MaTK";
+        $parameters = [];
+
+        if ($keyword !== '') {
+            $sql .= " WHERE kh.MaKH LIKE :idKeyword
+                      OR kh.HoTen LIKE :nameKeyword
+                      OR kh.SDT LIKE :phoneKeyword
+                      OR kh.Email LIKE :emailKeyword
+                      OR tk.TenDangNhap LIKE :usernameKeyword";
+            $likeKeyword = '%' . $keyword . '%';
+            $parameters = [
+                ':idKeyword' => $likeKeyword,
+                ':nameKeyword' => $likeKeyword,
+                ':phoneKeyword' => $likeKeyword,
+                ':emailKeyword' => $likeKeyword,
+                ':usernameKeyword' => $likeKeyword,
+            ];
+        }
+
+        $sql .= ' ORDER BY kh.MaKH ASC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parameters);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findCustomerForManagement(string $maKH): ?array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT kh.MaKH, kh.HoTen, kh.SDT, kh.Email, kh.MaTK,
+                    tk.TenDangNhap, tk.TrangThaiTaiKhoan, tk.VaiTro
+             FROM KhachHang kh
+             LEFT JOIN TaiKhoan tk ON tk.MaTK = kh.MaTK
+             WHERE kh.MaKH = :maKH"
+        );
+        $stmt->execute([':maKH' => $maKH]);
+        $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $customer ?: null;
+    }
+
+    public function customerEmailExists(string $email, string $excludeMaKH): bool
+    {
+        $stmt = $this->db->prepare(
+            'SELECT 1
+             FROM KhachHang kh
+             LEFT JOIN TaiKhoan tk ON tk.MaTK = kh.MaTK
+             WHERE kh.MaKH <> :maKH
+               AND (kh.Email = :customerEmail OR tk.Email = :accountEmail)
+             LIMIT 1'
+        );
+        $stmt->execute([
+            ':maKH' => $excludeMaKH,
+            ':customerEmail' => $email,
+            ':accountEmail' => $email,
+        ]);
+
+        if ($stmt->fetchColumn() !== false) {
+            return true;
+        }
+
+        $stmt = $this->db->prepare(
+            "SELECT 1 FROM TaiKhoan
+             WHERE Email = :email AND VaiTro <> 'KhachHang'
+             LIMIT 1"
+        );
+        $stmt->execute([':email' => $email]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function updateCustomer(string $maKH, array $data): bool
+    {
+        $current = $this->findCustomerForManagement($maKH);
+        if ($current === null) {
+            return false;
+        }
+
+        $this->db->beginTransaction();
+        try {
+            $customer = $this->db->prepare(
+                'UPDATE KhachHang
+                 SET HoTen = :hoTen, SDT = :sdt, Email = :email
+                 WHERE MaKH = :maKH'
+            );
+            $customer->execute([
+                ':hoTen' => $data['HoTen'] ?? $current['HoTen'],
+                ':sdt' => $data['SDT'] ?? $current['SDT'],
+                ':email' => array_key_exists('Email', $data) ? $data['Email'] : $current['Email'],
+                ':maKH' => $maKH,
+            ]);
+
+            if (array_key_exists('Email', $data) && $current['MaTK'] !== null) {
+                $account = $this->db->prepare(
+                    "UPDATE TaiKhoan
+                     SET Email = :email
+                     WHERE MaTK = :maTK AND VaiTro = 'KhachHang'"
+                );
+                $account->execute([
+                    ':email' => $data['Email'],
+                    ':maTK' => $current['MaTK'],
+                ]);
+                if ($account->rowCount() !== 1 && $current['Email'] !== $data['Email']) {
+                    throw new \RuntimeException('Linked customer account could not be updated.');
+                }
+            }
+
+            $this->db->commit();
+        } catch (\Throwable $exception) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $exception;
+        }
+
+        return true;
+    }
+
+    public function updateCustomerAccountStatus(string $maKH, string $status): bool
+    {
+        $customer = $this->findCustomerForManagement($maKH);
+        if ($customer === null || $customer['MaTK'] === null || $customer['VaiTro'] !== 'KhachHang') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare(
+            "UPDATE TaiKhoan
+             SET TrangThaiTaiKhoan = :status
+             WHERE MaTK = :maTK AND VaiTro = 'KhachHang'"
+        );
+        $stmt->execute([':status' => $status, ':maTK' => $customer['MaTK']]);
+
+        return true;
+    }
+
     /**
      * Sinh mã khách hàng tiếp theo (KH001, KH002...).
      */

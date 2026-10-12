@@ -85,6 +85,24 @@ phai co it nhat 8 ky tu va duoc hash truoc khi luu.
 | `/admin/themletan` | `HoTen`, `SDT`, `Email`, `TenDangNhap`, `MatKhau` | Tao tai khoan vai tro `LeTan` va ho so trong cung transaction |
 | `/admin/capnhatthongtinletan` | `MaLeTan` va it nhat mot trong `HoTen`, `SDT`, `Email` | Cap nhat thong tin; Email duoc dong bo vao tai khoan |
 
+## API quan ly khach hang (BE3)
+
+Danh sach, tim kiem va chi tiet chap nhan `GET` hoac `POST`; cap nhat va khoa/mo
+tai khoan dung `POST` voi JSON body. Cac route quan tri bao gom:
+
+| Endpoint | JSON body | Chuc nang |
+|---|---|---|
+| `/admin/xemdskhachhang` | `{}` | Xem danh sach khach hang va trang thai tai khoan neu co |
+| `/admin/timkiemkhachhang` | `keyword` hoac `TuKhoa` | Tim theo ma, ho ten, SDT, email hoac ten dang nhap |
+| `/admin/xemctkhachhang` | `MaKH` | Xem chi tiet khach hang |
+| `/admin/capnhatthongtinkhachhang` | `MaKH` va it nhat mot trong `HoTen`, `SDT`, `Email` | Cap nhat thong tin; dong bo Email voi tai khoan dang nhap |
+| `/admin/khoataikhoankhachhang` | `MaKH` | Khoa tai khoan `KhachHang` da lien ket |
+| `/admin/motaikhoankhachhang` | `MaKH` | Mo lai tai khoan `KhachHang` da lien ket |
+
+Khach hang duoc tao tu dat phong co the chua co tai khoan. Cac ban ghi nay van
+hien trong danh sach va co the cap nhat ho so, nhung endpoint khoa/mo se tra loi
+409 cho den khi tai khoan duoc lien ket.
+
 ## Ghi chu
 
 - Cac module nghiep vu khac van con method **stub (TODO)**; API quan ly phong BE3

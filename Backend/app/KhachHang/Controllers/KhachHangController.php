@@ -50,6 +50,58 @@ class KhachHangController
         exit;
     }
 
+    public function xemDSKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement($response, $this->service->xemDSKhachHang($this->getParams($request)));
+    }
+
+    public function timKiemKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement($response, $this->service->timKiemKhachHang($this->getParams($request)));
+    }
+
+    public function xemCTKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement($response, $this->service->xemCTKhachHang($this->getParams($request)));
+    }
+
+    public function capNhatThongTinKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement(
+            $response,
+            $this->service->capNhatThongTinKhachHang($this->getParams($request))
+        );
+    }
+
+    public function khoaTaiKhoanKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement(
+            $response,
+            $this->service->khoaTaiKhoanKhachHang($this->getParams($request))
+        );
+    }
+
+    public function moTaiKhoanKhachHang($request = null, $response = null)
+    {
+        return $this->respondManagement(
+            $response,
+            $this->service->moTaiKhoanKhachHang($this->getParams($request))
+        );
+    }
+
+    private function respondManagement($response, array $result)
+    {
+        if (!($result['success'] ?? false)) {
+            return Response::error(
+                $response,
+                $result['error'] ?? 'Không thể xử lý yêu cầu.',
+                $result['statusCode'] ?? 400
+            );
+        }
+
+        return Response::json($response, $result);
+    }
+
     /**
      * API: Lấy danh sách các phòng và loại phòng.
      * Endpoint: GET /khachhang/danhsachphong hoặc POST /khachhang/xemdsphong

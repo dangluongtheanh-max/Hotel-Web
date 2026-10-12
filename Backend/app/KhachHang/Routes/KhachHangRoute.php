@@ -17,6 +17,17 @@ class KhachHangRoute
         $router->get('/guest', [KhachHangController::class, 'viewPortal']);
         $router->get('/booking', [KhachHangController::class, 'viewPortal']);
 
+        // Quản lý khách hàng phía Admin
+        $router->get('/admin/xemdskhachhang', [KhachHangController::class, 'xemDSKhachHang']);
+        $router->post('/admin/xemdskhachhang', [KhachHangController::class, 'xemDSKhachHang']);
+        $router->get('/admin/timkiemkhachhang', [KhachHangController::class, 'timKiemKhachHang']);
+        $router->post('/admin/timkiemkhachhang', [KhachHangController::class, 'timKiemKhachHang']);
+        $router->get('/admin/xemctkhachhang', [KhachHangController::class, 'xemCTKhachHang']);
+        $router->post('/admin/xemctkhachhang', [KhachHangController::class, 'xemCTKhachHang']);
+        $router->post('/admin/capnhatthongtinkhachhang', [KhachHangController::class, 'capNhatThongTinKhachHang']);
+        $router->post('/admin/khoataikhoankhachhang', [KhachHangController::class, 'khoaTaiKhoanKhachHang']);
+        $router->post('/admin/motaikhoankhachhang', [KhachHangController::class, 'moTaiKhoanKhachHang']);
+
         // Xem danh sách phòng
         $router->get('/khachhang/danhsachphong', [KhachHangController::class, 'xemDSPhong']);
         $router->post('/khachhang/danhsachphong', [KhachHangController::class, 'xemDSPhong']);
