@@ -30,6 +30,18 @@ class RoleMiddleware
     public static function requiredRoles(string $method, string $path): ?array
     {
         if (
+            str_starts_with($path, '/admin/')
+            || str_starts_with($path, '/thongke/')
+            || str_starts_with($path, '/taikhoan/')
+            || str_starts_with($path, '/phong/')
+            || str_starts_with($path, '/loaiphong/')
+            || str_starts_with($path, '/khuyenmai/admin/')
+            || $path === '/khuyenmai'
+        ) {
+            return null;
+        }
+
+        if (
             in_array($path, ['/admin', '/admin/dashboard', '/gui', '/dashboard', '/client', '/guest', '/booking', '/khachhang'], true)
             || $path === '/khachhang/danhsachphong'
             || $path === '/khachhang/xemdsphong'
@@ -57,20 +69,11 @@ class RoleMiddleware
         ) {
             return null;
         }
-        if (str_starts_with($path, '/admin/') || str_starts_with($path, '/thongke/')) {
-            return ['Admin'];
-        }
         if (
             $path === '/taikhoan/dangnhap'
             || $path === '/taikhoan/quenmatkhau'
         ) {
             return null;
-        }
-        if (str_starts_with($path, '/taikhoan/')) {
-            return ['Admin'];
-        }
-        if (str_starts_with($path, '/phong/') || str_starts_with($path, '/loaiphong/')) {
-            return ['Admin'];
         }
         if (str_starts_with($path, '/letan/')) {
             return ['Admin', 'LeTan'];
@@ -90,25 +93,15 @@ class RoleMiddleware
         if (str_starts_with($path, '/danhgia/')) {
             return ['Admin', 'LeTan'];
         }
-        if (str_starts_with($path, '/khuyenmai/admin/')) {
-            return ['Admin'];
-        }
         if (str_starts_with($path, '/dichvu/')) {
             return ['Admin', 'LeTan'];
         }
         if ($path === '/hoadon') {
             return ['Admin', 'LeTan'];
         }
-        if ($path === '/khuyenmai') {
-            return ['Admin'];
-        }
         if (in_array($path, ['/khuyenmai/danhsach', '/khuyenmai/apdung'], true)) {
             return null;
         }
-        if (str_starts_with($path, '/khuyenmai/')) {
-            return ['Admin'];
-        }
-
         return null;
     }
 

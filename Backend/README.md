@@ -38,6 +38,12 @@ php -S localhost:8000 -t public public/index.php
 
 ## Dang nhap va phan quyen
 
+De don gian hoa demo tren lop, dashboard va cac API quan tri tai khoan, phong,
+loai phong, thong ke, khuyen mai Admin khong yeu cau dang nhap/token. Cac API
+nghiep vu nhu `/letan/*`, `/datphong/*`, `/hoadon/*`, `/thanhtoan/*`, va
+`/danhgia/*` van yeu cau token va vai tro theo route. Khong dua cac API quan tri
+mo nay len mang cong khai.
+
 Sao chep `Backend/.env.example` thanh `Backend/.env`, dien cau hinh MySQL va
 dat `AUTH_TOKEN_SECRET` thanh mot chuoi ngau nhien rieng, dai toi thieu 32 byte.
 Co the tao secret bang lenh:
@@ -49,8 +55,7 @@ php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'
 API dang nhap tra ve Bearer access token co hieu luc 1 gio. Cac request duoc
 bao ve gui token qua header `Authorization: Bearer <access_token>`. Moi request
 se kiem tra lai trang thai va vai tro trong database, vi vay khoa tai khoan hoac
-doi vai tro co hieu luc ngay; token het han sau toi da mot gio. Dang xuat tren
-dashboard xoa token khoi session hien tai.
+doi vai tro co hieu luc ngay; token het han sau toi da mot gio.
 
 Tai khoan mau (sau khi nap `Database/data.sql`): `admin` / `123456`. Mat khau
 plaintext mau se duoc nang cap sang hash sau lan dang nhap thanh cong dau tien;
@@ -66,12 +71,9 @@ khong su dung tai khoan/mat khau mau trong moi truong that.
 | `POST /taikhoan/capnhatvaitro` | `MaTK`, `VaiTro` | Admin doi vai tro; khong the ha cap Admin hoat dong cuoi cung |
 | `GET /taikhoan/vaitroquyen` | — | Admin xem danh sach vai tro va quyen |
 
-Chi Admin duoc quan ly tai khoan, nhan vien, phong, loai phong, khuyen mai va
-bao cao. Admin va LeTan duoc truy cap cac API nghiep vu le tan, dat phong noi
-bo, hoa don va thanh toan quan tri. Cac API xem phong/loai phong, tra phong
-trong, dat phong truc tuyen cua khach (`/khachhang/*`), xem/dung dich vu va
-khuyen mai cong khai, cung cac API khoi tao/tra cuu thanh toan cua khach tiep
-phuc vu khach vang lai; webhook thanh toan khong yeu cau Bearer token.
+Vai tro Admin/LeTan van duoc kiem tra tren cac API nghiep vu co bao ve. Cac API
+quan tri mo khong kiem tra vai tro, nen chi phu hop voi localhost/mang demo tin
+cay; day khong phai cau hinh bao mat cho production.
 
 ## API quan ly phong (BE3)
 
