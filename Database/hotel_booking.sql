@@ -74,11 +74,13 @@ CREATE TABLE KhuyenMai (
     LoaiKM VARCHAR(50) NOT NULL,
     GiaTriGiam DECIMAL(15,2) NOT NULL,
     SoDemToiThieu INT NOT NULL DEFAULT 0,
+    SoNguoiToiThieu INT NOT NULL DEFAULT 0,
     NgayBatDau DATE NOT NULL,
     NgayKetThuc DATE NOT NULL,
     TrangThai VARCHAR(50) NOT NULL DEFAULT 'HoatDong',
     CHECK (GiaTriGiam >= 0),
     CHECK (SoDemToiThieu >= 0),
+    CHECK (SoNguoiToiThieu >= 0),
     CHECK (NgayKetThuc >= NgayBatDau)
 ) ENGINE=InnoDB;
 
@@ -211,6 +213,12 @@ CREATE TABLE ThanhToan (
     HinhThuc VARCHAR(30) NOT NULL,
     TrangThaiThanhToan VARCHAR(50) NOT NULL,
     MaHD VARCHAR(50) NOT NULL,
+    SoTienHoan DECIMAL(15,2) DEFAULT 0,
+    NganHangHoan VARCHAR(100) NULL,
+    STKHoan VARCHAR(50) NULL,
+    TenChuTKHoan VARCHAR(100) NULL,
+    LyDoHoan TEXT NULL,
+    ThoiGianHoan DATETIME NULL,
     FOREIGN KEY (MaHD) REFERENCES HoaDon(MaHD)
         ON UPDATE CASCADE ON DELETE RESTRICT,
     CHECK (SoTien > 0),
