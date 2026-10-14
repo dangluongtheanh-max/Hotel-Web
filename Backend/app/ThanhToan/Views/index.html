@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BE4 — Cổng Thanh Toán Tự Động Napas 247 & Hoàn Tiền (ThanhToan)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-sub: #1a243d;
+            --bg-hover: #223052;
+            --border: #223254;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 24px 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-link {
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .badge-link:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        /* Account Banner */
+        .bank-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border: 1px solid #3b82f6;
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .bank-info-item {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .bank-info-item b {
+            color: #f8fafc;
+            font-size: 14px;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* Layout Grid */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:hover { background: #1d4ed8; }
+        .btn-accent { background: var(--accent); }
+        .btn-accent:hover { background: #059669; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* QR Frame Box */
+        .qr-box-wrapper {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .qr-image-container {
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 16px auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .qr-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-overlay-expired {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 20px;
+        }
+
+        /* Countdown Timer */
+        .countdown-timer {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #ef4444;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .warning-notice {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #fbbf24;
+            line-height: 1.6;
+            margin-top: 14px;
+        }
+
+        /* Success Paid Badge Screen */
+        .paid-badge-box {
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            color: #34d399;
+            margin-top: 14px;
+            display: none;
+        }
+
+        /* Admin Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        table.dark-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        table.dark-table th {
+            background: var(--bg-card-sub);
+            color: var(--text-muted);
+            padding: 12px 14px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        table.dark-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .status-refunded { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+        .alert-box.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            display: block;
+        }
+        .alert-box.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div>
+            <div class="brand-title">
+                <span>💳</span> BE4 — Cổng Thanh Toán Napas 247 MBBank & Hoàn Tiền
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                Quét VietQR thời hạn 15 phút • Đối soát chuyển tiền nghiêm ngặt • Form hoàn tiền STK khách (Mô hình 1)
+            </p>
+        </div>
+        <div class="header-nav">
+            <a href="/hoadon" class="badge-link">🧾 Quản lý Hóa Đơn</a>
+            <a href="/khuyenmai" class="badge-link">🎟️ Quản lý Khuyến Mãi</a>
+            <span class="badge-link" style="border-color: var(--accent); color: var(--accent);">🟢 Server Online (:8000)</span>
+        </div>
+    </header>
+
+    <!-- Bank Configuration Info Banner -->
+    <div class="bank-banner">
+        <div class="bank-info-item">
+            🏦 Ngân hàng thụ hưởng: <br><b>MBBank (Ngân hàng Quân Đội)</b>
+        </div>
+        <div class="bank-info-item">
+            🔢 Số tài khoản chính thức: <br><b style="color: var(--primary); font-size: 16px;">0589822346</b>
+        </div>
+        <div class="bank-info-item">
+            👤 Tên chủ tài khoản: <br><b style="color: var(--accent);">NGUYEN HOANG ANH</b>
+        </div>
+        <div class="bank-info-item">
+            ⏱️ Hiệu lực mã QR: <br><b>15 phút (900 giây)</b>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('qr')">
+            <span>📱</span> 1. Quét Mã VietQR Napas 247 & Tự Động Báo Tiền Vào
+        </button>
+        <button class="tab-btn" onclick="switchTab('refund')">
+            <span>↩️</span> 2. Điền Form Yêu Cầu Hoàn Tiền (Mô Hình 1)
+        </button>
+    </div>
+
+    <!-- TAB 1: VIETQR NAPAS 247 PAYMENT -->
+    <div id="tab-qr" class="tab-pane active">
+        <div class="layout-grid">
+            <!-- Cột trái: Chọn hóa đơn & Mô phỏng Test Webhook -->
+            <div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>🧾</span> Chọn Hóa Đơn Cần Thanh Toán
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Chọn Hóa Đơn trong CSDL:</label>
+                        <select id="selectHoaDon" class="form-select" onchange="loadPaymentForInvoice()">
+                            <option value="HD001">Hóa đơn HD001 — 2.519.000 đ (Phiếu PP001 - Khách Nguyễn Văn An)</option>
+                            <option value="HD002">Hóa đơn HD002 — 2.024.000 đ (Phiếu PP002 - Khách Trần Thị Bình)</option>
+                            <option value="HD003">Hóa đơn HD003 — 11.220.000 đ (Phiếu PP003 - Khách Lê Minh Châu)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hoặc gõ mã hóa đơn bất kỳ:</label>
+                        <input type="text" id="customMaHD" class="form-input" placeholder="VD: HD001, HD002..." style="font-weight: 700; text-transform: uppercase;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 14px;">
+                        <button class="btn btn-accent" style="flex: 1;" onclick="createPaymentQR()">
+                            <span>⚡</span> Sinh Mã VietQR Mới (15 Phút)
+                        </button>
+                    </div>
+
+                    <div id="alertPay" class="alert-box"></div>
+                </div>
+
+                <!-- Bảng Mô Phỏng / Test Đối Soát Nghiêm Ngặt -->
+                <div class="card" style="border: 1px dashed #3b82f6; background: rgba(30, 41, 59, 0.4);">
+                    <div class="card-title" style="color: #60a5fa;">
+                        <span>🧪</span> Kiểm Thử Đối Soát Ngân Hàng (Strict Verification)
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                        Kiểm tra các quy tắc bảo mật khi ngân hàng bắn Webhook về hệ thống:
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn" onclick="testSimulateBankSuccess()">
+                            <span>✅</span> 1. Mô Phỏng Chuyển Đúng Tiền & Đúng Mã HD (Thành Công)
+                        </button>
+                        <button class="btn btn-danger" onclick="testSimulateWrongContent()">
+                            <span>❌</span> 2. Thử Chuyển Sai Nội Dung (Hệ Thống Từ Chối Tiếp Nhận)
+                        </button>
+                        <button class="btn btn-danger" onclick="testSimulateInsufficientAmount()">
+                            <span>❌</span> 3. Thử Chuyển Thiếu Tiền (Hệ Thống Từ Chối Tiếp Nhận)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Màn hình quét QR MBBank Napas 247 -->
+            <div>
+                <div class="qr-box-wrapper">
+                    <div style="font-weight: 800; font-size: 16px; color: #1e293b; margin-bottom: 4px;">
+                        MÃ THANH TOÁN VIETQR NAPAS 247
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+                        Mở App Ngân Hàng (MBBank, Vietcombank, Momo...) quét mã dưới đây
+                    </div>
+
+                    <!-- Countdown Timer -->
+                    <div class="countdown-timer" id="countdownTimer">
+                        <span>⏳ Hiệu lực còn:</span> <b id="timerDigits">15:00</b>
+                    </div>
+
+                    <!-- QR Image Frame -->
+                    <div class="qr-image-container">
+                        <img id="vietQrImg" src="" alt="Mã VietQR">
+                        <div class="qr-overlay-expired" id="qrExpiredOverlay" style="display: none;">
+                            <span>⚠️ ĐÃ HẾT HẠN</span>
+                            <span style="font-size: 12px; font-weight: 400; margin-top: 4px;">Mã QR đã quá 15 phút. Vui lòng bấm sinh mã mới!</span>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 14px; font-weight: 700; color: #0f172a;" id="qrAmountDisplay">
+                        Số tiền: 0 đ
+                    </div>
+                    <div style="font-size: 13px; color: #2563eb; font-weight: 700; margin-top: 2px;" id="qrContentDisplay">
+                        Nội dung chuyển khoản: [Đang tải...]
+                    </div>
+
+                    <!-- Badge thanh toán thành công -->
+                    <div class="paid-badge-box" id="paidSuccessBox">
+                        <div style="font-size: 20px; font-weight: 800;">🎉 THANH TOÁN THÀNH CÔNG!</div>
+                        <div style="font-size: 12px; margin-top: 4px;">Hệ thống đã nhận tiền từ Napas 247 và cập nhật trạng thái Hoàn Tất.</div>
+                    </div>
+
+                    <!-- Lưu ý nghiêm ngặt -->
+                    <div class="warning-notice" style="text-align: left;">
+                        <b>⚠️ Quy tắc giao dịch nghiêm ngặt:</b><br>
+                        • Vui lòng <b>không chỉnh sửa nội dung chuyển khoản</b> đã điền sẵn trong mã QR.<br>
+                        • Mọi trường hợp chuyển sai nội dung, chuyển thiếu tiền hoặc chuyển sau 15 phút hệ thống sẽ <b>không tiếp nhận tự động</b>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: REFUND REQUEST FORM (MÔ HÌNH 1) -->
+    <div id="tab-refund" class="tab-pane">
+        <div class="card" style="max-width: 800px; margin: 0 auto 24px auto;">
+            <div class="card-title">
+                <span>↩️</span> Form Đăng Ký Thông Tin Nhận Tiền Hoàn (Khách Hàng)
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+                Áp dụng Mô hình 1: Khách hàng cung cấp thông tin tài khoản thụ hưởng để Khách Sạn chuyển trả tiền khi hủy phòng.
+            </p>
+
+            <form id="formRefund" onsubmit="submitRefundRequest(event)">
+                <div class="form-group">
+                    <label class="form-label">Mã Hóa Đơn cần hoàn tiền*:</label>
+                    <input type="text" id="refundMaHD" class="form-input" placeholder="VD: HD001, HD002..." required style="font-weight: 700; text-transform: uppercase;">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ngân hàng của bạn*:</label>
+                        <select id="refundBank" class="form-select" required>
+                            <option value="MB">MBBank (Ngân hàng Quân Đội)</option>
+                            <option value="VCB">Vietcombank (Ngoại thương)</option>
+                            <option value="TCB">Techcombank (Kỹ thương)</option>
+                            <option value="ACB">ACB (Á Châu)</option>
+                            <option value="ICB">VietinBank (Công thương)</option>
+                            <option value="BIDV">BIDV (Đầu tư và Phát triển)</option>
+                            <option value="TPB">TPBank (Tiên Phong)</option>
+                            <option value="VPB">VPBank (Việt Nam Thịnh Vượng)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số tài khoản nhận tiền*:</label>
+                        <input type="text" id="refundSTK" class="form-input" placeholder="VD: 0987654321..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tên chủ tài khoản (In hoa, không dấu)*:</label>
+                    <input type="text" id="refundTenChuTK" class="form-input" placeholder="VD: NGUYEN VAN A" required style="font-weight: 700; text-transform: uppercase;">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Lý do hủy phòng:</label>
+                    <input type="text" id="refundLyDo" class="form-input" placeholder="VD: Thay đổi lịch trình công tác, bận việc đột xuất...">
+                </div>
+
+                <!-- Bảng chính sách hoàn tiền -->
+                <div class="card" style="background: rgba(15, 23, 42, 0.4); border: 1px dashed #64748b; margin-top: 14px;">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
+                        📋 Chính sách hoàn tiền của khách sạn:
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.8;">
+                        • <b>Hủy trước 24h:</b> Hoàn <b>100%</b> số tiền hóa đơn.<br>
+                        • <b>Hủy trong vòng 24h:</b> Khấu trừ <b>30%</b> phí giữ phòng (Hoàn 70%).<br>
+                        • <b>Hủy sau giờ nhận phòng:</b> Khấu trừ <b>50%</b> phí hủy phòng.
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+                    <button type="submit" class="btn btn-accent">
+                        <span>💾</span> Gửi Yêu Cầu & Duyệt Hoàn Tiền
+                    </button>
+                </div>
+                <div id="alertRefund" class="alert-box"></div>
+            </form>
+
+            <!-- Hộp hiển thị kết quả hoàn tiền & Mã QR hoàn tiền cho khách -->
+            <div id="boxRefundResult" style="display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 18px;">
+                <div style="font-weight: 700; color: var(--accent); font-size: 15px; margin-bottom: 8px;">
+                    ✅ Đã duyệt hoàn tiền thành công!
+                </div>
+                <div id="refundResultText" style="font-size: 13px; color: #cbd5e1; line-height: 1.8;"></div>
+                
+                <div style="text-align: center; margin-top: 16px;">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+                        Mã VietQR hoàn tiền để Kế toán / Lễ tân quét chuyển trả ngay cho khách:
+                    </p>
+                    <img id="imgRefundQR" src="" alt="QR Hoàn Tiền" style="width: 220px; border-radius: 8px; border: 2px solid #3b82f6;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách tất cả các Giao Dịch Thanh Toán trong CSDL -->
+    <div class="card" style="margin-top: 24px;">
+        <div class="card-title" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span>📋</span> Danh Sách Tất Cả Giao Dịch Thanh Toán & Hoàn Tiền Trong CSDL
+            </div>
+            <button class="btn btn-sm" onclick="loadPaymentList()">🔄 Tải lại</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th>Mã TT</th>
+                        <th>Mã HĐ</th>
+                        <th>Số Tiền</th>
+                        <th>Hình Thức</th>
+                        <th>Trạng Thái</th>
+                        <th>Thời Gian TT</th>
+                        <th>Số Tiền Hoàn</th>
+                        <th>STK Hoàn Tiền (Mô Hình 1)</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timerInterval = null;
+    let pollInterval = null;
+    let remainingSeconds = 900;
+    let currentInvoiceAmount = 0;
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        if (tab === 'qr') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('tab-client').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('tab-refund').classList.add('active');
+        }
+    }
+
+    function getCurrentMaHD() {
+        const custom = document.getElementById('customMaHD').value.trim();
+        if (custom) return custom;
+        return document.getElementById('selectHoaDon').value;
+    }
+
+    // Load hoặc Sinh QR mới
+    async function createPaymentQR() {
+        const maHD = getCurrentMaHD();
+        const alertBox = document.getElementById('alertPay');
+        alertBox.style.display = 'none';
+
+        try {
+            const res = await fetch('/thanhtoan/tao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ MaHD: maHD, HinhThuc: 'ChuyenKhoan' })
+            });
+            const json = await res.json();
+            const data = json.data || json;
+
+            if (data.success) {
+                alertBox.className = 'alert-box success';
+                alertBox.innerText = `✅ ${data.message}`;
+                renderQRScreen(data.data);
+                startPolling(maHD);
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = `❌ ${data.error || 'Lỗi tạo mã QR!'}`;
+            }
+        } catch (err) {
+            console.error('Lỗi sinh QR:', err);
+        }
+    }
+
+    // Xem thông tin thanh toán hiện tại của Hóa đơn
+    async function loadPaymentForInvoice() {
+        const maHD = getCurrentMaHD();
+        try {
+            const res = await fetch(`/thanhtoan/xem?MaHD=${maHD}`);
+            const json = await res.json();
+            const data = json.data || json;
+
+            if (data.success) {
+                renderQRScreen(data.data);
+                startPolling(maHD);
+            } else {
+                // Nếu chưa có giao dịch, tự động tạo mới
+                createPaymentQR();
+            }
+        } catch (err) {
+            createPaymentQR();
+        }
+    }
+
+    function renderQRScreen(payData) {
+        currentInvoiceAmount = parseFloat(payData.SoTien) || 0;
+        document.getElementById('qrAmountDisplay').innerText = `Số tiền: ${new Intl.NumberFormat('vi-VN').format(currentInvoiceAmount)} đ`;
+        document.getElementById('qrContentDisplay').innerText = `Nội dung chuyển khoản: ${payData.MaHD}`;
+
+        const isPaid = (payData.TrangThaiThanhToan === 'HoanTat');
+        const isRefunded = (payData.TrangThaiThanhToan === 'DaHoanTien');
+        const paidBox = document.getElementById('paidSuccessBox');
+        const expiredOverlay = document.getElementById('qrExpiredOverlay');
+        const timerBox = document.getElementById('countdownTimer');
+
+        if (isPaid || isRefunded) {
+            paidBox.style.display = 'block';
+            paidBox.innerHTML = isPaid ? '🎉 THANH TOÁN THÀNH CÔNG!' : '↩️ ĐÃ HOÀN TIỀN THÀNH CÔNG';
+            timerBox.style.display = 'none';
+            expiredOverlay.style.display = 'none';
+            stopTimer();
+            stopPolling();
+        } else {
+            paidBox.style.display = 'none';
+            timerBox.style.display = 'inline-flex';
+
+            if (payData.VietQrUrl) {
+                document.getElementById('vietQrImg').src = payData.VietQrUrl;
+            }
+
+            // Đồng hồ 15 phút (900 giây)
+            remainingSeconds = payData.ConLaiGiay !== undefined ? payData.ConLaiGiay : 900;
+            if (remainingSeconds <= 0) {
+                expiredOverlay.style.display = 'flex';
+                document.getElementById('timerDigits').innerText = '00:00 (Hết hạn)';
+            } else {
+                expiredOverlay.style.display = 'none';
+                startTimer();
+            }
+        }
+    }
+
+    // Countdown Timer logic
+    function startTimer() {
+        stopTimer();
+        timerInterval = setInterval(() => {
+            if (remainingSeconds <= 0) {
+                stopTimer();
+                document.getElementById('timerDigits').innerText = '00:00 (Hết hạn)';
+                document.getElementById('qrExpiredOverlay').style.display = 'flex';
+                return;
+            }
+            remainingSeconds--;
+            const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+            const secs = String(remainingSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDigits').innerText = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+    }
+
+    // Polling tự động kiểm tra mỗi 2.5s khi khách đang chờ chuyển tiền
+    function startPolling(maHD) {
+        stopPolling();
+        pollInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/thanhtoan/xem?MaHD=${maHD}`);
+                const json = await res.json();
+                const data = json.data || json;
+                if (data.success && data.data.TrangThaiThanhToan === 'HoanTat') {
+                    renderQRScreen(data.data);
+                    loadPaymentList();
+                }
+            } catch (e) {}
+        }, 2500);
+    }
+
+    function stopPolling() {
+        if (pollInterval) clearInterval(pollInterval);
+    }
+
+    // --- TEST SUITE (STRICT VERIFICATION) ---
+    async function testSimulateBankSuccess() {
+        const maHD = getCurrentMaHD();
+        try {
+            const res = await fetch('/thanhtoan/mophong', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    MaHD: maHD,
+                    SoTien: currentInvoiceAmount,
+                    NoiDung: `THANH TOAN ${maHD}`
+                })
+            });
+            const json = await res.json();
+            const data = json.data || json;
+            alert(data.message || data.error);
+            loadPaymentForInvoice();
+            loadPaymentList();
+        } catch (e) { alert('Lỗi mô phỏng!'); }
+    }
+
+    async function testSimulateWrongContent() {
+        const maHD = getCurrentMaHD();
+        try {
+            const res = await fetch('/thanhtoan/mophong', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    MaHD: maHD,
+                    SoTien: currentInvoiceAmount,
+                    NoiDung: 'Chuyen tien phong khach san' // Sai nội dung, không có mã HD!
+                })
+            });
+            const json = await res.json();
+            const data = json.data || json;
+            alert(`⚠️ KẾT QUẢ ĐỐI SOÁT TỪ CHỐI:\n${data.error || data.message}`);
+        } catch (e) { alert('Lỗi!'); }
+    }
+
+    async function testSimulateInsufficientAmount() {
+        const maHD = getCurrentMaHD();
+        try {
+            const res = await fetch('/thanhtoan/mophong', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    MaHD: maHD,
+                    SoTien: 100000, // Chuyển thiếu tiền!
+                    NoiDung: `THANH TOAN ${maHD}`
+                })
+            });
+            const json = await res.json();
+            const data = json.data || json;
+            alert(`⚠️ KẾT QUẢ ĐỐI SOÁT TỪ CHỐI:\n${data.error || data.message}`);
+        } catch (e) { alert('Lỗi!'); }
+    }
+
+    // --- HOÀN TIỀN (MÔ HÌNH 1) ---
+    async function submitRefundRequest(e) {
+        e.preventDefault();
+        const alertBox = document.getElementById('alertRefund');
+        alertBox.style.display = 'none';
+
+        const payload = {
+            MaHD: document.getElementById('refundMaHD').value.trim(),
+            NganHangHoan: document.getElementById('refundBank').value,
+            STKHoan: document.getElementById('refundSTK').value.trim(),
+            TenChuTKHoan: document.getElementById('refundTenChuTK').value.trim(),
+            LyDoHoan: document.getElementById('refundLyDo').value.trim()
+        };
+
+        try {
+            const res = await fetch('/thanhtoan/hoantien', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json();
+            const resPayload = json.data || json;
+
+            if (resPayload.success) {
+                alertBox.className = 'alert-box success';
+                alertBox.innerText = `✅ ${resPayload.message}`;
+                
+                const info = resPayload.data;
+                document.getElementById('boxRefundResult').style.display = 'block';
+                document.getElementById('refundResultText').innerHTML = `
+                    • Hóa đơn: <b>${info.MaHD}</b> | Số tiền gốc: <b>${new Intl.NumberFormat('vi-VN').format(info.SoTienGoc)} đ</b><br>
+                    • Chính sách áp dụng: <span style="color: #fbbf24;">${info.ChinhSach}</span><br>
+                    • Phí hủy phòng khấu trừ: <b>${new Intl.NumberFormat('vi-VN').format(info.PhiHuy)} đ</b><br>
+                    • <b>SỐ TIỀN THỰC HOÀN:</b> <b style="color: #34d399; font-size: 16px;">${new Intl.NumberFormat('vi-VN').format(info.SoTienHoan)} đ</b><br>
+                    • Chuyển về: <b>${info.TaiKhoanNhanHoan.SoTaiKhoan}</b> (${info.TaiKhoanNhanHoan.NganHang}) - Chủ TK: <b>${info.TaiKhoanNhanHoan.ChuTaiKhoan}</b>
+                `;
+                document.getElementById('imgRefundQR').src = info.VietQrHoanUrl;
+                loadPaymentList();
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = `❌ ${resPayload.error || 'Yêu cầu hoàn tiền thất bại!'}`;
+            }
+        } catch (err) {
+            alertBox.className = 'alert-box error';
+            alertBox.innerText = 'Lỗi kết nối máy chủ khi hoàn tiền!';
+        }
+    }
+
+    // Load tất cả thanh toán
+    async function loadPaymentList() {
+        try {
+            const res = await fetch('/thanhtoan/danhsach');
+            const json = await res.json();
+            const resPayload = json.data || json;
+            const tbody = document.getElementById('paymentTableBody');
+
+            if (resPayload.data && resPayload.data.length > 0) {
+                tbody.innerHTML = resPayload.data.map(item => {
+                    let badge = '<span class="status-badge status-pending">Chờ thanh toán</span>';
+                    if (item.TrangThaiThanhToan === 'HoanTat') badge = '<span class="status-badge status-paid">Đã thanh toán</span>';
+                    if (item.TrangThaiThanhToan === 'DaHoanTien') badge = '<span class="status-badge status-refunded">Đã hoàn tiền</span>';
+
+                    const hoanInfo = item.STKHoan ? `${item.STKHoan} (${item.NganHangHoan}) - ${item.TenChuTKHoan}` : '—';
+                    const tienHoan = item.SoTienHoan > 0 ? new Intl.NumberFormat('vi-VN').format(item.SoTienHoan) + ' đ' : '0 đ';
+
+                    return `
+                        <tr>
+                            <td><b style="color: var(--primary);">${item.MaThanhToan}</b></td>
+                            <td><b>${item.MaHD}</b></td>
+                            <td><b style="color: var(--accent);">${new Intl.NumberFormat('vi-VN').format(item.SoTien)} đ</b></td>
+                            <td>${item.HinhThuc}</td>
+                            <td>${badge}</td>
+                            <td>${item.ThoiGianThanhToan}</td>
+                            <td style="color: #c084fc; font-weight: 700;">${tienHoan}</td>
+                            <td><span style="font-size: 11px;">${hoanInfo}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Chưa có dữ liệu thanh toán.</td></tr>`;
+            }
+        } catch (e) {
+            console.error('Lỗi load danh sách thanh toán:', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPaymentForInvoice();
+        loadPaymentList();
+    });
+</script>
+
+</body>
+</html>

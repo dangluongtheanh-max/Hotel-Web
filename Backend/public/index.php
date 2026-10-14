@@ -37,6 +37,7 @@ date_default_timezone_set($config['timezone'] ?? 'Asia/Ho_Chi_Minh');
 $router = new class {
 
     public array $routes = [];
+    private array $container = [];
 
     public function post(string $path, array $handler): void
     {
@@ -47,8 +48,6 @@ $router = new class {
     {
         $this->routes['GET'][$path] = $handler;
     }
-
-    private array $container = [];
 
     public function resolve(string $className): object
     {
@@ -101,11 +100,16 @@ $router = new class {
 
         // Route trang chu kiem tra trang thai
         if ($uri === '/' || $uri === '/index.php') {
+            if (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'text/html')) {
+                header('Location: /admin');
+                exit;
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'status' => 'online',
                 'message' => 'Hotel Booking API Server is running!',
                 'time' => date('Y-m-d H:i:s'),
+                'gui_dashboard' => 'http://localhost:8000/admin'
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             return;
         }

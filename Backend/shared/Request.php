@@ -8,6 +8,7 @@ namespace Shared;
 class Request
 {
     private array $data;
+    public ?array $user = null;
 
     public function __construct(array $data = [])
     {
@@ -25,8 +26,6 @@ class Request
         $data = array_merge($_GET, $_POST, $json);
         return new self($data);
     }
-
-    public ?array $user = null;
 
     public function all(): array
     {
