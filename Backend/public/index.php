@@ -37,7 +37,6 @@ date_default_timezone_set($config['timezone'] ?? 'Asia/Ho_Chi_Minh');
 $router = new class {
 
     public array $routes = [];
-    private array $container = [];
 
     public function post(string $path, array $handler): void
     {
@@ -47,42 +46,6 @@ $router = new class {
     public function get(string $path, array $handler): void
     {
         $this->routes['GET'][$path] = $handler;
-    }
-
-    public function resolve(string $className): object
-    {
-        if (isset($this->container[$className])) {
-            return $this->container[$className];
-        }
-
-        if (!class_exists($className)) {
-            throw new \RuntimeException("Class {$className} does not exist");
-        }
-
-        $ref = new \ReflectionClass($className);
-        $ctor = $ref->getConstructor();
-
-        if (!$ctor || $ctor->getNumberOfParameters() === 0) {
-            $instance = new $className();
-            $this->container[$className] = $instance;
-            return $instance;
-        }
-
-        $dependencies = [];
-        foreach ($ctor->getParameters() as $param) {
-            $paramType = $param->getType();
-            if ($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()) {
-                $dependencies[] = $this->resolve($paramType->getName());
-            } elseif ($param->isDefaultValueAvailable()) {
-                $dependencies[] = $param->getDefaultValue();
-            } else {
-                $dependencies[] = null;
-            }
-        }
-
-        $instance = $ref->newInstanceArgs($dependencies);
-        $this->container[$className] = $instance;
-        return $instance;
     }
 
     public function dispatch(string $method, string $rawUri): void
@@ -98,7 +61,7 @@ $router = new class {
         }
         $uri = '/' . ltrim($uri, '/');
 
-        // Route trang chu kiem tra trang thai
+        // Route trang chu kiem tra trang thai hoac chuyen huong GUI tren trinh duyet
         if ($uri === '/' || $uri === '/index.php') {
             if (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'text/html')) {
                 header('Location: /admin');
@@ -114,8 +77,7 @@ $router = new class {
             return;
         }
 
-        $normalizedUri = rtrim($uri, '/') ?: '/';
-        $handler = $this->routes[$method][$uri] ?? $this->routes[$method][$normalizedUri] ?? null;
+        $handler = $this->routes[$method][$uri] ?? null;
 
         if (!$handler) {
             http_response_code(404);
@@ -127,46 +89,20 @@ $router = new class {
             return;
         }
 
-        try {
-            if (is_callable($handler)) {
-                $handler();
-                return;
-            }
+        [$controllerClass, $methodName] = $handler;
 
-            if (is_array($handler) && count($handler) === 2) {
-                [$controllerClass, $methodName] = $handler;
-
-                if (!class_exists($controllerClass)) {
-                    http_response_code(500);
-                    header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['success' => false, 'error' => "Class {$controllerClass} not found"]);
-                    return;
-                }
-
-                $controller = $this->resolve($controllerClass);
-                if (!method_exists($controller, $methodName)) {
-                    http_response_code(500);
-                    header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['success' => false, 'error' => "Method {$methodName} not found in {$controllerClass}"]);
-                    return;
-                }
-
-                $request = Request::capture();
-                $response = null;
-
-                $controller->$methodName($request, $response);
-                return;
-            }
-
-            throw new \RuntimeException("Invalid route handler format");
-        } catch (\Throwable $e) {
+        if (!class_exists($controllerClass)) {
             http_response_code(500);
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            echo json_encode(['success' => false, 'error' => "Class {$controllerClass} not found"]);
+            return;
         }
+
+        $controller = new $controllerClass();
+        $request = Request::capture();
+        $response = null;
+
+        $controller->$methodName($request, $response);
     }
 };
 

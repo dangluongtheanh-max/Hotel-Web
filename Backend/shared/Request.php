@@ -8,7 +8,6 @@ namespace Shared;
 class Request
 {
     private array $data;
-    public ?array $user = null;
 
     public function __construct(array $data = [])
     {
@@ -35,17 +34,5 @@ class Request
     public function get(string $key, $default = null)
     {
         return $this->data[$key] ?? $default;
-    }
-
-    public function header(string $name, $default = null): ?string
-    {
-        $normalized = 'HTTP_' . strtoupper(str_replace('-', '_', $name));
-        if (isset($_SERVER[$normalized])) {
-            return $_SERVER[$normalized];
-        }
-        if (strcasecmp($name, 'Authorization') === 0) {
-            return $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? $default;
-        }
-        return $default;
     }
 }
