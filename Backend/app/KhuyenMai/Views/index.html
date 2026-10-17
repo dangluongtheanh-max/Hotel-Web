@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BE4 — Quản Lý & Tự Động Áp Dụng Khuyến Mãi (KhuyenMai)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-sub: #1a243d;
+            --bg-hover: #223052;
+            --border: #223254;
+            --border-highlight: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 24px 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-link {
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .badge-link:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        /* Flash Sale & Event Banner (Nguồn 2) */
+        .banner-wrapper {
+            background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 50%, #1e293b 100%);
+            border: 1px solid #4338ca;
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(67, 56, 202, 0.3);
+        }
+
+        .banner-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .banner-tag {
+            background: #ef4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .banner-events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .event-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .event-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e0e7ff;
+            margin-bottom: 4px;
+        }
+
+        .event-card p {
+            font-size: 12px;
+            color: #a5b4fc;
+        }
+
+        .event-badge {
+            background: #4f46e5;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Layout */
+        .client-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .client-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+        }
+        .btn-accent:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Voucher List Cards (Nguồn 1) */
+        .voucher-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .voucher-item {
+            background: var(--bg-card-sub);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .voucher-item.eligible {
+            border-color: #3b82f6;
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .voucher-item.selected {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .voucher-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voucher-icon-badge {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .voucher-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .voucher-info .code-pill {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+
+        .voucher-info .desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .badge-rule {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .badge-rule.ok { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-rule.wait { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        /* Realtime Calculation Result Box */
+        .result-box {
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-muted);
+        }
+
+        .price-row.final {
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .text-green {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Auto-Apply Switch Banner */
+        .auto-banner {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Admin Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--bg-card-sub);
+            color: var(--text-muted);
+            padding: 12px 14px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-future { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+        .status-expired { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .status-locked { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+        .alert-box.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            display: block;
+        }
+        .alert-box.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div>
+            <div class="brand-title">
+                <span>🎟️</span> BE4 — Quản Lý & Tự Động Áp Dụng Khuyến Mãi
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                Tự động tính chiết khấu khi tăng số đêm / số người • Quản lý chiến dịch sự kiện Flash Sale (Admin)
+            </p>
+        </div>
+        <div class="header-nav">
+            <a href="/dichvu" class="badge-link">🛎️ Quản lý Dịch vụ</a>
+            <span class="badge-link" style="border-color: var(--accent); color: var(--accent);">🟢 Server Online (:8000)</span>
+        </div>
+    </header>
+
+    <!-- NGUỒN 2: Flash Sale & Event Banner -->
+    <div class="banner-wrapper">
+        <div class="banner-header">
+            <span class="banner-tag">🔥 Nguồn 2: Sự Kiện Ưu Đãi Đặc Biệt (Admin Set Ngày)</span>
+            <span style="font-size: 12px; color: #c7d2fe;">Tự động cập nhật theo thời gian thực</span>
+        </div>
+        <div class="banner-events-grid" id="bannerEventsGrid">
+            <div style="color: #cbd5e1; font-size: 13px;">Đang tải danh sách sự kiện ưu đãi...</div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('client')">
+            <span>🛒</span> Nguồn 1: Khách Đặt Phòng & Tự Động Giảm Giá
+        </button>
+        <button class="tab-btn" onclick="switchTab('admin')">
+            <span>⚙️</span> Quản Trị Viên: Thiết Lập Quy Tắc & Mã (Admin)
+        </button>
+    </div>
+
+    <!-- TAB 1: CLIENT SIMULATOR -->
+    <div id="tab-client" class="tab-pane active">
+        <div class="client-layout">
+            <!-- Cột trái: Form đặt phòng & Tự động giảm giá khi tăng đêm/người -->
+            <div class="card">
+                <div class="card-title">
+                    <span>🏨</span> Giả Lập Đơn Đặt Phòng Của Khách
+                </div>
+
+                <!-- Banner Auto-Apply -->
+                <div class="auto-banner">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="checkAutoApply" checked onchange="toggleAutoApply()" style="cursor: pointer; width: 16px; height: 16px;">
+                        <label for="checkAutoApply" style="font-size: 13px; font-weight: 700; color: var(--primary); cursor: pointer;">
+                            ⚡ Bật chế độ Tự Động Áp Dụng Mã Tốt Nhất khi tăng Đêm/Người
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Đơn giá phòng/đêm (VNĐ):</label>
+                        <input type="number" id="inputDonGiaDem" class="form-input" value="800000" step="50000" oninput="onBookingParamsChange()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày nhận phòng giả lập:</label>
+                        <input type="date" id="inputNgayApDung" class="form-input" value="2026-10-10" onchange="onBookingParamsChange()">
+                    </div>
+                </div>
+
+                <!-- 2 ô cốt lõi: Số đêm và Số người -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Số đêm lưu trú (Tăng đêm để nhận thêm %):</label>
+                        <input type="number" id="inputSoDem" class="form-input" value="3" min="1" max="30" oninput="onBookingParamsChange()" style="font-size: 16px; font-weight: 700; color: var(--primary);">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số người lưu trú (Đoàn từ 4 người được giảm):</label>
+                        <input type="number" id="inputSoNguoi" class="form-input" value="2" min="1" max="20" oninput="onBookingParamsChange()" style="font-size: 16px; font-weight: 700; color: var(--accent);">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 14px;">
+                    <label class="form-label">Mã khuyến mãi đang dùng (Nhập hoặc để AUTO):</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="inputMaKM" class="form-input" placeholder="Để trống hoặc gõ mã..." style="font-weight: 700; text-transform: uppercase;">
+                        <button class="btn" onclick="applySpecificCode()">Kiểm Tra</button>
+                    </div>
+                </div>
+
+                <div id="alertApply" class="alert-box"></div>
+
+                <!-- Hộp kết quả tính tiền -->
+                <div class="result-box">
+                    <div class="price-row">
+                        <span>Chi tiết phòng:</span>
+                        <span id="resDetail">800.000 đ x 3 đêm = 2.400.000 đ</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Mã ưu đãi đang áp dụng:</span>
+                        <span id="resCode" style="color: var(--primary); font-weight: 700;">Đang kiểm tra...</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Khuyến mãi giảm trừ:</span>
+                        <span id="resGiam" class="text-green">-0 đ</span>
+                    </div>
+                    <div class="price-row final">
+                        <span>Tổng tiền phòng thực thu:</span>
+                        <span id="resTong" style="color: var(--primary);">2.400.000 đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Kho Voucher & Trạng thái đủ điều kiện -->
+            <div class="card">
+                <div class="card-title" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>🏷️</span> Kho Voucher Khả Dụng (Tự động cập nhật điều kiện)
+                    </div>
+                    <button class="btn btn-sm" style="background: var(--bg-card-sub); border: 1px solid var(--border);" onclick="reloadClientVouchers()">
+                        🔄 Làm mới
+                    </button>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+                    Hệ thống sẽ <b>sáng xanh</b> các mã bạn đã đủ điều kiện dựa trên Số đêm và Số người bên trái:
+                </p>
+
+                <div class="voucher-list" id="clientVoucherList">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: ADMIN MANAGEMENT -->
+    <div id="tab-admin" class="tab-pane">
+        <!-- Form thêm mới mã có cả quy tắc Số đêm & Số người -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-title">
+                <span>➕</span> Thiết Lập Quy Tắc & Mã Khuyến Mãi Mới (Admin)
+            </div>
+
+            <form id="formAddPromo" onsubmit="submitAddPromo(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Mã khuyến mãi (Viết hoa, không dấu)*:</label>
+                        <input type="text" id="addMaKM" class="form-input" placeholder="VD: KM_STAY5, KM_GROUP4, KM_TET" required style="font-weight: 700; text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tên chương trình khuyến mãi*:</label>
+                        <input type="text" id="addTenKM" class="form-input" placeholder="VD: Ở từ 5 đêm giảm 20%" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Hình thức giảm giá*:</label>
+                        <select id="addLoaiKM" class="form-select" onchange="togglePromoType()">
+                            <option value="PhanTram">Phần trăm (%)</option>
+                            <option value="SoTien">Số tiền cố định (VNĐ)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" id="labelGiaTriGiam">Mức giảm (%):*</label>
+                        <input type="number" id="addGiaTriGiam" class="form-input" placeholder="VD: 20 (nghĩa là 20%)" required min="1">
+                    </div>
+                </div>
+
+                <!-- 2 quy tắc cốt lõi: Số đêm & Số người -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quy tắc Số đêm tối thiểu (0 = không bắt buộc):</label>
+                        <input type="number" id="addSoDemToiThieu" class="form-input" value="0" min="0" placeholder="VD: 3 hoặc 5 đêm">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quy tắc Số người tối thiểu (0 = không bắt buộc):</label>
+                        <input type="number" id="addSoNguoiToiThieu" class="form-input" value="0" min="0" placeholder="VD: 4 người đi theo đoàn">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ngày bắt đầu áp dụng* (VD: 2026-12-12):</label>
+                        <input type="date" id="addNgayBatDau" class="form-input" value="2026-10-10" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày kết thúc áp dụng* (VD: 2026-12-31):</label>
+                        <input type="date" id="addNgayKetThuc" class="form-input" value="2026-12-31" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Trạng thái ban đầu:</label>
+                    <select id="addTrangThai" class="form-select">
+                        <option value="HoatDong">Hoạt Động (Kích hoạt ngay)</option>
+                        <option value="NgungHoatDong">Tạm Dừng (Chưa kích hoạt)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn btn-accent">
+                        <span>💾</span> Lưu & Tạo Mã Khuyến Mãi
+                    </button>
+                </div>
+                <div id="alertAdmin" class="alert-box"></div>
+            </form>
+        </div>
+
+        <!-- Bảng danh sách mã Admin -->
+        <div class="card">
+            <div class="card-title" style="justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span>📋</span> Danh Sách Toàn Bộ Khuyến Mãi Trong Hệ Thống
+                </div>
+                <button class="btn btn-sm" onclick="loadAdminPromotions()">🔄 Tải lại</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã KM</th>
+                            <th>Tên Chương Trình</th>
+                            <th>Mức Giảm</th>
+                            <th>Điều Kiện Áp Dụng</th>
+                            <th>Thời Gian Áp Dụng</th>
+                            <th>Tình Trạng</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        if (tab === 'client') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('tab-client').classList.add('active');
+            reloadClientVouchers();
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('tab-admin').classList.add('active');
+            loadAdminPromotions();
+        }
+    }
+
+    function togglePromoType() {
+        const type = document.getElementById('addLoaiKM').value;
+        const label = document.getElementById('labelGiaTriGiam');
+        const input = document.getElementById('addGiaTriGiam');
+        if (type === 'PhanTram') {
+            label.innerText = 'Mức giảm (%):*';
+            input.placeholder = 'VD: 20 (nghĩa là 20%)';
+            input.max = 100;
+        } else {
+            label.innerText = 'Mức giảm (VNĐ):*';
+            input.placeholder = 'VD: 200000';
+            input.removeAttribute('max');
+        }
+    }
+
+    function toggleAutoApply() {
+        const isAuto = document.getElementById('checkAutoApply').checked;
+        if (isAuto) {
+            document.getElementById('inputMaKM').value = '';
+        }
+        onBookingParamsChange();
+    }
+
+    // Khi người dùng thay đổi Đơn giá, Số đêm, Số người:
+    function onBookingParamsChange() {
+        const donGia = parseFloat(document.getElementById('inputDonGiaDem').value) || 0;
+        const soDem = parseInt(document.getElementById('inputSoDem').value) || 1;
+        const soNguoi = parseInt(document.getElementById('inputSoNguoi').value) || 1;
+        const tienPhongGoc = donGia * soDem;
+
+        document.getElementById('resDetail').innerText = 
+            `${new Intl.NumberFormat('vi-VN').format(donGia)} đ x ${soDem} đêm = ${new Intl.NumberFormat('vi-VN').format(tienPhongGoc)} đ`;
+
+        reloadClientVouchers();
+        evaluateAndCalculate();
+    }
+
+    async function evaluateAndCalculate() {
+        const donGia = parseFloat(document.getElementById('inputDonGiaDem').value) || 0;
+        const soDem = parseInt(document.getElementById('inputSoDem').value) || 1;
+        const soNguoi = parseInt(document.getElementById('inputSoNguoi').value) || 1;
+        const tienPhongGoc = donGia * soDem;
+        const ngayApDung = document.getElementById('inputNgayApDung').value;
+        const isAuto = document.getElementById('checkAutoApply').checked;
+        let maKM = document.getElementById('inputMaKM').value.trim();
+        const alertBox = document.getElementById('alertApply');
+
+        if (isAuto && !maKM) {
+            maKM = 'AUTO';
+        }
+
+        if (!maKM) {
+            // Không áp dụng mã nào
+            alertBox.style.display = 'none';
+            document.getElementById('resCode').innerText = 'Không sử dụng';
+            document.getElementById('resGiam').innerText = '-0 đ';
+            document.getElementById('resTong').innerText = new Intl.NumberFormat('vi-VN').format(tienPhongGoc) + ' đ';
+            return;
+        }
+
+        try {
+            const res = await fetch('/khuyenmai/apdung', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    MaKM: maKM,
+                    SoDem: soDem,
+                    SoNguoi: soNguoi,
+                    TienPhong: tienPhongGoc,
+                    NgayApDung: ngayApDung
+                })
+            });
+            const data = await res.json();
+            const resPayload = data.data || data;
+
+            if (resPayload.success) {
+                const info = resPayload.data;
+                alertBox.className = 'alert-box success';
+                alertBox.innerText = `✅ ${resPayload.message} (${info.MoTaGiam})`;
+                
+                document.getElementById('resCode').innerText = `${info.MaKM} (${info.TenKM})`;
+                document.getElementById('resGiam').innerText = '-' + new Intl.NumberFormat('vi-VN').format(info.TienGiam) + ' đ';
+                document.getElementById('resTong').innerText = new Intl.NumberFormat('vi-VN').format(info.TienSauGiam) + ' đ';
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = `❌ ${resPayload.error || 'Không đủ điều kiện áp dụng!'}`;
+                document.getElementById('resCode').innerText = maKM === 'AUTO' ? 'Chưa đủ điều kiện nhận ưu đãi' : `${maKM} (Không hợp lệ)`;
+                document.getElementById('resGiam').innerText = '-0 đ';
+                document.getElementById('resTong').innerText = new Intl.NumberFormat('vi-VN').format(tienPhongGoc) + ' đ';
+            }
+        } catch (err) {
+            alertBox.className = 'alert-box error';
+            alertBox.innerText = 'Lỗi kết nối máy chủ khi tính khuyến mãi!';
+        }
+    }
+
+    function applySpecificCode() {
+        document.getElementById('checkAutoApply').checked = false;
+        evaluateAndCalculate();
+    }
+
+    function selectVoucher(code) {
+        document.getElementById('checkAutoApply').checked = false;
+        document.getElementById('inputMaKM').value = code;
+        evaluateAndCalculate();
+    }
+
+    // Load Client Vouchers & Banners
+    async function reloadClientVouchers() {
+        const testDate = document.getElementById('inputNgayApDung').value;
+        const soDem = parseInt(document.getElementById('inputSoDem').value) || 1;
+        const soNguoi = parseInt(document.getElementById('inputSoNguoi').value) || 1;
+
+        try {
+            const res = await fetch(`/khuyenmai/danhsach?ngay=${testDate}&soDem=${soDem}&soNguoi=${soNguoi}`);
+            const data = await res.json();
+            const payload = data.data || data;
+            
+            // Banner Events
+            const bannerContainer = document.getElementById('bannerEventsGrid');
+            if (payload.upcoming_events && payload.upcoming_events.length > 0) {
+                bannerContainer.innerHTML = payload.upcoming_events.map(ev => `
+                    <div class="event-card">
+                        <div>
+                            <h4>🎉 ${ev.TenKM}</h4>
+                            <p>📅 Ngày diễn ra: <b>${ev.NgayBatDau}</b> đến <b>${ev.NgayKetThuc}</b></p>
+                        </div>
+                        <div class="event-badge">-${ev.GiaTriHienThi}</div>
+                    </div>
+                `).join('');
+            } else {
+                bannerContainer.innerHTML = `
+                    <div class="event-card">
+                        <div>
+                            <h4>📅 Siêu Sale 12/12/2026 Sắp Tới!</h4>
+                            <p>Admin đã lên lịch giảm giá 30% cho toàn bộ phòng trong ngày 12/12/2026.</p>
+                        </div>
+                        <div class="event-badge">-30%</div>
+                    </div>
+                `;
+            }
+
+            // Voucher list
+            const currentCode = document.getElementById('inputMaKM').value.trim();
+            const listContainer = document.getElementById('clientVoucherList');
+            if (payload.active_vouchers && payload.active_vouchers.length > 0) {
+                listContainer.innerHTML = payload.active_vouchers.map(v => {
+                    const isSelected = (currentCode === v.MaKM);
+                    const isOk = v.DuDieuKien;
+                    const itemClass = isSelected ? 'voucher-item selected' : (isOk ? 'voucher-item eligible' : 'voucher-item');
+                    const badgeRuleClass = isOk ? 'badge-rule ok' : 'badge-rule wait';
+                    const badgeRuleText = isOk ? '✓ Đủ điều kiện' : 'Chưa đủ điều kiện';
+
+                    return `
+                        <div class="${itemClass}">
+                            <div class="voucher-left">
+                                <div class="voucher-icon-badge">${v.LoaiKM === 'PhanTram' ? '%' : 'VNĐ'}</div>
+                                <div class="voucher-info">
+                                    <div>
+                                        <span class="code-pill">${v.MaKM}</span> 
+                                        <b>${v.TenKM}</b>
+                                        <span class="${badgeRuleClass}" style="margin-left: 6px;">${badgeRuleText}</span>
+                                    </div>
+                                    <div class="desc">🎁 Giảm <b>${v.GiaTriHienThi}</b> • Điều kiện: ${v.DieuKien}</div>
+                                    <div class="desc" style="font-size: 11px;">Hạn dùng: ${v.NgayBatDau} đến ${v.NgayKetThuc}</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm ${isOk ? 'btn-accent' : ''}" onclick="selectVoucher('${v.MaKM}')">
+                                ${isSelected ? 'Đang Chọn' : 'Áp Dụng'}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                listContainer.innerHTML = `<div style="color: var(--text-muted); text-align: center; padding: 20px;">Không có mã nào chạy vào ngày ${testDate}.</div>`;
+            }
+        } catch (err) {
+            console.error('Lỗi tải danh sách khuyến mãi:', err);
+        }
+    }
+
+    // Admin Load Promos
+    async function loadAdminPromotions() {
+        try {
+            const res = await fetch('/khuyenmai/admin/danhsach');
+            const data = await res.json();
+            const payload = data.data || data;
+            const tbody = document.getElementById('adminTableBody');
+
+            if (payload.promotions && payload.promotions.length > 0) {
+                tbody.innerHTML = payload.promotions.map(item => {
+                    let badgeClass = 'status-active';
+                    if (item.TinhTrangThucTe === 'SapDienRa') badgeClass = 'status-future';
+                    if (item.TinhTrangThucTe === 'DaKetThuc') badgeClass = 'status-expired';
+                    if (item.TinhTrangThucTe === 'TamKhoa') badgeClass = 'status-locked';
+
+                    const mucGiam = item.LoaiKM === 'PhanTram' 
+                        ? `${item.GiaTriGiam}%` 
+                        : new Intl.NumberFormat('vi-VN').format(item.GiaTriGiam) + ' đ';
+
+                    const toggleLabel = item.TrangThai === 'HoatDong' ? 'Tắt' : 'Bật';
+                    const nextStatus = item.TrangThai === 'HoatDong' ? 'NgungHoatDong' : 'HoatDong';
+
+                    return `
+                        <tr>
+                            <td><b style="color: var(--primary);">${item.MaKM}</b></td>
+                            <td>${item.TenKM}</td>
+                            <td><b style="color: var(--accent);">${mucGiam}</b></td>
+                            <td>${item.DieuKienText}</td>
+                            <td>${item.NgayBatDau} → ${item.NgayKetThuc}</td>
+                            <td><span class="status-badge ${badgeClass}">${item.TinhTrangText}</span></td>
+                            <td>
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="btn btn-sm" style="background: var(--bg-hover);" onclick="toggleStatus('${item.MaKM}', '${nextStatus}')">${toggleLabel}</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deletePromo('${item.MaKM}')">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Chưa có mã khuyến mãi nào.</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Lỗi load admin promos:', err);
+        }
+    }
+
+    async function toggleStatus(maKM, newStatus) {
+        if (!confirm(`Bạn có chắc muốn chuyển trạng thái mã ${maKM} sang "${newStatus}"?`)) return;
+        try {
+            const res = await fetch('/khuyenmai/admin/doitrangthai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ MaKM: maKM, TrangThai: newStatus })
+            });
+            const data = await res.json();
+            const payload = data.data || data;
+            alert(payload.message || payload.error || 'Cập nhật thành công!');
+            loadAdminPromotions();
+        } catch (err) {
+            alert('Lỗi máy chủ!');
+        }
+    }
+
+    async function deletePromo(maKM) {
+        if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn mã ${maKM}?`)) return;
+        try {
+            const res = await fetch('/khuyenmai/admin/xoa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ MaKM: maKM })
+            });
+            const data = await res.json();
+            const payload = data.data || data;
+            alert(payload.message || payload.error || 'Đã xóa thành công!');
+            loadAdminPromotions();
+        } catch (err) {
+            alert('Lỗi máy chủ!');
+        }
+    }
+
+    async function submitAddPromo(e) {
+        e.preventDefault();
+        const alertBox = document.getElementById('alertAdmin');
+        const payload = {
+            MaKM: document.getElementById('addMaKM').value.trim(),
+            TenKM: document.getElementById('addTenKM').value.trim(),
+            LoaiKM: document.getElementById('addLoaiKM').value,
+            GiaTriGiam: parseFloat(document.getElementById('addGiaTriGiam').value) || 0,
+            SoDemToiThieu: parseInt(document.getElementById('addSoDemToiThieu').value) || 0,
+            SoNguoiToiThieu: parseInt(document.getElementById('addSoNguoiToiThieu').value) || 0,
+            NgayBatDau: document.getElementById('addNgayBatDau').value,
+            NgayKetThuc: document.getElementById('addNgayKetThuc').value,
+            TrangThai: document.getElementById('addTrangThai').value
+        };
+
+        try {
+            const res = await fetch('/khuyenmai/admin/them', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            const resPayload = data.data || data;
+
+            if (resPayload.success) {
+                alertBox.className = 'alert-box success';
+                alertBox.innerText = '✅ ' + (resPayload.message || 'Tạo mã khuyến mãi thành công!');
+                document.getElementById('formAddPromo').reset();
+                loadAdminPromotions();
+                setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+            } else {
+                alertBox.className = 'alert-box error';
+                alertBox.innerText = '❌ ' + (resPayload.error || 'Tạo thất bại!');
+            }
+        } catch (err) {
+            alertBox.className = 'alert-box error';
+            alertBox.innerText = 'Lỗi kết nối máy chủ!';
+        }
+    }
+
+    // Init on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        onBookingParamsChange();
+    });
+</script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Database\Database;
+use Shared\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +14,10 @@ use Database\Database;
 |--------------------------------------------------------------------------
 */
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->load();
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +25,7 @@ $dotenv->load();
 |--------------------------------------------------------------------------
 */
 
-$config = require __DIR__ . '/../config/App.php';
-
+$config = file_exists(__DIR__ . '/../config/App.php') ? require __DIR__ . '/../config/App.php' : ['timezone' => 'Asia/Ho_Chi_Minh'];
 date_default_timezone_set($config['timezone'] ?? 'Asia/Ho_Chi_Minh');
 
 /*
@@ -43,106 +45,79 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 /*
 |--------------------------------------------------------------------------
-| Router & DI Container
+| Router đơn giản có hỗ trợ Base Path XAMPP & Dependency Injection
 |--------------------------------------------------------------------------
 */
 
 $router = new class {
 
     public array $routes = [];
-    private array $container = [];
 
-    public function post(string $path, array|callable $handler): void
+    public function post(string $path, array $handler): void
     {
         $this->routes['POST'][$path] = $handler;
     }
 
-    public function get(string $path, array|callable $handler): void
+    public function get(string $path, array $handler): void
     {
         $this->routes['GET'][$path] = $handler;
     }
 
-    /**
-     * Auto-wiring Dependency Injection container
-     */
-    public function resolve(string $className): object
+    public function dispatch(string $method, string $rawUri): void
     {
-        if (isset($this->container[$className])) {
-            return $this->container[$className];
-        }
-
-        if (!class_exists($className)) {
-            throw new RuntimeException("Class {$className} does not exist");
-        }
-
-        $ref = new ReflectionClass($className);
-        $ctor = $ref->getConstructor();
-
-        if (!$ctor || $ctor->getNumberOfParameters() === 0) {
-            $instance = new $className();
-            $this->container[$className] = $instance;
-            return $instance;
-        }
-
-        $dependencies = [];
-        foreach ($ctor->getParameters() as $param) {
-            $paramType = $param->getType();
-            if ($paramType instanceof ReflectionNamedType && !$paramType->isBuiltin()) {
-                $dependencies[] = $this->resolve($paramType->getName());
-            } elseif ($param->isDefaultValueAvailable()) {
-                $dependencies[] = $param->getDefaultValue();
-            } else {
-                $dependencies[] = null;
+        // Loại bỏ base path nếu chạy trong thư mục con của XAMPP
+        $uri = $rawUri;
+        $scriptName = dirname($_SERVER['SCRIPT_NAME'] ?? '');
+        if ($scriptName !== '/' && $scriptName !== '\\' && !empty($scriptName)) {
+            $scriptName = str_replace('\\', '/', $scriptName);
+            if (str_starts_with($uri, $scriptName)) {
+                $uri = substr($uri, strlen($scriptName));
             }
         }
+        $uri = '/' . ltrim($uri, '/');
 
-        $instance = $ref->newInstanceArgs($dependencies);
-        $this->container[$className] = $instance;
-        return $instance;
-    }
+        // Route trang chu kiem tra trang thai hoac chuyen huong GUI tren trinh duyet
+        if ($uri === '/' || $uri === '/index.php') {
+            if (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'text/html')) {
+                header('Location: /admin');
+                exit;
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'online',
+                'message' => 'Hotel Booking API Server is running!',
+                'time' => date('Y-m-d H:i:s'),
+                'gui_dashboard' => 'http://localhost:8000/admin'
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            return;
+        }
 
-    public function dispatch(string $method, string $uri): void
-    {
-        $normalizedUri = rtrim($uri, '/') ?: '/';
-        $handler = $this->routes[$method][$uri] ?? $this->routes[$method][$normalizedUri] ?? null;
+        $handler = $this->routes[$method][$uri] ?? null;
 
         if (!$handler) {
             http_response_code(404);
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
-                'error' => "Route not found: {$method} {$uri}"
-            ], JSON_UNESCAPED_UNICODE);
+                'error' => "Route not found: [{$method}] {$uri}"
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        try {
-            if (is_callable($handler)) {
-                $handler();
-                return;
-            }
+        [$controllerClass, $methodName] = $handler;
 
-            if (is_array($handler) && count($handler) === 2) {
-                [$controllerClass, $action] = $handler;
-                $controller = $this->resolve($controllerClass);
-
-                if (!method_exists($controller, $action)) {
-                    throw new RuntimeException("Action '{$action}' does not exist in {$controllerClass}");
-                }
-
-                $controller->$action();
-                return;
-            }
-
-            throw new RuntimeException("Invalid route handler format");
-        } catch (Throwable $e) {
+        if (!class_exists($controllerClass)) {
             http_response_code(500);
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['success' => false, 'error' => "Class {$controllerClass} not found"]);
+            return;
         }
+
+        $controller = new $controllerClass();
+        $request = Request::capture();
+        $response = null;
+
+        $controller->$methodName($request, $response);
     }
 };
 
@@ -152,24 +127,49 @@ $router = new class {
 |--------------------------------------------------------------------------
 */
 
-$router->get('/', function () {
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
-        'success' => true,
-        'message' => 'Hotel-Web Backend API is active',
-        'time' => date('Y-m-d H:i:s'),
-    ], JSON_UNESCAPED_UNICODE);
-});
+if (class_exists(\App\TaiKhoan\Routes\TaiKhoanRoute::class)) {
+    \App\TaiKhoan\Routes\TaiKhoanRoute::register($router);
+}
 
-\App\TaiKhoan\Routes\TaiKhoanRoute::register($router);
-\App\KhachHang\Routes\KhachHangRoute::register($router);
-\App\DatPhong\Routes\DatPhongRoute::register($router);
-\App\DanhGia\Routes\DanhGiaRoute::register($router);
-\App\LeTan\Routes\LeTanRoute::register($router);
-\App\Phong\Routes\PhongRoute::register($router);
-\App\ThanhToan\Routes\ThanhToanRoute::register($router);
-\App\HoaDon\Routes\HoaDonRoute::register($router);
-\App\Admin\Routes\AdminRoute::register($router);
+if (class_exists(\App\KhachHang\Routes\KhachHangRoute::class)) {
+    \App\KhachHang\Routes\KhachHangRoute::register($router);
+}
+
+if (class_exists(\App\DatPhong\Routes\DatPhongRoute::class)) {
+    \App\DatPhong\Routes\DatPhongRoute::register($router);
+}
+
+if (class_exists(\App\DanhGia\Routes\DanhGiaRoute::class)) {
+    \App\DanhGia\Routes\DanhGiaRoute::register($router);
+}
+
+if (class_exists(\App\LeTan\Routes\LeTanRoute::class)) {
+    \App\LeTan\Routes\LeTanRoute::register($router);
+}
+
+if (class_exists(\App\Phong\Routes\PhongRoute::class)) {
+    \App\Phong\Routes\PhongRoute::register($router);
+}
+
+if (class_exists(\App\DichVu\Routes\DichVuRoutes::class)) {
+    \App\DichVu\Routes\DichVuRoutes::register($router);
+}
+
+if (class_exists(\App\KhuyenMai\Routes\KhuyenMaiRoutes::class)) {
+    \App\KhuyenMai\Routes\KhuyenMaiRoutes::register($router);
+}
+
+if (class_exists(\App\ThanhToan\Routes\ThanhToanRoute::class)) {
+    \App\ThanhToan\Routes\ThanhToanRoute::register($router);
+}
+
+if (class_exists(\App\HoaDon\Routes\HoaDonRoute::class)) {
+    \App\HoaDon\Routes\HoaDonRoute::register($router);
+}
+
+if (class_exists(\App\Admin\Routes\AdminRoute::class)) {
+    \App\Admin\Routes\AdminRoute::register($router);
+}
 
 /*
 |--------------------------------------------------------------------------
