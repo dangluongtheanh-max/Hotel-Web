@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shared;
 
 /**
- * Helper chuan hoa response JSON tra ve cho client.
+ * Chuẩn hóa response JSON trả về cho client.
  */
 class Response
 {

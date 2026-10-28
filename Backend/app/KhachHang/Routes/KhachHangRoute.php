@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\KhachHang\Routes;
 
 use App\KhachHang\Controllers\KhachHangController;
@@ -22,8 +24,11 @@ class KhachHangRoute
     $router->post('/khachhang/xemhoadon', [KhachHangController::class, 'xemHoaDon']);
     $router->post('/khachhang/xemcthd', [KhachHangController::class, 'xemCTHD']);
     $router->post('/khachhang/xemthongtincanhan', [KhachHangController::class, 'xemThongTinCaNhan']);
+    $router->get('/khachhang/xemthongtincanhan', [KhachHangController::class, 'xemThongTinCaNhan']);
     $router->post('/khachhang/capnhatthongtincanhan', [KhachHangController::class, 'capNhatThongTinCaNhan']);
+    $router->post('/khachhang/doimatkhau', [KhachHangController::class, 'doiMatKhau']);
     $router->post('/khachhang/themdanhgia', [KhachHangController::class, 'themDanhGia']);
     $router->post('/khachhang/xoadanhgia', [KhachHangController::class, 'xoaDanhGia']);
+    $router->post('/khachhang/timtheosdt', [KhachHangController::class, 'timTheoSDT']);
     }
 }

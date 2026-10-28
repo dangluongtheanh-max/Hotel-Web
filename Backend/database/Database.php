@@ -22,6 +22,8 @@ class Database
                 $config['database']
             );
 
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
+
             try {
                 self::$connection = new PDO(
                     $dsn,
@@ -33,6 +35,7 @@ class Database
                         PDO::ATTR_EMULATE_PREPARES => false
                     ]
                 );
+                self::$connection->exec("SET time_zone = '+07:00'");
             } catch (PDOException $e) {
                 die(
                     'Kết nối database thất bại: '

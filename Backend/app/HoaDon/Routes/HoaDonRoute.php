@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HoaDon\Routes;
 
 use App\HoaDon\Controllers\HoaDonController;
@@ -12,9 +14,12 @@ class HoaDonRoute
 {
     public static function register($router): void
     {
-    $router->post('/hoadon/taohoadon', [HoaDonController::class, 'taoHoaDon']);
-    $router->post('/hoadon/xemhoadon', [HoaDonController::class, 'xemHoaDon']);
-    $router->post('/hoadon/xemcthd', [HoaDonController::class, 'xemCTHD']);
-    $router->post('/hoadon/timhoadon', [HoaDonController::class, 'timHoaDon']);
+        $router->post('/hoadon/taohoadon', [HoaDonController::class, 'taoHoaDon']);
+        $router->post('/hoadon/xemhoadon', [HoaDonController::class, 'xemHoaDon']);
+        $router->get('/hoadon/xemhoadon', [HoaDonController::class, 'xemHoaDon']);
+        $router->post('/hoadon/xemcthd', [HoaDonController::class, 'xemCTHD']);
+        $router->get('/hoadon/xemcthd', [HoaDonController::class, 'xemCTHD']);
+        $router->post('/hoadon/timhoadon', [HoaDonController::class, 'timHoaDon']);
+        $router->get('/hoadon/timhoadon', [HoaDonController::class, 'timHoaDon']);
     }
 }

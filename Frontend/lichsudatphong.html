@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đặt Phòng - Royal Lotus Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b1329;
+            --bg-card: #131f37;
+            --bg-card-light: #1e2c4d;
+            --gold: #c59b27;
+            --gold-light: #e5b842;
+            --gold-gradient: linear-gradient(135deg, #c59b27 0%, #dfb547 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-gold: #f1c40f;
+            --border-color: rgba(197, 155, 39, 0.25);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top center, #152243 0%, var(--bg-dark) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(19, 31, 55, 0.85);
+            backdrop-filter: blur(14px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+            border-color: rgba(197, 155, 39, 0.3);
+        }
+
+        .nav-link.active {
+            color: #0b1329;
+            background: var(--gold-gradient);
+            border-color: var(--gold);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.25);
+        }
+
+        .auth-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .user-tag {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            padding: 7px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            font-weight: 700;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13.5px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 14px rgba(197, 155, 39, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(19, 31, 55, 0.8) 0%, rgba(26, 43, 76, 0.5) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 32px 36px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::after {
+            content: "⚜️";
+            position: absolute;
+            right: 20px;
+            bottom: -25px;
+            font-size: 140px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .hero-info {
+            max-width: 650px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(197, 155, 39, 0.35);
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-refresh:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+        }
+
+        /* History State Boxes */
+        .history-state-box {
+            text-align: center;
+            padding: 55px 24px;
+            background: rgba(19, 31, 55, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px dashed rgba(197, 155, 39, 0.25);
+            margin: 20px 0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .history-state-box .state-icon {
+            font-size: 52px;
+            margin-bottom: 16px;
+        }
+
+        .history-state-box .state-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .history-state-box .state-desc {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            max-width: 480px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+
+        /* History Section Container */
+        .history-wrapper {
+            background: rgba(19, 31, 55, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Vertical List of Horizontal Row Cards */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .history-row-card {
+            display: grid;
+            grid-template-columns: 140px 1.5fr 1.2fr 1.1fr 1.3fr 110px;
+            gap: 18px;
+            align-items: center;
+            background: #0b1325;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px 22px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .history-row-card:hover {
+            border-color: var(--gold);
+            background: #0e1932;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .h-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .h-label {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .h-val {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .h-val.code {
+            color: var(--gold-light);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .h-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .h-date-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .date-point {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12.5px;
+            color: #cbd5e1;
+        }
+
+        .date-point .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .date-point .dot.checkin { background: #34d399; }
+        .date-point .dot.checkout { background: #f87171; }
+
+        .h-val.room-text {
+            color: #60a5fa;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .h-val.price {
+            color: var(--gold-light);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .badge-cluster {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        .h-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .h-badge.badge-blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.35);
+        }
+
+        .h-badge.badge-green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .h-badge.badge-yellow {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .h-badge.badge-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(139, 92, 246, 0.35);
+        }
+
+        .h-badge.badge-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-view-booking {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn-view-booking:hover {
+            background: var(--gold);
+            color: #0b1329;
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.3);
+        }
+
+        /* Loading & Pagination / Infinite Scroll */
+        .history-loading {
+            text-align: center;
+            padding: 24px;
+            color: var(--gold-light);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .history-spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(197, 155, 39, 0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-pagination {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .btn-load-more {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--gold-light);
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-load-more:hover {
+            background: rgba(197, 155, 39, 0.15);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .history-end-msg {
+            color: var(--text-muted);
+            font-size: 13.5px;
+            padding: 16px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        @media (max-width: 992px) {
+            .history-row-card {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+            .h-col-action {
+                grid-column: span 2;
+                margin-top: 6px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .history-row-card {
+                grid-template-columns: 1fr;
+            }
+            .h-col-action {
+                grid-column: span 1;
+            }
+        }
+
+        /* Invoice Modal Styling */
+        .invoice-modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 10, 25, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .invoice-modal-card {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 880px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.25s ease;
+            position: relative;
+            margin: auto;
+        }
+        .invoice-card-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 26px;
+            line-height: 1;
+            color: #94a3b8;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        .invoice-card-close:hover {
+            color: #ef4444;
+        }
+        .invoice-body {
+            padding: 28px 36px;
+            color: #1e293b;
+        }
+        .invoice-subtable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            background: #ffffff;
+        }
+        .invoice-subtable th {
+            padding: 10px 14px;
+            color: #475569;
+            font-weight: 700;
+        }
+        .invoice-subtable td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+        }
+        .invoice-subtable tr:last-child td {
+            border-bottom: none;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoiceModal, #invoiceModal * {
+                visibility: visible;
+            }
+            #invoiceModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #fff;
+                display: block !important;
+                padding: 0;
+            }
+            #invoiceModalCard {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a href="datphong.html" class="logo">
+            <span>⚜️</span> ROYAL LOTUS HOTEL
+        </a>
+        <div class="nav-links">
+            <span id="customerNavLinks">
+                <a href="datphong.html" class="nav-link">🏨 Đặt Phòng</a>
+                <a href="dichvu.html" class="nav-link">🛎️ Dịch Vụ</a>
+                <a href="lichsudatphong.html" class="nav-link active">📜 Lịch Sử Đặt Phòng</a>
+                <a href="thongtincanhan.html" class="nav-link">👤 Thông Tin Cá Nhân</a>
+                <a href="danhgia.html" class="nav-link">⭐ Đánh Giá Của Tôi</a>
+            </span>
+            <span id="receptionistNavArea" style="display: none;">
+                <a href="letan.html" class="nav-link" style="color:var(--gold-light); font-weight:700;">🛎️ Quầy Lễ Tân</a>
+            </span>
+        </div>
+        <div class="auth-bar" id="authBar">
+            <span id="userStatusText">Chưa đăng nhập</span>
+            <!-- NÚT DUY NHẤT CHUYỂN QUA LẠI GIỮA KHÁCH HÀNG VÀ LỄ TÂN -->
+            <button class="btn-small" id="btnRoleSwitcherHistory" onclick="toggleRoleSwitchHistory()" style="font-weight: 700; transition: all 0.2s;"></button>
+            <a href="index.html" class="btn-small">Quản lý TK</a>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-info">
+            <div class="hero-badge" id="heroBadgeText">LỊCH SỬ GIAO DỊCH KHÁCH HÀNG</div>
+            <h1 class="hero-title" id="heroTitleText">📜 Lịch Sử Phiếu Đặt Phòng</h1>
+            <p class="hero-subtitle" id="heroSubtitleText">
+                Xem lại danh sách phiếu đặt phòng, thời gian nhận & trả phòng, danh sách phòng, người lưu trú và tình trạng thanh toán của bạn.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <button class="btn-refresh" onclick="loadBookingHistory(false)" title="Tải lại danh sách">
+                <span id="refreshIcon">🔄</span> Làm mới
+            </button>
+            <a href="datphong.html" class="btn-small" style="background: rgba(197, 155, 39, 0.15); border-color: var(--gold);">
+                ➕ Đặt thêm phòng
+            </a>
+        </div>
+    </div>
+
+    <!-- History Wrapper -->
+    <div class="history-wrapper">
+        <!-- Trạng thái chưa đăng nhập -->
+        <div id="historyNotLoginBox" class="history-state-box" style="display: none;">
+            <div class="state-icon">🔒</div>
+            <div class="state-title">Vui lòng đăng nhập tài khoản</div>
+            <p class="state-desc">Bạn cần đăng nhập tài khoản khách hàng để xem lịch sử phiếu đặt phòng và đánh giá của mình.</p>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="quickLogin('khach02')">
+                    🔑 Đăng nhập nhanh (khach02)
+                </button>
+                <button class="btn-small" onclick="quickLogin('khach01')">
+                    🔑 Đăng nhập nhanh (khach01)
+                </button>
+                <a href="index.html" class="btn-small">
+                    Đến trang Đăng nhập / Đăng ký
+                </a>
+            </div>
+        </div>
+
+        <!-- Trạng thái trống (chưa có phiếu nào) -->
+        <div id="historyEmptyBox" class="history-state-box" style="display: none;">
+            <div class="state-icon">📭</div>
+            <div class="state-title" id="emptyBoxTitle">Chưa có phiếu đặt phòng nào</div>
+            <p class="state-desc" id="emptyBoxDesc">Bạn chưa có giao dịch đặt phòng nào trong hệ thống hoặc không có phiếu nào phù hợp với bộ lọc hiện tại.</p>
+            <a href="datphong.html" class="btn-primary">
+                🏨 Khám phá và Đặt phòng ngay
+            </a>
+        </div>
+
+        <!-- Danh sách dọc các phiếu đặt phòng -->
+        <div id="historyListContainer" class="history-list">
+            <!-- Render dynamic list items -->
+        </div>
+
+        <!-- Loading spinner khi tải dữ liệu -->
+        <div id="historyLoading" class="history-loading" style="display: none;">
+            <div class="history-spinner"></div>
+            <span>Đang tải danh sách phiếu đặt phòng...</span>
+        </div>
+
+        <!-- Khu vực phân trang & Infinite Scroll -->
+        <div id="historyPaginationArea" class="history-pagination" style="display: none;">
+            <button id="btnLoadMoreHistory" class="btn-load-more" onclick="enableInfiniteScrollAndLoadMore()">
+                ⬇️ Xem thêm phiếu cũ hơn (Kích hoạt cuộn tự động)
+            </button>
+            <!-- Sentinel element để kích hoạt IntersectionObserver khi cuộn -->
+            <div id="historySentinel" style="height: 10px; width: 100%;"></div>
+            <div id="historyEndOfList" class="history-end-msg" style="display: none;">
+                ✓ Đã hiển thị tất cả phiếu của bạn
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tự động nhận diện API Base URL
+    const API_BASE = window.location.protocol === 'file:' 
+        ? 'http://localhost:8000/Backend/public/index.php' 
+        : '/Backend/public/index.php';
+
+    // State phiên làm việc
+    let currentUser = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+
+    // State danh sách
+    let cachedBookingItems = [];
+
+    // Phân trang & cuộn vô tận
+    let historyLimit = 20;
+    let historyOffset = 0;
+    let hasMoreHistory = false;
+    let isHistoryLoading = false;
+    let isInfiniteScrollActive = false;
+    let historyObserver = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateUserStatus();
+        loadBookingHistory(false);
+    });
+
+    function isReceptionistRole() {
+        return currentUser && (currentUser.VaiTro === 'LeTan' || currentUser.VaiTro === 'Admin');
+    }
+
+    // Cập nhật trạng thái đăng nhập & ẩn hiện chức năng
+    function updateUserStatus() {
+        const bar = document.getElementById('userStatusText');
+        const switcherBtn = document.getElementById('btnRoleSwitcherHistory');
+        const custNav = document.getElementById('customerNavLinks');
+        const recArea = document.getElementById('receptionistNavArea');
+        const isRec = isReceptionistRole();
+
+        // 1. Cập nhật nút chuyển đổi duy nhất
+        if (switcherBtn) {
+            if (isRec) {
+                switcherBtn.innerHTML = '👤 Test Khách Hàng';
+                switcherBtn.style.background = 'rgba(59, 130, 246, 0.2)';
+                switcherBtn.style.borderColor = '#3b82f6';
+                switcherBtn.style.color = '#93c5fd';
+                switcherBtn.title = 'Nhấn để chuyển sang vai trò Khách Hàng (ẩn chức năng lễ tân)';
+            } else {
+                switcherBtn.innerHTML = '🛎️ Test Lễ Tân';
+                switcherBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+                switcherBtn.style.borderColor = '#10b981';
+                switcherBtn.style.color = '#6ee7b7';
+                switcherBtn.title = 'Nhấn để chuyển sang vai trò Lễ Tân (ẩn chức năng khách hàng)';
+            }
+        }
+
+        // 2. Nhãn người dùng
+        if (currentUser && currentUser.TenDangNhap) {
+            bar.innerHTML = `Xin chào: <strong class="user-tag">${currentUser.TenDangNhap}</strong> (${currentUser.VaiTro})`;
+        } else {
+            bar.innerHTML = '<span style="color: #f87171;">Chưa đăng nhập</span>';
+        }
+
+        // 3. Ẩn/Hiện chức năng
+        if (isRec) {
+            if (custNav) custNav.style.display = 'none';
+            if (recArea) recArea.style.display = 'inline-flex';
+        } else {
+            if (custNav) custNav.style.display = 'inline-flex';
+            if (recArea) recArea.style.display = 'none';
+        }
+    }
+
+    async function toggleRoleSwitchHistory() {
+        const switcherBtn = document.getElementById('btnRoleSwitcherHistory');
+        if (switcherBtn) switcherBtn.disabled = true;
+
+        if (isReceptionistRole()) {
+            // Đang là Lễ tân -> Chuyển sang Khách hàng
+            await quickLogin('khach01');
+        } else {
+            // Đang là Khách hàng -> Chuyển sang Lễ tân và điều hướng về Quầy Lễ Tân
+            try {
+                const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenDangNhap: 'letan01', matKhau: '123456' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('hotel_user', JSON.stringify(data.data));
+                }
+            } catch (e) {}
+            window.location.href = 'letan.html';
+        }
+
+        if (switcherBtn) switcherBtn.disabled = false;
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('hotel_user');
+        currentUser = null;
+        cachedBookingItems = [];
+        updateUserStatus();
+        loadBookingHistory(false);
+    }
+
+    // Đăng nhập nhanh tài khoản test (mặc định khach02 để test đánh giá hoặc khach01)
+    async function quickLogin(username = 'khach02') {
+        try {
+            const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenDangNhap: username,
+                    matKhau: '123456'
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.data;
+                localStorage.setItem('hotel_user', JSON.stringify(currentUser));
+                updateUserStatus();
+                loadBookingHistory(false);
+                showToast('Đăng nhập thành công!', 'success');
+            } else {
+                showToast('Đăng nhập thất bại: ' + (data.message || 'Lỗi server'), 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối server: ' + e.message, 'error');
+        }
+    }
+
+    // Định dạng tiền tệ VND (nếu chưa có hóa đơn thì hiển thị Chưa xuất HĐ)
+    function formatVND(num) {
+        if (num === null || num === undefined || num === '' || isNaN(num) || Number(num) <= 0) {
+            return '<span style="color: #94a3b8; font-size: 12.5px; font-weight: normal; font-style: italic;">Chưa xuất HĐ</span>';
+        }
+        return Number(num).toLocaleString('vi-VN') + ' đ';
+    }
+
+    // Định dạng ngày chỉ lấy DD/MM/YYYY
+    function formatDateOnly(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Định dạng ngày giờ: DD/MM/YYYY HH:mm
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    // Huy hiệu trạng thái phiếu đặt phòng
+    function renderBadgePhieu(status) {
+        const map = {
+            'ChoThanhToan': { text: 'Chờ thanh toán (20p)', class: 'badge-yellow', icon: '⏳' },
+            'ThanhToanThatBai': { text: 'Thanh toán thất bại', class: 'badge-red', icon: '⚠️' },
+            'DaTraPhong': { text: 'Đã trả phòng', class: 'badge-green', icon: '🏁' },
+            'DangLuuTru': { text: 'Đang lưu trú', class: 'badge-purple', icon: '🏨' },
+            'DaNhanPhong': { text: 'Đã nhận phòng', class: 'badge-blue', icon: '🔑' },
+            'DaDatPhong': { text: 'Đã đặt phòng', class: 'badge-blue', icon: '📅' },
+            'DaDat': { text: 'Đã đặt phòng', class: 'badge-blue', icon: '📅' },
+            'ChoXacNhan': { text: 'Chờ xác nhận', class: 'badge-yellow', icon: '⏳' },
+            'DaHuy': { text: 'Đã hủy', class: 'badge-red', icon: '❌' },
+            'TuChoi': { text: 'Từ chối', class: 'badge-red', icon: '🚫' }
+        };
+        const item = map[status] || { text: status || 'Không rõ', class: 'badge-yellow', icon: '📌' };
+        return `<span class="h-badge ${item.class}"><span>${item.icon}</span> ${item.text}</span>`;
+    }
+
+    // Huy hiệu trạng thái thanh toán
+    function renderBadgeThanhToan(tt) {
+        if (tt === 'HoanTat') {
+            return `<span class="h-badge badge-green"><span>✓</span> Đã thanh toán</span>`;
+        } else if (tt === 'ChoThanhToan' || tt === 'ChoXuLy') {
+            return `<span class="h-badge badge-yellow"><span>⏳</span> Chờ thanh toán (20p)</span>`;
+        } else if (tt === 'DaHetHan' || tt === 'ThatBai') {
+            return `<span class="h-badge badge-red"><span>❌</span> Đã hết hạn</span>`;
+        } else {
+            return `<span class="h-badge badge-yellow"><span>⚠️</span> Chưa thanh toán</span>`;
+        }
+    }
+
+    // Render danh sách theo danh sách phiếu hiện tại
+    function renderCurrentView(isAppend = false) {
+        renderHistoryRows(cachedBookingItems, isAppend);
+    }
+
+    // Tải danh sách lịch sử phiếu đặt phòng của khách hàng hiện tại
+    async function loadBookingHistory(isLoadMore = false) {
+        const notLoginBox = document.getElementById('historyNotLoginBox');
+        const emptyBox = document.getElementById('historyEmptyBox');
+        const listContainer = document.getElementById('historyListContainer');
+        const loadingElem = document.getElementById('historyLoading');
+        const paginationArea = document.getElementById('historyPaginationArea');
+        const btnLoadMore = document.getElementById('btnLoadMoreHistory');
+        const endOfListMsg = document.getElementById('historyEndOfList');
+        const refreshIcon = document.getElementById('refreshIcon');
+
+        // Kiểm tra xem khách hàng đã đăng nhập chưa
+        if (!currentUser || !currentUser.MaTK) {
+            notLoginBox.style.display = 'block';
+            emptyBox.style.display = 'none';
+            listContainer.innerHTML = '';
+            paginationArea.style.display = 'none';
+            cachedBookingItems = [];
+            return;
+        }
+
+        notLoginBox.style.display = 'none';
+
+        if (isHistoryLoading) return;
+        isHistoryLoading = true;
+
+        if (refreshIcon) refreshIcon.style.animation = 'spin 0.8s linear infinite';
+        loadingElem.style.display = 'flex';
+
+        if (!isLoadMore) {
+            historyOffset = 0;
+            hasMoreHistory = false;
+            listContainer.innerHTML = '';
+            endOfListMsg.style.display = 'none';
+            btnLoadMore.style.display = 'none';
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/datphong/lichsu`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.MaTK}`
+                },
+                body: JSON.stringify({
+                    maTK: currentUser.MaTK,
+                    limit: historyLimit,
+                    offset: historyOffset
+                })
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                console.error('Lỗi khi tải lịch sử:', data.message);
+                if (!isLoadMore && listContainer.children.length === 0) {
+                    emptyBox.style.display = 'block';
+                }
+                return;
+            }
+
+            const items = data.data && data.data.items ? data.data.items : [];
+            hasMoreHistory = Boolean(data.data && data.data.hasMore);
+
+            if (!isLoadMore) {
+                cachedBookingItems = items;
+            } else {
+                cachedBookingItems = cachedBookingItems.concat(items);
+            }
+
+            if (!isLoadMore && items.length === 0) {
+                emptyBox.style.display = 'block';
+                paginationArea.style.display = 'none';
+            } else {
+                emptyBox.style.display = 'none';
+                renderCurrentView(isLoadMore);
+                historyOffset += items.length;
+
+                paginationArea.style.display = 'block';
+
+                if (hasMoreHistory) {
+                    if (!isInfiniteScrollActive) {
+                        btnLoadMore.style.display = 'inline-block';
+                        btnLoadMore.disabled = false;
+                        btnLoadMore.innerText = '⬇️ Xem thêm phiếu cũ hơn (Kích hoạt cuộn tự động)';
+                    } else {
+                        btnLoadMore.style.display = 'none';
+                    }
+                    endOfListMsg.style.display = 'none';
+                } else {
+                    btnLoadMore.style.display = 'none';
+                    endOfListMsg.style.display = 'block';
+                    if (historyObserver) {
+                        historyObserver.disconnect();
+                    }
+                }
+            }
+
+        } catch (e) {
+            console.error('Lỗi mạng khi tải lịch sử đặt phòng:', e);
+        } finally {
+            isHistoryLoading = false;
+            loadingElem.style.display = 'none';
+            if (refreshIcon) refreshIcon.style.animation = 'none';
+        }
+    }
+
+    // Hiển thị danh sách phiếu trong Tab "Lịch Sử Đặt Phòng"
+    function renderHistoryRows(items, isAppend) {
+        const container = document.getElementById('historyListContainer');
+        const emptyBox = document.getElementById('historyEmptyBox');
+
+        if (!items || items.length === 0) {
+            emptyBox.style.display = 'block';
+            container.innerHTML = '';
+            return;
+        }
+        emptyBox.style.display = 'none';
+
+        const rowsHtml = items.map(p => `
+            <div class="history-row-card" onclick="window.location.href = 'chitietphieu.html?maPhieu=' + encodeURIComponent('${p.MaPhieu}')" title="Nhấp để xem chi tiết phiếu #${p.MaPhieu}">
+                <!-- Cột 1: Mã phiếu & Ngày lập -->
+                <div class="h-col h-col-code">
+                    <div class="h-label">MÃ PHIẾU</div>
+                    <div class="h-val code">#${p.MaPhieu}</div>
+                    <div class="h-sub">Lập: ${formatDateOnly(p.NgayLap)}</div>
+                    ${p.MaHD ? `<div class="h-sub" style="color:var(--gold-light); font-weight:700; margin-top:2px;">🧾 HĐ: #${p.MaHD}</div>` : ''}
+                </div>
+
+                <!-- Cột 2: Thời gian nhận & trả phòng -->
+                <div class="h-col h-col-dates">
+                    <div class="h-label">THỜI GIAN LƯU TRÚ</div>
+                    <div class="h-date-flow">
+                        <div class="date-point">
+                            <span class="dot checkin"></span>
+                            <span class="d-txt">Nhận: <strong>${formatDateTime(p.NgayNhan)}</strong></span>
+                        </div>
+                        <div class="date-point">
+                            <span class="dot checkout"></span>
+                            <span class="d-txt">Trả: <strong>${formatDateTime(p.NgayTra)}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột 3: Phòng đã đặt & Số người lưu trú -->
+                <div class="h-col h-col-rooms">
+                    <div class="h-label">PHÒNG ĐÃ ĐẶT</div>
+                    <div class="h-val room-text">🛏️ ${p.DanhSachPhong || 'Chưa xếp phòng'}</div>
+                    <div class="h-sub">👥 ${p.SoNguoi || 0} khách lưu trú</div>
+                </div>
+
+                <!-- Cột 4: Tổng tiền thanh toán -->
+                <div class="h-col h-col-price">
+                    <div class="h-label">TỔNG THANH TOÁN</div>
+                    <div class="h-val price">${formatVND(p.TongTien)}</div>
+                </div>
+
+                <!-- Cột 5: Trạng thái phiếu & thanh toán -->
+                <div class="h-col h-col-status">
+                    <div class="h-label">TRẠNG THÁI</div>
+                    <div class="badge-cluster">
+                        ${renderBadgePhieu(p.TrangThaiPhieu || p.TrangThai)}
+                        ${renderBadgeThanhToan(p.TrangThaiThanhToan)}
+                    </div>
+                </div>
+
+                <!-- Cột 6: Hành động xem chi tiết phiếu & hóa đơn -->
+                <div class="h-col h-col-action" style="display: flex; flex-direction: column; gap: 6px;">
+                    <a href="chitietphieu.html?maPhieu=${encodeURIComponent(p.MaPhieu)}" class="btn-view-booking" onclick="event.stopPropagation();" title="Xem chi tiết phiếu nhận phòng">
+                        <span>👁️</span> Chi tiết
+                    </a>
+                    <button type="button" class="btn-view-booking" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #6ee7b7;" onclick="event.stopPropagation(); openInvoiceModal('${p.MaPhieu}', '${p.MaHD || ''}');" title="Xem và in Hóa đơn điện tử">
+                        <span>🧾</span> Hóa đơn
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        if (isAppend) {
+            container.insertAdjacentHTML('beforeend', rowsHtml);
+        } else {
+            container.innerHTML = rowsHtml;
+        }
+    }
+
+    // ==========================================
+    // XỬ LÝ MODAL HÓA ĐƠN ĐIỆN TỬ
+    // ==========================================
+    async function openInvoiceModal(maPhieu, maHD) {
+        const modal = document.getElementById('invoiceModal');
+        const content = document.getElementById('invoiceModalContent');
+        if (!modal || !content) return;
+
+        modal.style.display = 'flex';
+        content.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #64748b;">
+                <div class="spinner" style="border-top-color: #0284c7; margin: 0 auto 12px;"></div>
+                Đang nạp dữ liệu hóa đơn điện tử...
+            </div>
+        `;
+
+        try {
+            const res = await fetch(`${API_BASE}/hoadon/xemhoadon?maPhieu=${encodeURIComponent(maPhieu)}&maHD=${encodeURIComponent(maHD || '')}`);
+            const json = await res.json();
+
+            if (!json.success || !json.data) {
+                content.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: #ef4444;">
+                        <span style="font-size: 32px;">⚠️</span>
+                        <div style="font-weight: 700; margin-top: 8px;">Không thể tải dữ liệu hóa đơn</div>
+                        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">${json.message || 'Hóa đơn chưa sẵn sàng hoặc không tồn tại.'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const d = json.data;
+            const hd = d.hoaDon || {};
+            const p = d.phieu || {};
+            const items = d.chiTiet || [];
+            const ttList = d.thanhToan || [];
+            const tongHop = d.tongHop || {};
+
+            // Tách riêng danh sách tiền phòng và danh sách chi phí phát sinh
+            const roomItems = items.filter(it => Boolean(it.MaPhong));
+            const serviceItems = items.filter(it => !it.MaPhong);
+
+            let tongTienPhong = 0;
+            let tongTienDichVu = 0;
+
+            // Render bảng Tiền Phòng
+            let roomRowsHtml = '';
+            if (roomItems.length === 0) {
+                roomRowsHtml = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:14px; font-style:italic;">Chưa có dữ liệu phòng lưu trú.</td></tr>`;
+            } else {
+                roomRowsHtml = roomItems.map((it, idx) => {
+                    const tt = parseFloat(it.ThanhTien || 0);
+                    tongTienPhong += tt;
+                    const tenPhong = `Phòng ${it.MaPhong} (${it.TenLoaiPhong || 'Phòng tiêu chuẩn'})`;
+                    const qtyStr = `${it.SoDem || 1} đêm`;
+                    return `
+                        <tr>
+                            <td style="text-align:center; font-weight:600; color:#64748b; padding: 11px 10px;">${idx + 1}</td>
+                            <td style="padding: 11px 10px;">
+                                <strong style="color:#0f172a; font-size:14px;">${tenPhong}</strong>
+                                <div style="font-size:12px; color:#64748b; margin-top:2px;">Tiền phòng lưu trú</div>
+                            </td>
+                            <td style="text-align:center; font-weight:600; color:#334155; padding: 11px 10px;">${qtyStr}</td>
+                            <td style="text-align:right; color:#475569; padding: 11px 10px;">${formatVND(it.DonGia)}</td>
+                            <td style="text-align:right; font-weight:700; color:#0f172a; font-size:14.5px; padding: 11px 18px 11px 10px;">${formatVND(tt)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Render bảng Chi Phí Phát Sinh
+            let serviceRowsHtml = '';
+            if (serviceItems.length === 0) {
+                serviceRowsHtml = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:14px; font-style:italic;">Không có chi phí dịch vụ phát sinh.</td></tr>`;
+            } else {
+                serviceRowsHtml = serviceItems.map((it, idx) => {
+                    const tt = parseFloat(it.ThanhTien || 0);
+                    tongTienDichVu += tt;
+                    const tenDV = it.TenCTDV || it.TenDV || 'Dịch vụ tiện ích';
+                    const qtyStr = `${it.SoLuong || 1} phần`;
+                    return `
+                        <tr>
+                            <td style="text-align:center; font-weight:600; color:#64748b; padding: 11px 10px;">${roomItems.length + idx + 1}</td>
+                            <td style="padding: 11px 10px;">
+                                <strong style="color:#0f172a; font-size:14px;">${tenDV}</strong>
+                                <div style="font-size:12px; color:#059669; font-weight:600; margin-top:2px;">Dịch vụ phát sinh</div>
+                            </td>
+                            <td style="text-align:center; font-weight:600; color:#334155; padding: 11px 10px;">${qtyStr}</td>
+                            <td style="text-align:right; color:#475569; padding: 11px 10px;">${formatVND(it.DonGia)}</td>
+                            <td style="text-align:right; font-weight:700; color:#0f172a; font-size:14.5px; padding: 11px 18px 11px 10px;">${formatVND(tt)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const tongTienPhongRaw = (tongHop.tongTienPhong !== undefined) ? parseFloat(tongHop.tongTienPhong) : tongTienPhong;
+            const tienGiamKM = (tongHop.tienGiamKM !== undefined) ? parseFloat(tongHop.tienGiamKM) : 0;
+            const tienPhongSauKM = (tongHop.tienPhongSauKM !== undefined) ? parseFloat(tongHop.tienPhongSauKM) : Math.max(0, tongTienPhongRaw - tienGiamKM);
+            const vatPhong = (tongHop.vatPhong !== undefined) ? parseFloat(tongHop.vatPhong) : Math.round(tienPhongSauKM * 0.08);
+            const tongTienPhongSauVAT = (tongHop.tongTienPhongSauVAT !== undefined) ? parseFloat(tongHop.tongTienPhongSauVAT) : (tienPhongSauKM + vatPhong);
+
+            const tongTienDichVuRaw = (tongHop.tongTienDichVu !== undefined) ? parseFloat(tongHop.tongTienDichVu) : tongTienDichVu;
+            const vatDichVu = (tongHop.vatDichVu !== undefined) ? parseFloat(tongHop.vatDichVu) : Math.round(tongTienDichVuRaw * 0.08);
+            const tongTienDichVuSauVAT = (tongHop.tongTienDichVuSauVAT !== undefined) ? parseFloat(tongHop.tongTienDichVuSauVAT) : (tongTienDichVuRaw + vatDichVu);
+
+            const tongTienSauVAT = (tongHop.tongTienSauVAT !== undefined) ? parseFloat(tongHop.tongTienSauVAT) : (hd.TongTienSauVAT ? parseFloat(hd.TongTienSauVAT) : (tongTienPhongSauVAT + tongTienDichVuSauVAT));
+
+            const ptTT = ttList.length > 0 ? (ttList[0].HinhThuc === 'TienMat' ? 'Tiền mặt tại quầy' : 'Chuyển khoản VietQR Napas247') : (p.KenhDat === 'TrucTiep' ? 'Tiền mặt tại quầy' : 'Chuyển khoản');
+            const isCompleted = (ttList.length > 0 && ttList[0].TrangThaiThanhToan === 'HoanTat') || (p.TrangThaiPhieu === 'DaDatPhong' || p.TrangThai === 'DaDatPhong' || p.TrangThaiPhieu === 'DangLuuTru' || p.TrangThaiPhieu === 'DaTraPhong');
+            const trangThaiTT = isCompleted
+                ? '<span style="color:#15803d; font-weight:700; background:#dcfce7; padding:4px 12px; border-radius:20px; font-size:12.5px; display:inline-block;">✓ ĐÃ THANH TOÁN HOÀN TẤT</span>'
+                : '<span style="color:#b45309; font-weight:700; background:#fef3c7; padding:4px 12px; border-radius:20px; font-size:12.5px; display:inline-block;">⏳ CHỜ QUYẾT TOÁN</span>';
+
+            content.innerHTML = `
+                <button class="invoice-card-close no-print" onclick="closeInvoiceModal()" title="Đóng hóa đơn">&times;</button>
+                <div class="invoice-body">
+                    <!-- Tiêu đề Hóa Đơn -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #eab308; padding-bottom: 16px; margin-bottom: 20px;">
+                        <div>
+                            <div style="font-size: 22px; font-weight: 800; color: #0d172e; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: #eab308;">⚜️</span> ROYAL LOTUS HOTEL & RESORT
+                            </div>
+                            <div style="font-size: 13px; color: #64748b; margin-top: 4px;">123 Bờ Biển Vàng, Nha Trang, Khánh Hòa • Hotline: 1900 6868</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 20px; font-weight: 800; color: #b45309; letter-spacing: 0.5px;">HÓA ĐƠN ĐIỆN TỬ (GTGT)</div>
+                            <div style="font-size: 14px; font-family: monospace; color: #0f172a; font-weight: 700; margin-top: 3px;">MÃ HĐ: #${hd.MaHD}</div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin Khách hàng & Tình trạng lưu trú -->
+                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid #e2e8f0; font-size: 13.5px;">
+                        <div>
+                            <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">KHÁCH HÀNG & PHIẾU ĐẶT</div>
+                            <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-top: 3px;">${p.TenKhachHang || 'Khách hàng'}</div>
+                            <div style="color: #475569; margin-top: 2px;">Số điện thoại: <strong>${p.SDT || '-'}</strong> • Email: ${p.Email || '-'}</div>
+                            <div style="color: #475569; margin-top: 2px;">Mã phiếu nhận phòng: <strong style="color: #0284c7;">#${p.MaPhieu}</strong> (${p.KenhDat === 'TrucTiep' ? 'Đặt tại quầy' : 'Đặt trực tuyến'})</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">TÌNH TRẠNG & THỜI GIAN LƯU TRÚ</div>
+                            <div style="margin-top: 3px; color: #334155;">Ngày lập hóa đơn: <strong>${formatDateTime(p.NgayLap)}</strong></div>
+                            <div style="margin-top: 2px; color: #334155;">Khuyến mãi: <strong>${p.MaKM ? 'Mã ' + p.MaKM : 'Không áp dụng'}</strong></div>
+                            <div style="margin-top: 6px;">${trangThaiTT}</div>
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC 1: TIỀN PHÒNG -->
+                    <div style="margin-top: 20px; border: 1px solid #bae6fd; border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+                        <div style="background: #e0f2fe; padding: 10px 18px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14.5px; color: #0369a1; border-bottom: 1px solid #bae6fd;">
+                            <span style="font-size: 17px;">🛏️</span> TIỀN PHÒNG
+                        </div>
+                        <table class="invoice-subtable">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 12.5px;">
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th style="text-align: left;">Nội dung chi phí / Dịch vụ</th>
+                                    <th style="width: 120px; text-align: center;">Số lượng</th>
+                                    <th style="width: 140px; text-align: right;">Đơn giá</th>
+                                    <th style="width: 160px; text-align: right; padding-right: 18px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${roomRowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                                    <td colspan="4" style="text-align: right; padding: 7px 16px; color: #475569; font-weight: 600; font-size: 13.5px;">
+                                        Tiền phòng tạm tính:
+                                    </td>
+                                    <td style="text-align: right; padding: 7px 18px 7px 10px; font-weight: 600; color: #334155; font-size: 14px;">
+                                        ${formatVND(tongTienPhongRaw)}
+                                    </td>
+                                </tr>
+                                ${tienGiamKM > 0 ? `
+                                <tr style="background: #f8fafc;">
+                                    <td colspan="4" style="text-align: right; padding: 6px 16px; color: #16a34a; font-weight: 600; font-size: 13px;">
+                                        Khuyến mãi (${p.MaKM || ''}):
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #16a34a; font-size: 13.5px;">
+                                        -${formatVND(tienGiamKM)}
+                                    </td>
+                                </tr>
+                                ` : ''}
+                                <tr style="background: #f8fafc;">
+                                    <td colspan="4" style="text-align: right; padding: 6px 16px; color: #0284c7; font-weight: 600; font-size: 13px;">
+                                        Thuế VAT phòng (8%):
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #0284c7; font-size: 13.5px;">
+                                        +${formatVND(vatPhong)}
+                                    </td>
+                                </tr>
+                                <tr style="background: #f0f9ff; border-top: 1px solid #bae6fd;">
+                                    <td colspan="4" style="text-align: right; padding: 11px 16px; font-weight: 800; color: #0369a1; font-size: 14px; text-transform: uppercase;">
+                                        TỔNG TIỀN PHÒNG (ĐÃ GỒM VAT 8%)
+                                    </td>
+                                    <td style="text-align: right; padding: 11px 18px 11px 10px; font-weight: 800; color: #0369a1; font-size: 16px;">
+                                        ${formatVND(tongTienPhongSauVAT)}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- KHU VỰC 2: CHI PHÍ PHÁT SINH -->
+                    <div style="border: 1px solid #a7f3d0; border-radius: 10px; overflow: hidden; margin-bottom: 22px;">
+                        <div style="background: #ecfdf5; padding: 10px 18px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14.5px; color: #047857; border-bottom: 1px solid #a7f3d0;">
+                            <span style="font-size: 17px;">⚙️</span> CHI PHÍ PHÁT SINH
+                        </div>
+                        <table class="invoice-subtable">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 12.5px;">
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th style="text-align: left;">Nội dung chi phí / Dịch vụ</th>
+                                    <th style="width: 120px; text-align: center;">Số lượng</th>
+                                    <th style="width: 140px; text-align: right;">Đơn giá</th>
+                                    <th style="width: 160px; text-align: right; padding-right: 18px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${serviceRowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                                    <td colspan="4" style="text-align: right; padding: 7px 16px; color: #475569; font-weight: 600; font-size: 13.5px;">
+                                        Tổng chi phí dịch vụ:
+                                    </td>
+                                    <td style="text-align: right; padding: 7px 18px 7px 10px; font-weight: 600; color: #334155; font-size: 14px;">
+                                        ${formatVND(tongTienDichVuRaw)}
+                                    </td>
+                                </tr>
+                                <tr style="background: #f8fafc;">
+                                    <td colspan="4" style="text-align: right; padding: 6px 16px; color: #059669; font-weight: 600; font-size: 13px;">
+                                        Thuế VAT dịch vụ (8%):
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #059669; font-size: 13.5px;">
+                                        +${formatVND(vatDichVu)}
+                                    </td>
+                                </tr>
+                                <tr style="background: #f0fdf4; border-top: 1px solid #a7f3d0;">
+                                    <td colspan="4" style="text-align: right; padding: 11px 16px; font-weight: 800; color: #047857; font-size: 14px; text-transform: uppercase;">
+                                        TỔNG CHI PHÍ PHÁT SINH (ĐÃ GỒM VAT 8%)
+                                    </td>
+                                    <td style="text-align: right; padding: 11px 18px 11px 10px; font-weight: 800; color: #047857; font-size: 16px;">
+                                        ${formatVND(tongTienDichVuSauVAT)}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- TỔNG KẾT THANH TOÁN -->
+                    <div style="display: flex; justify-content: flex-end; margin-top: 15px; margin-bottom: 22px;">
+                        <div style="width: 420px; font-size: 13.5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px;">
+                            <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 6px;">
+                                <span>📋</span> QUYẾT TOÁN HÓA ĐƠN
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+                                <span>Tiền phòng (đã gồm VAT 8%):</span>
+                                <strong style="color: #0369a1;">${formatVND(tongTienPhongSauVAT)}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+                                <span>Chi phí phát sinh (đã gồm VAT 8%):</span>
+                                <strong style="color: #047857;">${formatVND(tongTienDichVuSauVAT)}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #64748b; font-size: 12px; font-style: italic;">
+                                <span>(Tổng VAT phòng + dịch vụ: ${formatVND(vatPhong + vatDichVu)} - Không phụ thu thêm)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 18px; font-weight: 800; color: #b45309; border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 6px;">
+                                <span>TỔNG TIỀN THANH TOÁN:</span>
+                                <span style="font-size: 21px;">${formatVND(tongTienSauVAT)}</span>
+                            </div>
+                            <div style="font-size: 12.5px; color: #64748b; text-align: right; margin-top: 6px;">
+                                Phương thức: <strong>${ptTT}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER & NÚT HÀNH ĐỘNG -->
+                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px dashed #cbd5e1;">
+                        <div style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                            Hóa đơn điện tử khởi tạo từ hệ thống quản lý khách sạn Royal Lotus Hotel.
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn-small" onclick="window.print()" style="background: #0284c7; color: #fff; font-weight: 700; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);">
+                                <span>🖨️</span> In Hóa Đơn Điện Tử
+                            </button>
+                            <button type="button" class="btn-small" onclick="closeInvoiceModal()" style="background: #f1f5f9; color: #475569; font-weight: 600; border: 1px solid #cbd5e1; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13.5px;">
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (e) {
+            content.innerHTML = `
+                <div style="padding: 30px; text-align: center; color: #ef4444;">
+                    <span style="font-size: 32px;">⚠️</span>
+                    <div style="font-weight: 700; margin-top: 8px;">Lỗi kết nối khi tải hóa đơn</div>
+                    <div style="font-size: 13px; color: #64748b; margin-top: 4px;">${e.message}</div>
+                </div>
+            `;
+        }
+    }
+
+    function closeInvoiceModal() {
+        const modal = document.getElementById('invoiceModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    // Kích hoạt Infinite Scroll khi người dùng bấm nút Xem thêm
+    function enableInfiniteScrollAndLoadMore() {
+        isInfiniteScrollActive = true;
+        const btnLoadMore = document.getElementById('btnLoadMoreHistory');
+        if (btnLoadMore) btnLoadMore.style.display = 'none';
+
+        initHistoryInfiniteScroll();
+        loadBookingHistory(true);
+    }
+
+    // Khởi tạo IntersectionObserver lắng nghe phần tử cuối danh sách
+    function initHistoryInfiniteScroll() {
+        if (historyObserver) {
+            historyObserver.disconnect();
+        }
+
+        const sentinel = document.getElementById('historySentinel');
+        if (!sentinel) return;
+
+        historyObserver = new IntersectionObserver((entries) => {
+            const entry = entries[0];
+            if (entry.isIntersecting && hasMoreHistory && !isHistoryLoading && isInfiniteScrollActive) {
+                loadBookingHistory(true);
+            }
+        }, {
+            root: null,
+            rootMargin: '250px',
+            threshold: 0.1
+        });
+
+        historyObserver.observe(sentinel);
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATION SYSTEM
+    // =========================================================================
+    let _historyToastTimer = null;
+    function showToast(message, type = 'info') {
+        let toast = document.getElementById('historyToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'historyToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = '#1e293b';
+            toast.style.color = '#f8fafc';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
+            toast.style.zIndex = '99999';
+            toast.style.borderLeft = '4px solid #38bdf8';
+            toast.style.display = 'none';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '10px';
+            toast.style.fontSize = '14px';
+            toast.style.fontFamily = 'inherit';
+            toast.style.maxWidth = '450px';
+            toast.style.wordBreak = 'break-word';
+            document.body.appendChild(toast);
+        }
+        const iconMap = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        const colorMap = { success: '#4ade80', error: '#f87171', warning: '#fbbf24', info: '#38bdf8' };
+        toast.innerHTML = `<span style="font-size:17px">${iconMap[type] || 'ℹ️'}</span> <span>${message}</span>`;
+        toast.style.borderLeftColor = colorMap[type] || '#38bdf8';
+        toast.style.display = 'flex';
+        if (_historyToastTimer) clearTimeout(_historyToastTimer);
+        _historyToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    window.showToast = showToast;
+</script>
+
+<!-- MODAL XEM HÓA ĐƠN ĐIỆN TỬ -->
+<div id="invoiceModal" class="invoice-modal-backdrop" onclick="if(event.target === this) closeInvoiceModal()">
+    <div id="invoiceModalCard" class="invoice-modal-card">
+        <div id="invoiceModalContent">
+            <!-- Nội dung hóa đơn nạp tự động qua API -->
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

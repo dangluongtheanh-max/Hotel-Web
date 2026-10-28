@@ -1,87 +1,179 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\LeTan\Services;
 
 use App\LeTan\Repositories\LeTanRepository;
+use App\HoaDon\Repositories\HoaDonRepository;
+use App\ThanhToan\Repositories\ThanhToanRepository;
 
 /**
- * Service (business logic) cho module LeTan.
- * Cac module khac muon dung du lieu cua module nay PHAI goi qua Service nay,
- * khong duoc goi thang Repository/Model de giu tinh dong goi giua cac module.
+ * Facade Service cho module LeTan.
+ * Điều phối các sub-services chuyên trách:
+ * - LeTanPhieuService: Quản lý danh sách phiếu, chi tiết phiếu, check-in, tính tiền hoàn hủy & hủy phiếu.
+ * - LeTanCheckoutService: Phụ phí trễ giờ, tính tiền trả phòng và check-out quyết toán.
+ * - LeTanPhongVaKhachService: Sơ đồ phòng, đổi phòng, cập nhật giấy tờ lưu trú, bảo trì, dịch vụ nhanh.
+ *
+ * Giữ 100% tương thích ngược (Backward Compatibility) với các Controller và Route hiện hành.
  */
 class LeTanService
 {
-    private LeTanRepository $repository;
+    private LeTanPhieuService $phieuService;
+    private LeTanCheckoutService $checkoutService;
+    private LeTanPhongVaKhachService $phongVaKhachService;
 
-    public function __construct(LeTanRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        ?LeTanRepository $repository = null,
+        ?HoaDonRepository $hoaDonRepo = null,
+        ?ThanhToanRepository $thanhToanRepo = null,
+        ?LeTanPhieuService $phieuService = null,
+        ?LeTanCheckoutService $checkoutService = null,
+        ?LeTanPhongVaKhachService $phongVaKhachService = null
+    ) {
+        $repo = $repository ?? new LeTanRepository();
+        $hdRepo = $hoaDonRepo ?? new HoaDonRepository();
+        $ttRepo = $thanhToanRepo ?? new ThanhToanRepository();
+
+        $this->phieuService = $phieuService ?? new LeTanPhieuService($repo->getPhieuRepo(), $repo->getPhongVaKhachRepo());
+        $this->checkoutService = $checkoutService ?? new LeTanCheckoutService($repo->getCheckoutRepo(), $repo->getPhieuRepo(), $hdRepo, $ttRepo);
+        $this->phongVaKhachService = $phongVaKhachService ?? new LeTanPhongVaKhachService($repo->getPhongVaKhachRepo(), $repo->getPhieuRepo());
     }
 
-    public function xemDSPhong(array $params = [])
+    public function getPhieuService(): LeTanPhieuService
     {
-        // TODO: xemDSPhong
-        return null;
+        return $this->phieuService;
     }
 
-    public function xemCTPhong(array $params = [])
+    public function getCheckoutService(): LeTanCheckoutService
     {
-        // TODO: xemCTPhong
-        return null;
+        return $this->checkoutService;
     }
 
-    public function timKiemPhong(array $params = [])
+    public function getPhongVaKhachService(): LeTanPhongVaKhachService
     {
-        // TODO: timKiemPhong
-        return null;
+        return $this->phongVaKhachService;
     }
 
-    public function xemDSPhieu(array $params = [])
+    // ==========================================
+    // NHÓM 1: QUẢN LÝ PHIẾU VÀ CHECK-IN / HỦY PHIẾU
+    // ==========================================
+
+    public function xemDSPhieu(array $params = []): array
     {
-        // TODO: xemDSPhieu
-        return null;
+        return $this->phieuService->xemDSPhieu($params);
     }
 
-    public function xemCTPhieu(array $params = [])
+    public function xemCTPhieu(array $params = []): array
     {
-        // TODO: xemCTPhieu
-        return null;
+        return $this->phieuService->xemCTPhieu($params);
     }
 
-    public function timKiemPhieu(array $params = [])
+    public function timKiemPhieu(array $params = []): array
     {
-        // TODO: timKiemPhieu
-        return null;
+        return $this->phieuService->timKiemPhieu($params);
     }
 
-    public function checkin(array $params = [])
+    public function checkin(array $params = []): array
     {
-        // TODO: checkin
-        return null;
+        return $this->phieuService->checkin($params);
     }
 
-    public function checkout(array $params = [])
+    public function tinhTienHoanHuyPhong(array $params = []): array
     {
-        // TODO: checkout
-        return null;
+        return $this->phieuService->tinhTienHoanHuyPhong($params);
+    }
+
+    public function huyPhieu(array $params = []): array
+    {
+        return $this->phieuService->huyPhieu($params);
+    }
+
+    public function resolveMaLeTan(string $identifier = 'LT001'): string
+    {
+        return $this->phieuService->resolveMaLeTan($identifier);
+    }
+
+    // ==========================================
+    // NHÓM 2: CHECK-OUT VÀ QUYẾT TOÁN TRẢ PHÒNG
+    // ==========================================
+
+    public function tinhPhuPhiTreGio(string $thoiGianTraDuKien, float $donGiaPhong, ?int $thoiGianThucTeTs = null): array
+    {
+        return $this->checkoutService->tinhPhuPhiTreGio($thoiGianTraDuKien, $donGiaPhong, $thoiGianThucTeTs);
+    }
+
+    public function tinhTienCheckout(array $params = []): array
+    {
+        return $this->checkoutService->tinhTienCheckout($params);
+    }
+
+    public function checkout(array $params = []): array
+    {
+        return $this->checkoutService->checkout($params);
+    }
+
+    // ==========================================
+    // NHÓM 3: SƠ ĐỒ PHÒNG, BẢO TRÌ, KHÁCH & DỊCH VỤ NHANH
+    // ==========================================
+
+    public function doiPhongNguoiLuuTru(array $params = []): array
+    {
+        return $this->phongVaKhachService->doiPhongNguoiLuuTru($params);
+    }
+
+    public function capNhatThongTinKhach(array $params = []): array
+    {
+        return $this->phongVaKhachService->capNhatThongTinKhach($params);
+    }
+
+    public function xemTrangThaiLoaiPhongVaPhong(array $params = []): array
+    {
+        return $this->phongVaKhachService->xemTrangThaiLoaiPhongVaPhong($params);
+    }
+
+    public function xemDSPhong(array $params = []): array
+    {
+        return $this->phongVaKhachService->xemDSPhong($params);
+    }
+
+    public function xemCTPhong(array $params = []): ?array
+    {
+        return $this->phongVaKhachService->xemCTPhong($params);
+    }
+
+    public function timKiemPhong(array $params = []): array
+    {
+        return $this->phongVaKhachService->timKiemPhong($params);
     }
 
     public function timHoaDon(array $params = [])
     {
-        // TODO: timHoaDon
-        return null;
+        return $this->phongVaKhachService->timHoaDon($params);
     }
 
     public function xemHoaDon(array $params = [])
     {
-        // TODO: xemHoaDon
-        return null;
+        return $this->phongVaKhachService->xemHoaDon($params);
     }
 
     public function xemCTHD(array $params = [])
     {
-        // TODO: xemCTHD
-        return null;
+        return $this->phongVaKhachService->xemCTHD($params);
     }
 
+    public function capNhatBaoTriPhong(array $params = []): array
+    {
+        return $this->phongVaKhachService->capNhatBaoTriPhong($params);
+    }
+
+    public function layDanhSachDichVu(array $params = []): array
+    {
+        return $this->phongVaKhachService->layDanhSachDichVu($params);
+    }
+
+    public function datDichVuNhanh(array $params = []): array
+    {
+        return $this->phongVaKhachService->datDichVuNhanh($params);
+    }
 }

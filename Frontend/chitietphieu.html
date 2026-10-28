@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Phiếu Đặt Phòng - Royal Lotus Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b1329;
+            --bg-card: #131f37;
+            --bg-card-light: #1e2c4d;
+            --gold: #c59b27;
+            --gold-light: #e5b842;
+            --gold-gradient: linear-gradient(135deg, #c59b27 0%, #dfb547 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-gold: #f1c40f;
+            --border-color: rgba(197, 155, 39, 0.25);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top center, #152243 0%, var(--bg-dark) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px 80px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(19, 31, 55, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+        }
+
+        .user-tag {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Summary Header Card */
+        .summary-card {
+            background: rgba(19, 31, 55, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .summary-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .summary-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .summary-title-wrap h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .summary-badge-status {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Stats Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #0b1325;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .val {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-card .val.gold {
+            color: var(--gold-light);
+            font-size: 18px;
+        }
+
+        .stat-card .val.blue {
+            color: #60a5fa;
+        }
+
+        /* Tab Navigation */
+        .tabs-container {
+            background: rgba(19, 31, 55, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .tab-headers {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--gold-light);
+            border-bottom-color: var(--gold);
+        }
+
+        /* Tab Pane */
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tab 1: Info Sections */
+        .info-block {
+            margin-bottom: 26px;
+        }
+
+        .info-block-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pnp-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .pnp-info-item {
+            background: #0b1325;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .pnp-info-item label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .pnp-info-item .val {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #0b1325;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+        }
+
+        .detail-table th {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            padding: 14px 16px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-table td {
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+        }
+
+        .detail-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Under Construction Placeholder Card */
+        .placeholder-card {
+            text-align: center;
+            padding: 60px 24px;
+            background: #0b1325;
+            border-radius: 16px;
+            border: 1px dashed rgba(197, 155, 39, 0.3);
+            margin: 10px 0;
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .placeholder-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+        }
+
+        .placeholder-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .placeholder-badge {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        /* Loading / Error */
+        .state-loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--gold-light);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(197, 155, 39, 0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .state-error {
+            text-align: center;
+            padding: 50px 24px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            color: #f87171;
+            margin: 20px 0;
+        }
+
+        .state-error h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .summary-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Nút icon chỉnh sửa người lưu trú & Icon khóa */
+        .btn-icon-edit {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid rgba(197, 155, 39, 0.35);
+            color: var(--gold-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            margin: 0 auto;
+        }
+        .btn-icon-edit:hover {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            border-color: transparent;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.35);
+        }
+        .icon-locked {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+            cursor: not-allowed;
+            margin: 0 auto;
+        }
+
+        /* Modal Chỉnh Sửa Người Lưu Trú */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 10, 25, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-backdrop.show {
+            display: flex;
+        }
+        .modal-card {
+            background: #111c33;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            padding: 18px 24px;
+            background: rgba(19, 31, 55, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+            padding: 0 4px;
+        }
+        .modal-close:hover {
+            color: #ffffff;
+        }
+        .modal-body {
+            padding: 24px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; gap: 12px; }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control {
+            background: #0b1325;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2);
+        }
+        select.form-control option {
+            background: #0b1325;
+            color: #ffffff;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            background: rgba(19, 31, 55, 0.7);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        .btn-save {
+            background: var(--gold-gradient);
+            border: none;
+            color: #0b1329;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .btn-save:hover {
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.35);
+            transform: translateY(-1px);
+        }
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .modal-alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .modal-alert.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+        .modal-alert.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        /* Header chứa tiêu đề danh sách phòng và nút đánh giá nằm ngang bên phải */
+        .info-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .info-block-header .info-block-title {
+            margin-bottom: 0;
+        }
+        .btn-header-review {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gold-gradient);
+            border: 1px solid var(--gold);
+            color: #0b1329;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(197, 155, 39, 0.25);
+            line-height: 1.2;
+        }
+        .btn-header-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(197, 155, 39, 0.4);
+            filter: brightness(1.08);
+        }
+        .btn-header-review.reviewed {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: #34d399;
+            box-shadow: none;
+        }
+        .btn-header-review.reviewed:hover {
+            background: rgba(16, 185, 129, 0.22);
+            color: #6ee7b7;
+            border-color: #10b981;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Star rating trong modal đánh giá */
+        .star-rating-box {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px auto;
+            gap: 10px;
+            font-size: 34px;
+            user-select: none;
+            line-height: 1;
+        }
+        .star-item {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.2);
+            transition: color 0.15s ease, transform 0.15s ease;
+        }
+        .star-item.active {
+            color: #f59e0b;
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+        }
+        .star-item:hover {
+            transform: scale(1.18);
+        }
+        .star-rating-box.readonly .star-item {
+            cursor: default;
+        }
+        .star-rating-box.readonly .star-item:hover {
+            transform: none;
+        }
+        .review-view-box {
+            background: rgba(11, 19, 37, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            min-height: 80px;
+        }
+
+        /* Invoice Tab & Print Styles */
+        .invoice-card {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid #e2e8f0;
+        }
+        .invoice-card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13.5px;
+        }
+        .invoice-card th {
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+            padding: 11px 14px;
+            text-align: left;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .invoice-card td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoicePrintSection, #invoicePrintSection * {
+                visibility: visible;
+            }
+            #invoicePrintSection {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="logo">
+            <span>⚜️</span> ROYAL LOTUS HOTEL
+        </div>
+        <div class="nav-actions">
+            <span id="navUserText" class="user-tag">Đang kiểm tra...</span>
+            <a href="letan.html" id="navLeTanLink" class="btn-back" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; text-decoration: none; display: none;">🛎️ Quầy Lễ Tân</a>
+            <a href="dichvu.html" class="btn-back" style="background: rgba(197, 155, 39, 0.2); border-color: var(--gold); color: #fff; text-decoration: none;">🛎️ Dịch Vụ</a>
+            <a href="danhgia.html" class="btn-back" style="background: rgba(197, 155, 39, 0.2); border-color: var(--gold); color: #fff; text-decoration: none;">⭐ Đánh Giá Của Tôi</a>
+            <a href="lichsudatphong.html" class="btn-back">⬅ Quay lại Lịch sử</a>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingBox" class="state-loading">
+        <div class="spinner"></div>
+        <div style="font-size: 15px;">Đang tải chi tiết phiếu đặt phòng từ hệ thống...</div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorBox" class="state-error" style="display: none;">
+        <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+        <h3 id="errorTitle">Không thể xem thông tin phiếu</h3>
+        <p id="errorMsg" style="font-size: 14px; margin-bottom: 20px;"></p>
+        <a href="lichsudatphong.html" class="btn-back">⬅ Trở về danh sách lịch sử</a>
+    </div>
+
+    <!-- Main Detail Content -->
+    <div id="mainContent" style="display: none;">
+        <!-- Summary Header Card -->
+        <div class="summary-card">
+            <div class="summary-top">
+                <div class="summary-title-wrap">
+                    <span style="font-size: 28px;">📄</span>
+                    <div>
+                        <h1 id="sumMaPhieu">Phiếu Đặt Phòng #---</h1>
+                        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;" id="sumNgayLap">Ngày lập: --/--/----</div>
+                    </div>
+                </div>
+                <div id="sumStatusBadge" class="summary-badge-status">
+                    <!-- Status Badge -->
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="summary-grid">
+                <div class="stat-card">
+                    <div class="label">📅 THỜI GIAN LƯU TRÚ</div>
+                    <div class="val" id="sumDates" style="font-size: 13.5px;">-- ➔ --</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">🛏️ PHÒNG ĐÃ ĐẶT</div>
+                    <div class="val blue" id="sumRooms">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">👥 SỐ KHÁCH LƯU TRÚ</div>
+                    <div class="val" id="sumGuests">-- khách</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">💰 TỔNG THANH TOÁN</div>
+                    <div class="val gold" id="sumPrice">-- đ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Component -->
+        <div class="tabs-container">
+            <!-- Tab Headers -->
+            <div class="tab-headers">
+                <button class="tab-btn active" onclick="switchTab('tabPhieu')">
+                    <span>📋</span> Tab 1 — Phiếu nhận phòng
+                </button>
+                <button class="tab-btn" onclick="switchTab('tabHoaDon')">
+                    <span>🧾</span> Tab 2 — Hóa đơn
+                </button>
+            </div>
+
+            <!-- Tab 1: Phiếu nhận phòng -->
+            <div id="tabPhieu" class="tab-pane active">
+                <!-- 1. Thông tin chung phiếu -->
+                <div class="info-block">
+                    <div class="info-block-title">
+                        <span>📌</span> THÔNG TIN CHUNG PHIẾU NHẬN PHÒNG
+                    </div>
+                    <div class="pnp-info-grid">
+                        <div class="pnp-info-item">
+                            <label>Khách Hàng</label>
+                            <div class="val" id="pnpKhachHang" style="color: #60a5fa;">--</div>
+                        </div>
+                        <div class="pnp-info-item">
+                            <label>Số Điện Thoại</label>
+                            <div class="val" id="pnpSDT">--</div>
+                        </div>
+                        <div class="pnp-info-item">
+                            <label>Kênh Đặt</label>
+                            <div class="val" id="pnpKenhDat">--</div>
+                        </div>
+                        <div class="pnp-info-item">
+                            <label>Lễ Tân Tạo Phiếu</label>
+                            <div class="val" id="pnpLeTanTao" style="color: var(--gold-light);">--</div>
+                        </div>
+                        <div class="pnp-info-item">
+                            <label>Khuyến Mãi Áp Dụng</label>
+                            <div class="val" id="pnpKhuyenMai">Không có</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Danh sách phòng đặt (CTPNP) -->
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <div class="info-block-title">
+                            <span>🛏️</span> DANH SÁCH PHÒNG THUỘC PHIẾU (CHI TIẾT PHIẾU NHẬN PHÒNG)
+                        </div>
+                        <div id="phieuReviewHeaderAction"></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Phòng</th>
+                                    <th>Loại Phòng</th>
+                                    <th>Giá Niêm Yết</th>
+                                    <th>Nhận Phòng (Dự Kiến)</th>
+                                    <th>Trả Phòng (Dự Kiến)</th>
+                                    <th>Số Khách</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Lễ Tân Check-in</th>
+                                    <th>Lễ Tân Check-out</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pnpRoomTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Danh sách người lưu trú -->
+                <div class="info-block" style="margin-bottom: 0;">
+                    <div class="info-block-title">
+                        <span>👥</span> DANH SÁCH NGƯỜI LƯU TRÚ ĐÃ ĐĂNG KÝ
+                    </div>
+                    <div id="pnpGuestNotice" style="font-size: 13px; margin-bottom: 12px; line-height: 1.5;"></div>
+                    <div class="table-wrap">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 85px;">Mã NLT</th>
+                                    <th style="min-width: 170px;">Họ Và Tên</th>
+                                    <th style="width: 105px;">Ngày Sinh</th>
+                                    <th style="width: 100px;">Quốc Tịch</th>
+                                    <th style="width: 125px;">Loại Giấy Tờ</th>
+                                    <th style="min-width: 155px;">Số Giấy Tờ</th>
+                                    <th style="width: 75px; text-align: center;">Phòng</th>
+                                    <th>Ghi Chú</th>
+                                    <th style="width: 44px; text-align: center; padding: 14px 4px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="pnpGuestTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Hóa đơn điện tử chính thức -->
+            <div id="tabHoaDon" class="tab-pane">
+                <div id="invoiceDetailContainer">
+                    <div style="text-align: center; padding: 40px; color: var(--gold-light);">
+                        <div class="spinner" style="margin: 0 auto 12px;"></div>
+                        Đang đồng bộ dữ liệu hóa đơn điện tử...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh Sửa Thông Tin Người Lưu Trú -->
+<div id="editGuestModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">✏️ Chỉnh Sửa Thông Tin Người Lưu Trú</div>
+                <div id="modalGuestSubtitle" style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
+                    Mã khách: <code id="mNltCode" style="color: var(--gold-light);">NLT---</code> | Phòng: <strong id="mNltRoom" style="color: #60a5fa;">---</strong>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeEditGuestModal()" title="Đóng">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="modalAlertBox" class="modal-alert"></div>
+            <form id="editGuestForm" onsubmit="event.preventDefault(); submitEditGuest();">
+                <input type="hidden" id="editGuestMaNLT">
+                
+                <div class="form-group">
+                    <label for="editGuestHoTen">Họ và tên khách lưu trú <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="editGuestHoTen" class="form-control" required placeholder="Ví dụ: Nguyễn Văn An">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="editGuestNgaySinh">Ngày sinh <span style="color: #ef4444;">*</span></label>
+                        <input type="date" id="editGuestNgaySinh" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="editGuestQuocTich">Quốc tịch <span style="color: #ef4444;">*</span></label>
+                        <select id="editGuestQuocTich" class="form-control" required>
+                            <option value="Việt Nam">Việt Nam</option>
+                            <option value="Nước ngoài">Nước ngoài</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="editGuestLoaiGiayTo">Loại giấy tờ <span style="color: #ef4444;">*</span></label>
+                        <select id="editGuestLoaiGiayTo" class="form-control" required>
+                            <option value="CCCD">CCCD / Căn cước</option>
+                            <option value="HoChieu">Hộ chiếu (Passport)</option>
+                            <option value="GiayKhaiSinh">Giấy khai sinh (Trẻ em)</option>
+                            <option value="Khac">Giấy tờ khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="editGuestSoGiayTo">Số giấy tờ tùy thân <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="editGuestSoGiayTo" class="form-control" required placeholder="Nhập số CCCD / Hộ chiếu">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
+                    <label for="editGuestGhiChu">Ghi chú (Tùy chọn)</label>
+                    <textarea id="editGuestGhiChu" class="form-control" rows="2" placeholder="Ví dụ: Khách cần chuẩn bị nôi trẻ em hoặc hỗ trợ đặc biệt..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeEditGuestModal()">Hủy bỏ</button>
+            <button type="button" id="btnSubmitGuest" class="btn-save" onclick="submitEditGuest()">
+                💾 Lưu thay đổi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đánh Giá Phòng -->
+<div id="reviewModal" class="modal-backdrop" onclick="if (event.target === this) closeReviewModal()">
+    <div class="modal-card" style="max-width: 520px;">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="reviewModalTitle">⭐ Đánh Giá Phòng</div>
+                <div id="reviewModalSubtitle" style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
+                    Phiếu: <code id="rmPhieuCode" style="color: #cbd5e1;">PP---</code>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeReviewModal()" title="Đóng">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="reviewAlertBox" class="modal-alert"></div>
+
+            <!-- Khối chọn phòng khi phiếu có nhiều phòng -->
+            <div id="modalRoomSelectContainer" class="form-group" style="display: none; margin-bottom: 18px;">
+                <label for="reviewRoomSelect">Chọn phòng muốn đánh giá / xem lại</label>
+                <select id="reviewRoomSelect" class="form-control" onchange="onModalRoomSelected(this.value)">
+                </select>
+            </div>
+
+            <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
+                <input type="hidden" id="reviewMaPhong">
+
+                <!-- Số sao đánh giá -->
+                <div class="form-group" style="align-items: center; text-align: center; margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700;">Chất lượng phòng & Dịch vụ</label>
+                    <div class="star-rating-box" id="starRatingBox">
+                        <span class="star-item" data-val="1" onclick="setStarRating(1)" onmouseenter="previewStarHover(1)" onmouseleave="resetStarHover()">★</span>
+                        <span class="star-item" data-val="2" onclick="setStarRating(2)" onmouseenter="previewStarHover(2)" onmouseleave="resetStarHover()">★</span>
+                        <span class="star-item" data-val="3" onclick="setStarRating(3)" onmouseenter="previewStarHover(3)" onmouseleave="resetStarHover()">★</span>
+                        <span class="star-item" data-val="4" onclick="setStarRating(4)" onmouseenter="previewStarHover(4)" onmouseleave="resetStarHover()">★</span>
+                        <span class="star-item" data-val="5" onclick="setStarRating(5)" onmouseenter="previewStarHover(5)" onmouseleave="resetStarHover()">★</span>
+                    </div>
+                    <div id="starRatingDesc" style="font-size: 13px; font-weight: 600; color: var(--gold-light); margin-top: 6px;">5 sao — Rất tuyệt vời</div>
+                    <div id="reviewDateInfo" style="font-size: 12px; color: var(--text-muted); margin-top: 4px; display: none;"></div>
+                </div>
+
+                <!-- Ô nhận xét -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="reviewNoiDung">Nhận xét chi tiết <span style="color: #ef4444;" id="reviewRequiredMark">*</span></label>
+                    <div id="reviewViewContent" class="review-view-box" style="display: none;"></div>
+                    <textarea id="reviewNoiDung" class="form-control" rows="4" maxlength="1000" placeholder="Chia sẻ trải nghiệm của bạn về không gian phòng, vệ sinh, tiện nghi..." oninput="updateReviewCharCount()"></textarea>
+                    <div id="reviewCharCount" style="display: flex; justify-content: flex-end; font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">0 / 1000 ký tự</div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="btnCancelReview" onclick="closeReviewModal()">Hủy bỏ</button>
+            <button type="button" id="btnSubmitReview" class="btn-save" onclick="submitReview()">
+                ⭐ Gửi đánh giá
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = window.location.protocol === 'file:' 
+        ? 'http://localhost:8000/Backend/public/index.php' 
+        : '/Backend/public/index.php';
+
+    let currentUser = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentMaPhieu = urlParams.get('maPhieu');
+    let currentDetailData = null;
+
+    // Chuyển đổi tab
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+        const targetPane = document.getElementById(tabId);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+
+        // Active tab button tương ứng
+        const btns = document.querySelectorAll('.tab-btn');
+        if (tabId === 'tabPhieu') btns[0]?.classList.add('active');
+        if (tabId === 'tabHoaDon') btns[1]?.classList.add('active');
+    }
+
+    // Format ngày giờ: DD/MM/YYYY HH:mm
+    function formatDateTime(str) {
+        if (!str) return '-';
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return str;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    // Format ngày: DD/MM/YYYY
+    function formatDateOnly(str) {
+        if (!str) return '-';
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return str;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Format tiền VND
+    function formatVND(num) {
+        if (num === null || num === undefined || num === '' || isNaN(num) || Number(num) <= 0) {
+            return '<span style="color: #94a3b8; font-size: 13px; font-weight: normal; font-style: italic;">Chưa xuất HĐ</span>';
+        }
+        return Number(num).toLocaleString('vi-VN') + ' đ';
+    }
+
+    // Trạng thái phiếu
+    function getStatusBadge(st) {
+        const map = {
+            'ChoThanhToan': { text: '⏳ Chờ thanh toán (20p)', bg: 'rgba(249, 115, 22, 0.2)', border: '#f97316', color: '#fb923c' },
+            'ThanhToanThatBai': { text: '⚠️ Thanh toán thất bại', bg: 'rgba(239, 68, 68, 0.2)', border: '#ef4444', color: '#f87171' },
+            'DaTraPhong': { text: '🏁 Đã trả phòng', bg: 'rgba(16, 185, 129, 0.2)', border: '#10b981', color: '#34d399' },
+            'DangLuuTru': { text: '🏨 Đang lưu trú', bg: 'rgba(139, 92, 246, 0.2)', border: '#8b5cf6', color: '#c084fc' },
+            'DaNhanPhong': { text: '🔑 Đã nhận phòng', bg: 'rgba(6, 182, 212, 0.2)', border: '#06b6d4', color: '#22d3ee' },
+            'DaDatPhong': { text: '📅 Đã đặt phòng', bg: 'rgba(59, 130, 246, 0.2)', border: '#3b82f6', color: '#60a5fa' },
+            'DaDat': { text: '📅 Đã đặt phòng', bg: 'rgba(59, 130, 246, 0.2)', border: '#3b82f6', color: '#60a5fa' },
+            'ChoXacNhan': { text: '⏳ Chờ xác nhận', bg: 'rgba(245, 158, 11, 0.2)', border: '#f59e0b', color: '#fbbf24' },
+            'DaHuy': { text: '❌ Đã hủy', bg: 'rgba(239, 68, 68, 0.2)', border: '#ef4444', color: '#f87171' },
+            'TuChoi': { text: '🚫 Từ chối', bg: 'rgba(220, 38, 38, 0.2)', border: '#dc2626', color: '#f87171' }
+        };
+        const item = map[st] || { text: st || 'Không rõ', bg: 'rgba(148, 163, 184, 0.2)', border: '#94a3b8', color: '#cbd5e1' };
+        return `<span style="background:${item.bg}; border:1px solid ${item.border}; color:${item.color};" class="summary-badge-status">${item.text}</span>`;
+    }
+
+    // Format tên hiển thị của loại giấy tờ tùy thân
+    function formatLoaiGiayTo(type) {
+        if (!type) return '-';
+        const map = {
+            'CCCD': 'CCCD',
+            'HoChieu': 'Hộ chiếu',
+            'GiayKhaiSinh': 'Giấy khai sinh',
+            'Khac': 'Khác'
+        };
+        return map[type] || type;
+    }
+
+    // Khởi tạo và tải dữ liệu chi tiết phiếu
+    async function loadChiTietPhieu() {
+        const navUserText = document.getElementById('navUserText');
+        const loadingBox = document.getElementById('loadingBox');
+        const errorBox = document.getElementById('errorBox');
+        const mainContent = document.getElementById('mainContent');
+
+        const navLeTanLink = document.getElementById('navLeTanLink');
+
+        if (currentUser && currentUser.TenDangNhap) {
+            navUserText.innerText = `Xin chào: ${currentUser.TenDangNhap} (${currentUser.VaiTro})`;
+            if (currentUser.VaiTro === 'LeTan' || currentUser.VaiTro === 'Admin' || currentUser.LoaiTK === 'LeTan' || currentUser.LoaiTK === 'Admin') {
+                if (navLeTanLink) navLeTanLink.style.display = 'inline-flex';
+                // Điều chỉnh nút quay lại phù hợp với Lễ tân / Admin
+                const backLinks = document.querySelectorAll('a.btn-back[href="lichsudatphong.html"]');
+                backLinks.forEach(lnk => {
+                    if (currentUser.VaiTro === 'Admin') {
+                        lnk.href = 'admin.html';
+                        lnk.innerHTML = '⬅ Quay lại Trang Quản Trị';
+                    } else {
+                        lnk.href = 'letan.html';
+                        lnk.innerHTML = '⬅ Quay lại Quầy Lễ Tân';
+                    }
+                });
+            }
+        } else {
+            navUserText.innerHTML = '<span style="color: #f87171;">Chưa đăng nhập</span>';
+        }
+
+        if (!currentMaPhieu) {
+            loadingBox.style.display = 'none';
+            errorBox.style.display = 'block';
+            document.getElementById('errorTitle').innerText = 'Thiếu mã phiếu đặt phòng';
+            document.getElementById('errorMsg').innerText = 'Không tìm thấy tham số mã phiếu trên đường dẫn URL.';
+            return;
+        }
+
+        if (!currentUser || !currentUser.MaTK) {
+            loadingBox.style.display = 'none';
+            errorBox.style.display = 'block';
+            document.getElementById('errorTitle').innerText = 'Yêu cầu đăng nhập';
+            document.getElementById('errorMsg').innerText = 'Bạn cần đăng nhập tài khoản để xem chi tiết phiếu nhận phòng / hóa đơn.';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/datphong/xemctphieu`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.MaTK}`
+                },
+                body: JSON.stringify({
+                    maPhieu: currentMaPhieu,
+                    maTK: currentUser.MaTK
+                })
+            });
+
+            const data = await res.json();
+            loadingBox.style.display = 'none';
+
+            if (!data.success) {
+                errorBox.style.display = 'block';
+                if (res.status === 403) {
+                    document.getElementById('errorTitle').innerText = '🚫 Từ chối truy cập (403)';
+                    document.getElementById('errorMsg').innerText = data.message || 'Phiếu đặt phòng này không thuộc tài khoản của bạn.';
+                } else {
+                    document.getElementById('errorTitle').innerText = 'Không tìm thấy phiếu (404)';
+                    document.getElementById('errorMsg').innerText = data.message || 'Không tìm thấy thông tin phiếu trong hệ thống.';
+                }
+                return;
+            }
+
+            const detail = data.data || {};
+            currentDetailData = detail;
+            const pnp = detail.Phieu || {};
+            const phongList = detail.DanhSachPhong || [];
+            const nltList = detail.NguoiLuuTru || [];
+            const hoaDon = detail.HoaDon || null;
+
+            // 1. Render Summary Header
+            document.getElementById('sumMaPhieu').innerText = `Phiếu Đặt Phòng #${pnp.MaPhieu || currentMaPhieu}`;
+            document.getElementById('sumNgayLap').innerText = `Ngày lập: ${formatDateOnly(pnp.NgayLap)}`;
+            document.getElementById('sumStatusBadge').innerHTML = getStatusBadge(pnp.TrangThai);
+
+            // Thời gian nhận / trả tổng thể từ danh sách phòng (MIN nhận ➔ MAX trả)
+            if (phongList.length > 0) {
+                const timestampsNhan = phongList
+                    .map(p => new Date(p.ThoiGianNhanPhong).getTime())
+                    .filter(t => !isNaN(t));
+                const timestampsTra = phongList
+                    .map(p => new Date(p.ThoiGianTraPhong).getTime())
+                    .filter(t => !isNaN(t));
+
+                const minNhan = timestampsNhan.length > 0 ? new Date(Math.min(...timestampsNhan)) : null;
+                const maxTra = timestampsTra.length > 0 ? new Date(Math.max(...timestampsTra)) : null;
+
+                const textNhan = minNhan ? formatDateTime(minNhan) : '-';
+                const textTra = maxTra ? formatDateTime(maxTra) : '-';
+
+                document.getElementById('sumDates').innerText = `${textNhan} ➔ ${textTra}`;
+                document.getElementById('sumRooms').innerText = phongList.map(p => p.MaPhong).join(', ');
+                const totalGuests = phongList.reduce((sum, p) => sum + (parseInt(p.SoNguoi) || 0), 0);
+                document.getElementById('sumGuests').innerText = `${totalGuests} khách`;
+            } else {
+                document.getElementById('sumDates').innerText = 'Chưa xếp lịch';
+                document.getElementById('sumRooms').innerText = 'Chưa xếp phòng';
+                document.getElementById('sumGuests').innerText = '0 khách';
+            }
+
+            const tongTien = hoaDon && hoaDon.TongTienSauVAT ? hoaDon.TongTienSauVAT : null;
+            document.getElementById('sumPrice').innerHTML = formatVND(tongTien);
+
+            // 2. Render Tab 1 - Thông tin chung
+            document.getElementById('pnpKhachHang').innerText = pnp.TenKH || pnp.TenKhachHang || 'N/A';
+            document.getElementById('pnpSDT').innerText = pnp.SDT || 'Chưa cập nhật';
+            document.getElementById('pnpKenhDat').innerText = (pnp.KenhDat === 'TrucTuyen') ? '🌐 Đặt trực tuyến' : '🏢 Đặt tại quầy';
+            
+            const leTanTaoEl = document.getElementById('pnpLeTanTao');
+            if (leTanTaoEl) {
+                if (pnp.KenhDat === 'TrucTiep') {
+                    if (pnp.TenLeTan) {
+                        leTanTaoEl.innerHTML = `<strong style="color:var(--gold-light);">${pnp.TenLeTan}</strong> <span style="font-size:12px; color:var(--text-muted);">(${pnp.MaLeTan})</span>`;
+                    } else if (pnp.MaLeTan) {
+                        leTanTaoEl.innerHTML = `<strong style="color:var(--gold-light);">${pnp.MaLeTan}</strong>`;
+                    } else {
+                        leTanTaoEl.innerText = 'Lễ tân tại quầy';
+                    }
+                } else {
+                    leTanTaoEl.innerHTML = '<span style="color:#94a3b8; font-style:italic;">🌐 Khách đặt trực tuyến (Hệ thống web)</span>';
+                }
+            }
+
+            document.getElementById('pnpKhuyenMai').innerText = pnp.MaKM ? `🏷️ Mã: ${pnp.MaKM}` : 'Không áp dụng';
+
+            // Render Danh sách phòng & nút đánh giá ở tiêu đề
+            renderRoomTable(phongList);
+            renderReviewHeaderAction(phongList);
+
+            // Kiểm tra quyền chỉnh sửa người lưu trú: chỉ cho phép khi chưa nhận phòng (DaDatPhong, ChoXacNhan, DaDat)
+            const canEditGuests = ['DaDatPhong', 'ChoXacNhan', 'DaDat'].includes(pnp.TrangThai);
+            const guestNotice = document.getElementById('pnpGuestNotice');
+            if (guestNotice) {
+                if (canEditGuests) {
+                    guestNotice.innerHTML = `
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 14px; color: #fbbf24; font-size: 13px;">
+                            💡 <strong>Quyền cập nhật:</strong> Quý khách có thể bấm vào biểu tượng cây bút ở cuối mỗi hàng để đính chính lại thông tin (họ tên, ngày sinh, giấy tờ tùy thân, ghi chú) trước khi làm thủ tục nhận phòng.
+                        </div>
+                    `;
+                } else {
+                    const statusText = (pnp.TrangThai === 'DaTraPhong') ? 'Đã trả phòng' : (pnp.TrangThai === 'DaHuy' ? 'Đã hủy' : 'Đã nhận phòng');
+                    guestNotice.innerHTML = `
+                        <div style="background: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 14px; color: #94a3b8; font-size: 13px;">
+                            🔒 <strong>Thông tin đã khóa:</strong> Phiếu đang ở trạng thái <em>${statusText}</em>. Theo quy định khách sạn, thông tin người lưu trú không thể chỉnh sửa sau khi đã nhận phòng hoặc kết thúc đợt lưu trú.
+                        </div>
+                    `;
+                }
+            }
+
+            // Render Danh sách người lưu trú (9 cột)
+            const guestTbody = document.getElementById('pnpGuestTableBody');
+            if (nltList.length === 0) {
+                guestTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px; color:#94a3b8;">Chưa khai báo danh sách người lưu trú nào.</td></tr>';
+            } else {
+                guestTbody.innerHTML = nltList.map(g => {
+                    const actionCell = canEditGuests
+                        ? `<button class="btn-icon-edit" onclick="openEditGuestModal('${g.MaNguoiLuuTru}')" title="Sửa thông tin" aria-label="Sửa thông tin">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </button>`
+                        : `<span class="icon-locked" title="Thông tin đã khóa (không thể chỉnh sửa)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>`;
+
+                    return `
+                        <tr>
+                            <td><code>${g.MaNguoiLuuTru}</code></td>
+                            <td><strong style="color:#ffffff;">${g.HoTen}</strong></td>
+                            <td>${formatDateOnly(g.NgaySinh)}</td>
+                            <td>${g.QuocTich || 'Việt Nam'}</td>
+                            <td><span style="color: #cbd5e1;">${formatLoaiGiayTo(g.LoaiGiayTo)}</span></td>
+                            <td><code style="color: var(--gold-light); font-weight: 600;">${g.SoGiayTo || '-'}</code></td>
+                            <td style="text-align: center;"><span style="color: #60a5fa; font-weight:700;">${g.MaPhong}</span></td>
+                            <td>${g.GhiChu || '-'}</td>
+                            <td style="text-align: center; padding: 10px 4px;">${actionCell}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 3. Render Tab 2 - Hóa đơn điện tử
+            renderInvoiceTab(detail);
+
+            mainContent.style.display = 'block';
+
+            // Kích hoạt tab nếu có chỉ định trên URL query (ví dụ ?tab=tabHoaDon)
+            const targetTab = urlParams.get('tab');
+            if (targetTab && document.getElementById(targetTab)) {
+                switchTab(targetTab);
+            }
+
+        } catch (e) {
+            loadingBox.style.display = 'none';
+            errorBox.style.display = 'block';
+            document.getElementById('errorTitle').innerText = 'Lỗi kết nối máy chủ';
+            document.getElementById('errorMsg').innerText = e.message;
+        }
+    }
+
+    // Render nội dung Tab Hóa đơn điện tử
+    // Render nội dung Tab Hóa đơn điện tử (Chia thành 2 khu vực: Tiền Phòng & Chi Phí Phát Sinh)
+    function renderInvoiceTab(detail) {
+        const container = document.getElementById('invoiceDetailContainer');
+        if (!container) return;
+
+        const pnp = detail.Phieu || {};
+        const hoaDon = detail.HoaDon || null;
+        const cthdList = detail.ChiTietHoaDon || [];
+
+        if (!hoaDon || !hoaDon.MaHD) {
+            container.innerHTML = `
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">🧾</div>
+                    <div class="placeholder-title">Chưa có hóa đơn cho phiếu này</div>
+                    <p class="placeholder-desc">
+                        Phiếu nhận phòng này chưa được xuất hóa đơn hoặc đang chờ thanh toán hoàn tất.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        // Tách riêng danh sách tiền phòng và danh sách chi phí phát sinh
+        const roomItems = cthdList.filter(it => Boolean(it.MaPhong));
+        const serviceItems = cthdList.filter(it => !it.MaPhong);
+
+        let tongTienPhong = 0;
+        let tongTienDichVu = 0;
+
+        // Render bảng Tiền Phòng
+        let roomRowsHtml = '';
+        if (roomItems.length === 0) {
+            roomRowsHtml = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:14px; font-style:italic;">Chưa có dữ liệu phòng lưu trú.</td></tr>`;
+        } else {
+            roomRowsHtml = roomItems.map((it, idx) => {
+                const tt = parseFloat(it.ThanhTien || 0);
+                tongTienPhong += tt;
+                const tenPhong = `Phòng ${it.MaPhong} (${it.TenLoaiPhong || 'Phòng tiêu chuẩn'})`;
+                const qtyStr = `${it.SoDem || 1} đêm`;
+                return `
+                    <tr>
+                        <td style="text-align:center; font-weight:600; color:#64748b; padding: 11px 10px;">${idx + 1}</td>
+                        <td style="padding: 11px 10px;">
+                            <strong style="color:#0f172a; font-size:14px;">${tenPhong}</strong>
+                            <div style="font-size:12px; color:#64748b; margin-top:2px;">Tiền phòng lưu trú</div>
+                        </td>
+                        <td style="text-align:center; font-weight:600; color:#334155; padding: 11px 10px;">${qtyStr}</td>
+                        <td style="text-align:right; color:#475569; padding: 11px 10px;">${formatVND(it.DonGia)}</td>
+                        <td style="text-align:right; font-weight:700; color:#0f172a; font-size:14.5px; padding: 11px 18px 11px 10px;">${formatVND(tt)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render bảng Chi Phí Phát Sinh
+        let serviceRowsHtml = '';
+        if (serviceItems.length === 0) {
+            serviceRowsHtml = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:14px; font-style:italic;">Không có chi phí dịch vụ phát sinh.</td></tr>`;
+        } else {
+            serviceRowsHtml = serviceItems.map((it, idx) => {
+                const tt = parseFloat(it.ThanhTien || 0);
+                tongTienDichVu += tt;
+                const tenDV = it.TenCTDV || it.TenDV || 'Dịch vụ tiện ích';
+                const qtyStr = `${it.SoLuong || 1} phần`;
+                return `
+                    <tr>
+                        <td style="text-align:center; font-weight:600; color:#64748b; padding: 11px 10px;">${roomItems.length + idx + 1}</td>
+                        <td style="padding: 11px 10px;">
+                            <strong style="color:#0f172a; font-size:14px;">${tenDV}</strong>
+                            <div style="font-size:12px; color:#059669; font-weight:600; margin-top:2px;">Dịch vụ phát sinh</div>
+                        </td>
+                        <td style="text-align:center; font-weight:600; color:#334155; padding: 11px 10px;">${qtyStr}</td>
+                        <td style="text-align:right; color:#475569; padding: 11px 10px;">${formatVND(it.DonGia)}</td>
+                        <td style="text-align:right; font-weight:700; color:#0f172a; font-size:14.5px; padding: 11px 18px 11px 10px;">${formatVND(tt)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const tongHop = detail.TongHop || detail.tongHop || {};
+        const tongTienPhongRaw = (tongHop.tongTienPhong !== undefined) ? parseFloat(tongHop.tongTienPhong) : tongTienPhong;
+        const tienGiamKM = (tongHop.tienGiamKM !== undefined) ? parseFloat(tongHop.tienGiamKM) : 0;
+        const tienPhongSauKM = (tongHop.tienPhongSauKM !== undefined) ? parseFloat(tongHop.tienPhongSauKM) : Math.max(0, tongTienPhongRaw - tienGiamKM);
+        const vatPhong = (tongHop.vatPhong !== undefined) ? parseFloat(tongHop.vatPhong) : Math.round(tienPhongSauKM * 0.08);
+        const tongTienPhongSauVAT = (tongHop.tongTienPhongSauVAT !== undefined) ? parseFloat(tongHop.tongTienPhongSauVAT) : (tienPhongSauKM + vatPhong);
+
+        const tongTienDichVuRaw = (tongHop.tongTienDichVu !== undefined) ? parseFloat(tongHop.tongTienDichVu) : tongTienDichVu;
+        const vatDichVu = (tongHop.vatDichVu !== undefined) ? parseFloat(tongHop.vatDichVu) : Math.round(tongTienDichVuRaw * 0.08);
+        const tongTienDichVuSauVAT = (tongHop.tongTienDichVuSauVAT !== undefined) ? parseFloat(tongHop.tongTienDichVuSauVAT) : (tongTienDichVuRaw + vatDichVu);
+
+        const tongTienSauVAT = (tongHop.tongTienSauVAT !== undefined) ? parseFloat(tongHop.tongTienSauVAT) : (hoaDon.TongTienSauVAT ? parseFloat(hoaDon.TongTienSauVAT) : (tongTienPhongSauVAT + tongTienDichVuSauVAT));
+
+        const hinhThucTT = hoaDon.HinhThuc === 'TienMat' ? 'Tiền mặt tại quầy' : 'Chuyển khoản VietQR Napas247';
+        const isCompleted = (hoaDon.TrangThaiThanhToan === 'HoanTat') || ['DaDatPhong', 'DangLuuTru', 'DaTraPhong'].includes(pnp.TrangThai);
+        const trangThaiTT = isCompleted
+            ? '<span style="color:#15803d; font-weight:700; background:#dcfce7; padding:4px 12px; border-radius:20px; font-size:12.5px; display:inline-block;">✓ ĐÃ THANH TOÁN HOÀN TẤT</span>'
+            : '<span style="color:#b45309; font-weight:700; background:#fef3c7; padding:4px 12px; border-radius:20px; font-size:12.5px; display:inline-block;">⏳ CHỜ QUYẾT TOÁN</span>';
+
+        container.innerHTML = `
+            <div id="invoicePrintSection" class="invoice-card" style="background:#ffffff; border-radius:16px; padding:28px 36px; box-shadow:0 10px 30px rgba(0,0,0,0.3); color:#1e293b; max-width:880px; margin:0 auto;">
+                <!-- Header Hóa Đơn -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #eab308; padding-bottom: 16px; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-size: 22px; font-weight: 800; color: #0d172e; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #eab308;">⚜️</span> ROYAL LOTUS HOTEL & RESORT
+                        </div>
+                        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">123 Bờ Biển Vàng, Nha Trang, Khánh Hòa • Hotline: 1900 6868</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 20px; font-weight: 800; color: #b45309; letter-spacing: 0.5px;">HÓA ĐƠN ĐIỆN TỬ (GTGT)</div>
+                        <div style="font-size: 14px; font-family: monospace; color: #0f172a; font-weight: 700; margin-top: 3px;">MÃ HĐ: #${hoaDon.MaHD}</div>
+                    </div>
+                </div>
+
+                <!-- Meta thông tin Khách hàng & Lưu trú -->
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid #e2e8f0; font-size: 13.5px;">
+                    <div>
+                        <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">KHÁCH HÀNG & PHIẾU ĐẶT</div>
+                        <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-top: 3px;">${pnp.TenKH || pnp.TenKhachHang || 'Khách hàng'}</div>
+                        <div style="color: #475569; margin-top: 2px;">Số điện thoại: <strong>${pnp.SDT || '-'}</strong> • Email: ${pnp.Email || '-'}</div>
+                        <div style="color: #475569; margin-top: 2px;">Mã phiếu nhận phòng: <strong style="color: #0284c7;">#${pnp.MaPhieu}</strong> (${pnp.KenhDat === 'TrucTiep' ? 'Đặt tại quầy' : 'Đặt trực tuyến'})</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">TÌNH TRẠNG & THỜI GIAN LƯU TRÚ</div>
+                        <div style="margin-top: 3px; color: #334155;">Ngày lập hóa đơn: <strong>${formatDateTime(pnp.NgayLap)}</strong></div>
+                        <div style="margin-top: 2px; color: #334155;">Khuyến mãi: <strong>${pnp.MaKM ? 'Mã ' + pnp.MaKM : 'Không áp dụng'}</strong></div>
+                        <div style="margin-top: 6px;">${trangThaiTT}</div>
+                    </div>
+                </div>
+
+                <!-- KHU VỰC 1: TIỀN PHÒNG -->
+                <div style="margin-top: 20px; border: 1px solid #bae6fd; border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+                    <div style="background: #e0f2fe; padding: 10px 18px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14.5px; color: #0369a1; border-bottom: 1px solid #bae6fd;">
+                        <span style="font-size: 17px;">🛏️</span> TIỀN PHÒNG
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; background: #ffffff;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 12.5px;">
+                                <th style="width: 50px; text-align: center; padding: 10px;">STT</th>
+                                <th style="text-align: left; padding: 10px;">Nội dung chi phí / Dịch vụ</th>
+                                <th style="width: 120px; text-align: center; padding: 10px;">Số lượng</th>
+                                <th style="width: 140px; text-align: right; padding: 10px;">Đơn giá</th>
+                                <th style="width: 160px; text-align: right; padding: 10px 18px 10px 10px;">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${roomRowsHtml}
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                                <td colspan="4" style="text-align: right; padding: 7px 16px; color: #475569; font-weight: 600; font-size: 13.5px;">
+                                    Tiền phòng tạm tính:
+                                </td>
+                                <td style="text-align: right; padding: 7px 18px 7px 10px; font-weight: 600; color: #334155; font-size: 14px;">
+                                    ${formatVND(tongTienPhongRaw)}
+                                </td>
+                            </tr>
+                            ${tienGiamKM > 0 ? `
+                            <tr style="background: #f8fafc;">
+                                <td colspan="4" style="text-align: right; padding: 6px 16px; color: #16a34a; font-weight: 600; font-size: 13px;">
+                                    Khuyến mãi (${pnp.MaKM || ''}):
+                                </td>
+                                <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #16a34a; font-size: 13.5px;">
+                                    -${formatVND(tienGiamKM)}
+                                </td>
+                            </tr>
+                            ` : ''}
+                            <tr style="background: #f8fafc;">
+                                <td colspan="4" style="text-align: right; padding: 6px 16px; color: #0284c7; font-weight: 600; font-size: 13px;">
+                                    Thuế VAT phòng (8%):
+                                </td>
+                                <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #0284c7; font-size: 13.5px;">
+                                    +${formatVND(vatPhong)}
+                                </td>
+                            </tr>
+                            <tr style="background: #f0f9ff; border-top: 1px solid #bae6fd;">
+                                <td colspan="4" style="text-align: right; padding: 11px 16px; font-weight: 800; color: #0369a1; font-size: 14px; text-transform: uppercase;">
+                                    TỔNG TIỀN PHÒNG (ĐÃ GỒM VAT 8%)
+                                </td>
+                                <td style="text-align: right; padding: 11px 18px 11px 10px; font-weight: 800; color: #0369a1; font-size: 16px;">
+                                    ${formatVND(tongTienPhongSauVAT)}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- KHU VỰC 2: CHI PHÍ PHÁT SINH -->
+                <div style="border: 1px solid #a7f3d0; border-radius: 10px; overflow: hidden; margin-bottom: 22px;">
+                    <div style="background: #ecfdf5; padding: 10px 18px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14.5px; color: #047857; border-bottom: 1px solid #a7f3d0;">
+                        <span style="font-size: 17px;">⚙️</span> CHI PHÍ PHÁT SINH
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; background: #ffffff;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 12.5px;">
+                                <th style="width: 50px; text-align: center; padding: 10px;">STT</th>
+                                <th style="text-align: left; padding: 10px;">Nội dung chi phí / Dịch vụ</th>
+                                <th style="width: 120px; text-align: center; padding: 10px;">Số lượng</th>
+                                <th style="width: 140px; text-align: right; padding: 10px;">Đơn giá</th>
+                                <th style="width: 160px; text-align: right; padding: 10px 18px 10px 10px;">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${serviceRowsHtml}
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                                <td colspan="4" style="text-align: right; padding: 7px 16px; color: #475569; font-weight: 600; font-size: 13.5px;">
+                                    Tổng chi phí dịch vụ:
+                                </td>
+                                <td style="text-align: right; padding: 7px 18px 7px 10px; font-weight: 600; color: #334155; font-size: 14px;">
+                                    ${formatVND(tongTienDichVuRaw)}
+                                </td>
+                            </tr>
+                            <tr style="background: #f8fafc;">
+                                <td colspan="4" style="text-align: right; padding: 6px 16px; color: #059669; font-weight: 600; font-size: 13px;">
+                                    Thuế VAT dịch vụ (8%):
+                                </td>
+                                <td style="text-align: right; padding: 6px 18px 6px 10px; font-weight: 600; color: #059669; font-size: 13.5px;">
+                                    +${formatVND(vatDichVu)}
+                                </td>
+                            </tr>
+                            <tr style="background: #f0fdf4; border-top: 1px solid #a7f3d0;">
+                                <td colspan="4" style="text-align: right; padding: 11px 16px; font-weight: 800; color: #047857; font-size: 14px; text-transform: uppercase;">
+                                    TỔNG CHI PHÍ PHÁT SINH (ĐÃ GỒM VAT 8%)
+                                </td>
+                                <td style="text-align: right; padding: 11px 18px 11px 10px; font-weight: 800; color: #047857; font-size: 16px;">
+                                    ${formatVND(tongTienDichVuSauVAT)}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- TỔNG KẾT THANH TOÁN -->
+                <div style="display: flex; justify-content: flex-end; margin-top: 15px; margin-bottom: 22px;">
+                    <div style="width: 420px; font-size: 13.5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px;">
+                        <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 6px;">
+                            <span>📋</span> QUYẾT TOÁN HÓA ĐƠN
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+                            <span>Tiền phòng (đã gồm VAT 8%):</span>
+                            <strong style="color: #0369a1;">${formatVND(tongTienPhongSauVAT)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+                            <span>Chi phí phát sinh (đã gồm VAT 8%):</span>
+                            <strong style="color: #047857;">${formatVND(tongTienDichVuSauVAT)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #64748b; font-size: 12px; font-style: italic;">
+                            <span>(Tổng VAT phòng + dịch vụ: ${formatVND(vatPhong + vatDichVu)} - Không phụ thu thêm)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 18px; font-weight: 800; color: #b45309; border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 6px;">
+                            <span>TỔNG TIỀN THANH TOÁN:</span>
+                            <span style="font-size: 21px;">${formatVND(tongTienSauVAT)}</span>
+                        </div>
+                        <div style="font-size: 12.5px; color: #64748b; text-align: right; margin-top: 6px;">
+                            Phương thức: <strong>${hinhThucTT}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER & NÚT IN -->
+                <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 18px; border-top: 1px dashed #cbd5e1;">
+                    <div style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                        Hóa đơn điện tử khởi tạo từ hệ thống quản lý khách sạn Royal Lotus Hotel.
+                    </div>
+                    <button type="button" class="btn-small" onclick="window.print()" style="background: #0284c7; color: #fff; font-weight: 700; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);">
+                        <span>🖨️</span> In Hóa Đơn Điện Tử
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Mở Modal Chỉnh Sửa Thông Tin Người Lưu Trú
+    function openEditGuestModal(maNLT) {
+        if (!currentDetailData || !Array.isArray(currentDetailData.NguoiLuuTru)) {
+            showToast('Chưa tải được dữ liệu người lưu trú.', 'warning');
+            return;
+        }
+
+        const guest = currentDetailData.NguoiLuuTru.find(g => g.MaNguoiLuuTru === maNLT);
+        if (!guest) {
+            showToast('Không tìm thấy thông tin người lưu trú có mã ' + maNLT, 'error');
+            return;
+        }
+
+        document.getElementById('editGuestMaNLT').value = guest.MaNguoiLuuTru;
+        document.getElementById('mNltCode').innerText = guest.MaNguoiLuuTru;
+        document.getElementById('mNltRoom').innerText = guest.MaPhong;
+        document.getElementById('editGuestHoTen').value = guest.HoTen || '';
+        
+        // Format ngày sinh YYYY-MM-DD
+        const dob = guest.NgaySinh ? guest.NgaySinh.split(' ')[0] : '';
+        const dobInput = document.getElementById('editGuestNgaySinh');
+        dobInput.value = dob;
+        dobInput.max = new Date().toISOString().split('T')[0];
+
+        // Quốc tịch
+        const natSelect = document.getElementById('editGuestQuocTich');
+        if (guest.QuocTich === 'Việt Nam' || guest.QuocTich === 'Viet Nam') {
+            natSelect.value = 'Việt Nam';
+        } else {
+            natSelect.value = 'Nước ngoài';
+        }
+
+        // Loại giấy tờ
+        const idTypeSelect = document.getElementById('editGuestLoaiGiayTo');
+        if (['CCCD', 'HoChieu', 'GiayKhaiSinh', 'Khac'].includes(guest.LoaiGiayTo)) {
+            idTypeSelect.value = guest.LoaiGiayTo;
+        } else {
+            idTypeSelect.value = 'CCCD';
+        }
+
+        document.getElementById('editGuestSoGiayTo').value = guest.SoGiayTo || '';
+        document.getElementById('editGuestGhiChu').value = guest.GhiChu || '';
+
+        // Reset alert box
+        const alertBox = document.getElementById('modalAlertBox');
+        alertBox.style.display = 'none';
+        alertBox.className = 'modal-alert';
+        alertBox.innerText = '';
+
+        const btn = document.getElementById('btnSubmitGuest');
+        btn.disabled = false;
+        btn.innerHTML = '💾 Lưu thay đổi';
+
+        document.getElementById('editGuestModal').classList.add('show');
+    }
+
+    // Đóng Modal
+    function closeEditGuestModal() {
+        document.getElementById('editGuestModal').classList.remove('show');
+    }
+
+    function validateDocumentNumber(loaiGiayTo, soGiayTo) {
+        const s = (soGiayTo || '').trim();
+        if (!s) return { valid: false, message: 'Vui lòng nhập số giấy tờ tùy thân.' };
+        const len = s.length;
+        const norm = (loaiGiayTo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+        if (norm.includes('CCCD')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CCCD chỉ được chứa các chữ số (0-9).' };
+            if (len < 12) {
+                const thieu = 12 - len;
+                return { valid: false, message: `Số CCCD chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CCCD phải gồm đúng 12 chữ số.` };
+            }
+            if (len > 12) {
+                const thua = len - 12;
+                return { valid: false, message: `Số CCCD có ${len} chữ số (thừa ${thua} số). Quy định CCCD chỉ gồm đúng 12 chữ số.` };
+            }
+        } else if (norm.includes('CMND')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CMND chỉ được chứa các chữ số (0-9).' };
+            if (len < 9) {
+                const thieu = 9 - len;
+                return { valid: false, message: `Số CMND chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CMND phải gồm đúng 9 chữ số.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số CMND có ${len} chữ số (thừa ${thua} số). Quy định CMND chỉ gồm đúng 9 chữ số.` };
+            }
+        } else if (norm.includes('HOCHIEU') || norm.includes('PASSPORT')) {
+            if (/\s/.test(s) || /[^A-Za-z0-9]/.test(s)) return { valid: false, message: 'Số Hộ chiếu không được chứa khoảng trắng hoặc ký tự đặc biệt.' };
+            if (len < 7) {
+                const thieu = 7 - len;
+                return { valid: false, message: `Số Hộ chiếu chỉ có ${len} ký tự (quá ngắn, thiếu tối thiểu ${thieu} ký tự). Quy định Hộ chiếu từ 7 đến 9 ký tự.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số Hộ chiếu có ${len} ký tự (quá dài, thừa ${thua} ký tự). Quy định Hộ chiếu tối đa 9 ký tự.` };
+            }
+        } else if (norm.includes('GIAYKHAISINH')) {
+            if (len < 6) {
+                const thieu = 6 - len;
+                return { valid: false, message: `Số Giấy khai sinh chỉ có ${len} ký tự (quá ngắn, thiếu ${thieu} ký tự). Độ dài hợp lệ từ 6 đến 15 ký tự.` };
+            }
+            if (len > 15) {
+                const thua = len - 15;
+                return { valid: false, message: `Số Giấy khai sinh có ${len} ký tự (quá dài, thừa ${thua} ký tự). Độ dài tối đa 15 ký tự.` };
+            }
+        }
+        return { valid: true, message: 'Số giấy tờ hợp lệ.' };
+    }
+
+    // Gửi yêu cầu cập nhật thông tin người lưu trú
+    async function submitEditGuest() {
+        const maNLT = document.getElementById('editGuestMaNLT').value;
+        const hoTen = document.getElementById('editGuestHoTen').value.trim();
+        const ngaySinh = document.getElementById('editGuestNgaySinh').value;
+        const quocTich = document.getElementById('editGuestQuocTich').value;
+        const loaiGiayTo = document.getElementById('editGuestLoaiGiayTo').value;
+        const soGiayTo = document.getElementById('editGuestSoGiayTo').value.trim();
+        const ghiChu = document.getElementById('editGuestGhiChu').value.trim();
+
+        const alertBox = document.getElementById('modalAlertBox');
+        alertBox.style.display = 'none';
+
+        if (!hoTen) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Vui lòng nhập họ và tên khách lưu trú!';
+            alertBox.style.display = 'block';
+            return;
+        }
+        if (!ngaySinh) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Vui lòng chọn ngày sinh!';
+            alertBox.style.display = 'block';
+            return;
+        }
+        if (new Date(ngaySinh) > new Date()) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Ngày sinh không thể nằm ở tương lai!';
+            alertBox.style.display = 'block';
+            return;
+        }
+        if (!soGiayTo) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Vui lòng nhập số giấy tờ tùy thân!';
+            alertBox.style.display = 'block';
+            return;
+        }
+
+        const docCheck = validateDocumentNumber(loaiGiayTo, soGiayTo);
+        if (!docCheck.valid) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = docCheck.message;
+            alertBox.style.display = 'block';
+            document.getElementById('editGuestSoGiayTo').focus();
+            return;
+        }
+
+        const btn = document.getElementById('btnSubmitGuest');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Đang lưu...';
+
+        try {
+            const res = await fetch(`${API_BASE}/datphong/capnhatnguoiluutru`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.MaTK}`
+                },
+                body: JSON.stringify({
+                    maTK: currentUser.MaTK,
+                    maNguoiLuuTru: maNLT,
+                    hoTen: hoTen,
+                    ngaySinh: ngaySinh,
+                    quocTich: quocTich,
+                    loaiGiayTo: loaiGiayTo,
+                    soGiayTo: soGiayTo,
+                    ghiChu: ghiChu
+                })
+            });
+
+            const data = await res.json();
+            if (!data.success) {
+                alertBox.className = 'modal-alert error';
+                alertBox.innerText = data.message || 'Cập nhật thất bại.';
+                btn.disabled = false;
+                btn.innerHTML = '💾 Lưu thay đổi';
+                return;
+            }
+
+            alertBox.className = 'modal-alert success';
+            alertBox.innerText = '✅ Cập nhật thông tin người lưu trú thành công!';
+
+            // Đóng modal sau 0.6 giây và tải lại dữ liệu mới nhất
+            setTimeout(async () => {
+                closeEditGuestModal();
+                await loadChiTietPhieu();
+            }, 600);
+
+        } catch (e) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Lỗi mạng khi cập nhật: ' + e.message;
+            btn.disabled = false;
+            btn.innerHTML = '💾 Lưu thay đổi';
+        }
+    }
+
+    // Render Danh sách phòng (sạch sẽ, không chứa các nút hành động chen chúc)
+    function renderRoomTable(phongList) {
+        const roomTbody = document.getElementById('pnpRoomTableBody');
+        if (!roomTbody) return;
+        if (!phongList || phongList.length === 0) {
+            roomTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px; color:#94a3b8;">Chưa có thông tin phòng nào thuộc phiếu này.</td></tr>';
+            return;
+        }
+
+        roomTbody.innerHTML = phongList.map(p => {
+            const checkinText = p.TenLeTanCheckin 
+                ? `<strong style="color: #34d399;">${p.TenLeTanCheckin}</strong> <span style="font-size:11px; color:var(--text-muted);">(${p.MaLeTanCheckin})</span>`
+                : (p.MaLeTanCheckin 
+                    ? `<strong style="color: #34d399;">${p.MaLeTanCheckin}</strong>` 
+                    : (p.TrangThai === 'DangLuuTru' || p.TrangThai === 'DaTraPhong' ? '<span style="color:#94a3b8;">Đã check-in</span>' : '<span style="color:#94a3b8; font-style:italic;">Chưa nhận</span>'));
+
+            const checkoutText = p.TenLeTanCheckout 
+                ? `<strong style="color: #f59e0b;">${p.TenLeTanCheckout}</strong> <span style="font-size:11px; color:var(--text-muted);">(${p.MaLeTanCheckout})</span>`
+                : (p.MaLeTanCheckout 
+                    ? `<strong style="color: #f59e0b;">${p.MaLeTanCheckout}</strong>` 
+                    : (p.TrangThai === 'DaTraPhong' ? '<span style="color:#94a3b8;">Đã check-out</span>' : '<span style="color:#94a3b8; font-style:italic;">Chưa trả</span>'));
+
+            return `
+            <tr>
+                <td><strong style="color: var(--gold-light); font-size:14px;">${p.MaPhong}</strong></td>
+                <td><strong style="color: #60a5fa;">${p.TenLoaiPhong || p.MaLoaiPhong}</strong></td>
+                <td>${Number(p.Gia || 0).toLocaleString('vi-VN')} đ/đêm</td>
+                <td>${formatDateTime(p.ThoiGianNhanPhong)}</td>
+                <td>${formatDateTime(p.ThoiGianTraPhong)}</td>
+                <td><strong>${p.SoNguoi || 1}</strong> người</td>
+                <td>${getStatusBadge(p.TrangThai)}</td>
+                <td>${checkinText}</td>
+                <td>${checkoutText}</td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    // Render nút đánh giá nằm ngang tiêu đề danh sách phòng (bên phải)
+    function renderReviewHeaderAction(phongList) {
+        const container = document.getElementById('phieuReviewHeaderAction');
+        if (!container) return;
+
+        const checkedOutRooms = (phongList || []).filter(p => p.TrangThai === 'DaTraPhong');
+        if (checkedOutRooms.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        const unreviewedRooms = checkedOutRooms.filter(p => !p.DaDanhGia);
+        if (unreviewedRooms.length > 0) {
+            container.innerHTML = `
+                <button type="button" class="btn-header-review" onclick="openReviewModalFromHeader()" title="Gửi đánh giá chất lượng phòng đã lưu trú">
+                    ⭐ Đánh giá phòng
+                </button>
+            `;
+        } else {
+            container.innerHTML = `
+                <button type="button" class="btn-header-review reviewed" onclick="openReviewModalFromHeader()" title="Xem lại các đánh giá đã gửi cho phòng">
+                    ✓ Đã đánh giá phòng
+                </button>
+            `;
+        }
+    }
+
+    // Biến trạng thái modal đánh giá
+    let selectedRating = 5;
+    let isReviewModalReadOnly = false;
+    const ratingDescriptions = {
+        1: '1 sao — Rất tệ',
+        2: '2 sao — Chưa hài lòng',
+        3: '3 sao — Bình thường',
+        4: '4 sao — Hài lòng',
+        5: '5 sao — Rất tuyệt vời'
+    };
+
+    function updateStarsDisplay(score) {
+        const stars = document.querySelectorAll('#starRatingBox .star-item');
+        stars.forEach(star => {
+            const val = parseInt(star.getAttribute('data-val'));
+            if (val <= score) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+        const descEl = document.getElementById('starRatingDesc');
+        if (descEl) {
+            descEl.innerText = ratingDescriptions[score] || `${score} sao`;
+        }
+    }
+
+    function setStarRating(score) {
+        if (isReviewModalReadOnly) return;
+        selectedRating = score;
+        updateStarsDisplay(score);
+    }
+
+    function previewStarHover(score) {
+        if (isReviewModalReadOnly) return;
+        updateStarsDisplay(score);
+    }
+
+    function resetStarHover() {
+        if (isReviewModalReadOnly) return;
+        updateStarsDisplay(selectedRating);
+    }
+
+    function updateReviewCharCount() {
+        const val = document.getElementById('reviewNoiDung').value;
+        document.getElementById('reviewCharCount').innerText = `${val.length} / 1000 ký tự`;
+    }
+
+    // Mở modal đánh giá từ nút ở tiêu đề
+    function openReviewModalFromHeader() {
+        const phongList = (currentDetailData && currentDetailData.DanhSachPhong) ? currentDetailData.DanhSachPhong : [];
+        const checkedOutRooms = phongList.filter(p => p.TrangThai === 'DaTraPhong');
+        if (checkedOutRooms.length === 0) {
+            showToast('Chỉ có thể đánh giá phòng sau khi đã hoàn tất thủ tục trả phòng.', 'warning');
+            return;
+        }
+
+        const roomSelectContainer = document.getElementById('modalRoomSelectContainer');
+        const roomSelect = document.getElementById('reviewRoomSelect');
+        document.getElementById('rmPhieuCode').innerText = currentMaPhieu;
+
+        if (checkedOutRooms.length > 1) {
+            roomSelectContainer.style.display = 'block';
+            roomSelect.innerHTML = checkedOutRooms.map(p => {
+                const stateText = p.DaDanhGia ? '✓ Đã đánh giá' : '★ Chưa đánh giá';
+                return `<option value="${p.MaPhong}">Phòng ${p.MaPhong} (${p.TenLoaiPhong || p.MaLoaiPhong}) — ${stateText}</option>`;
+            }).join('');
+
+            // Ưu tiên chọn phòng chưa đánh giá đầu tiên
+            const firstUnreviewed = checkedOutRooms.find(p => !p.DaDanhGia);
+            const initialRoom = firstUnreviewed ? firstUnreviewed.MaPhong : checkedOutRooms[0].MaPhong;
+            roomSelect.value = initialRoom;
+            displayRoomReview(initialRoom);
+        } else {
+            roomSelectContainer.style.display = 'none';
+            displayRoomReview(checkedOutRooms[0].MaPhong);
+        }
+
+        document.getElementById('reviewModal').classList.add('show');
+    }
+
+    function onModalRoomSelected(maPhong) {
+        displayRoomReview(maPhong);
+    }
+
+    // Hiển thị nội dung đánh giá cho một phòng cụ thể (View mode hoặc Create mode)
+    function displayRoomReview(maPhong) {
+        const phongList = (currentDetailData && currentDetailData.DanhSachPhong) ? currentDetailData.DanhSachPhong : [];
+        const room = phongList.find(p => p.MaPhong === maPhong);
+        if (!room) return;
+
+        document.getElementById('reviewMaPhong').value = maPhong;
+        const alertBox = document.getElementById('reviewAlertBox');
+        alertBox.style.display = 'none';
+
+        if (room.DaDanhGia && room.DanhGia) {
+            // Chế độ xem lại đánh giá đã gửi (Read-only)
+            isReviewModalReadOnly = true;
+            const dg = room.DanhGia;
+            document.getElementById('reviewModalTitle').innerHTML = `📋 Đánh Giá Phòng ${maPhong}`;
+
+            selectedRating = parseInt(dg.SoSao) || 5;
+            updateStarsDisplay(selectedRating);
+            document.getElementById('starRatingBox').classList.add('readonly');
+
+            const dateInfo = document.getElementById('reviewDateInfo');
+            dateInfo.style.display = 'block';
+            dateInfo.innerText = `Đã gửi đánh giá vào ngày: ${formatDateOnly(dg.NgayDanhGia)}`;
+
+            document.getElementById('reviewNoiDung').style.display = 'none';
+            const viewContent = document.getElementById('reviewViewContent');
+            viewContent.style.display = 'block';
+            viewContent.innerText = dg.NoiDung ? dg.NoiDung : '(Không có nội dung nhận xét chi tiết)';
+
+            document.getElementById('reviewRequiredMark').style.display = 'none';
+            document.getElementById('reviewCharCount').style.display = 'none';
+            document.getElementById('btnSubmitReview').style.display = 'none';
+            document.getElementById('btnCancelReview').innerText = 'Đóng';
+        } else {
+            // Chế độ gửi đánh giá mới (Create mode)
+            isReviewModalReadOnly = false;
+            document.getElementById('reviewModalTitle').innerHTML = `⭐ Đánh Giá Phòng ${maPhong}`;
+
+            selectedRating = 5;
+            updateStarsDisplay(5);
+            document.getElementById('starRatingBox').classList.remove('readonly');
+
+            const ta = document.getElementById('reviewNoiDung');
+            ta.value = '';
+            ta.style.display = 'block';
+            ta.readOnly = false;
+            ta.disabled = false;
+            updateReviewCharCount();
+
+            document.getElementById('reviewViewContent').style.display = 'none';
+            document.getElementById('reviewRequiredMark').style.display = 'inline';
+            document.getElementById('reviewCharCount').style.display = 'flex';
+            document.getElementById('reviewDateInfo').style.display = 'none';
+
+            const btnSave = document.getElementById('btnSubmitReview');
+            btnSave.style.display = 'inline-flex';
+            btnSave.disabled = false;
+            btnSave.innerHTML = '⭐ Gửi đánh giá';
+            document.getElementById('btnCancelReview').innerText = 'Hủy bỏ';
+
+            setTimeout(() => ta.focus(), 100);
+        }
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').classList.remove('show');
+    }
+
+    async function submitReview() {
+        if (isReviewModalReadOnly) return;
+
+        const maPhong = document.getElementById('reviewMaPhong').value;
+        const noiDung = document.getElementById('reviewNoiDung').value.trim();
+        const alertBox = document.getElementById('reviewAlertBox');
+        const btnSave = document.getElementById('btnSubmitReview');
+
+        alertBox.style.display = 'none';
+
+        if (!currentUser || !currentUser.MaTK) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để gửi đánh giá.';
+            return;
+        }
+
+        if (!maPhong || !currentMaPhieu) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Thiếu thông tin mã phòng hoặc mã phiếu đặt phòng.';
+            return;
+        }
+
+        if (selectedRating < 1 || selectedRating > 5) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Vui lòng chọn số sao đánh giá từ 1 đến 5 sao.';
+            return;
+        }
+
+        btnSave.disabled = true;
+        btnSave.innerHTML = '⏳ Đang gửi...';
+
+        try {
+            const res = await fetch(`${API_BASE}/danhgia/themdanhgia`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.MaTK}`
+                },
+                body: JSON.stringify({
+                    maTK: currentUser.MaTK,
+                    maPhieu: currentMaPhieu,
+                    maPhong: maPhong,
+                    soSao: selectedRating,
+                    noiDung: noiDung
+                })
+            });
+
+            const data = await res.json();
+            if (!data.success) {
+                alertBox.className = 'modal-alert error';
+                alertBox.innerText = data.message || 'Gửi đánh giá thất bại.';
+                btnSave.disabled = false;
+                btnSave.innerHTML = '⭐ Gửi đánh giá';
+                return;
+            }
+
+            alertBox.className = 'modal-alert success';
+            alertBox.innerText = '✅ ' + (data.message || 'Đánh giá phòng thành công!');
+
+            // Cập nhật dữ liệu tại client mà không làm mất thông tin trang hiện tại
+            if (currentDetailData && Array.isArray(currentDetailData.DanhSachPhong)) {
+                const targetRoom = currentDetailData.DanhSachPhong.find(p => p.MaPhong === maPhong);
+                if (targetRoom) {
+                    targetRoom.DaDanhGia = true;
+                    targetRoom.DanhGia = data.data;
+                }
+                // Cập nhật lại nút đánh giá ở tiêu đề
+                renderReviewHeaderAction(currentDetailData.DanhSachPhong);
+
+                // Cập nhật text trong dropdown phòng nếu có
+                const roomSelect = document.getElementById('reviewRoomSelect');
+                if (roomSelect) {
+                    const opt = roomSelect.querySelector(`option[value="${maPhong}"]`);
+                    if (opt && targetRoom) {
+                        opt.innerText = `Phòng ${targetRoom.MaPhong} (${targetRoom.TenLoaiPhong || targetRoom.MaLoaiPhong}) — ✓ Đã đánh giá`;
+                    }
+                }
+            }
+
+            // Tự động chuyển modal sang chế độ xem lại sau 0.6s
+            setTimeout(() => {
+                displayRoomReview(maPhong);
+            }, 600);
+
+        } catch (e) {
+            alertBox.className = 'modal-alert error';
+            alertBox.innerText = 'Lỗi kết nối khi gửi đánh giá: ' + e.message;
+            btnSave.disabled = false;
+            btnSave.innerHTML = '⭐ Gửi đánh giá';
+        }
+    }
+
+    // Đóng modal khi bấm phím Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeEditGuestModal();
+            closeReviewModal();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadChiTietPhieu);
+
+    // =========================================================================
+    // TOAST NOTIFICATION SYSTEM
+    // =========================================================================
+    let _detailToastTimer = null;
+    function showToast(message, type = 'info') {
+        let toast = document.getElementById('detailToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'detailToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = '#1e293b';
+            toast.style.color = '#f8fafc';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
+            toast.style.zIndex = '99999';
+            toast.style.borderLeft = '4px solid #38bdf8';
+            toast.style.display = 'none';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '10px';
+            toast.style.fontSize = '14px';
+            toast.style.fontFamily = 'inherit';
+            toast.style.maxWidth = '450px';
+            toast.style.wordBreak = 'break-word';
+            document.body.appendChild(toast);
+        }
+        const iconMap = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        const colorMap = { success: '#4ade80', error: '#f87171', warning: '#fbbf24', info: '#38bdf8' };
+        toast.innerHTML = `<span style="font-size:17px">${iconMap[type] || 'ℹ️'}</span> <span>${message}</span>`;
+        toast.style.borderLeftColor = colorMap[type] || '#38bdf8';
+        toast.style.display = 'flex';
+        if (_detailToastTimer) clearTimeout(_detailToastTimer);
+        _detailToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    window.showToast = showToast;
+</script>
+
+</body>
+</html>

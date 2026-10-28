@@ -1,70 +1,105 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HoaDon\Repositories;
 
-use App\HoaDon\Models\HoaDon;
-use App\HoaDon\Models\CTHD;
 use Database\Database;
+use PDO;
 
 /**
- * Repository cho module HoaDon.
- * Chi lop nay duoc phep thao tac truc tiep voi database (qua Database::getConnection()).
+ * Facade Repository cho module HoaDon.
+ * Đóng vai trò lớp trung gian điều phối và chuyển tiếp các thao tác sang HoaDonXuLyRepository.
+ * Giữ nguyên 100% public API để đảm bảo tương thích với DatPhongRepository, LeTanService,...
  */
 class HoaDonRepository
 {
-    private $db;
+    private ?Database $db;
+    private HoaDonXuLyRepository $xuLyRepo;
 
-    public function __construct(Database $db)
+    public function __construct(?Database $db = null, ?HoaDonXuLyRepository $xuLyRepo = null)
     {
-        $this->db = $db;
+        $this->db = $db ?? new Database();
+        $this->xuLyRepo = $xuLyRepo ?? new HoaDonXuLyRepository($this->db);
     }
 
-    public function findHoaDonById(string $id): ?HoaDon
+    public function getConnection(): PDO
     {
-        // TODO: SELECT * FROM hoadon WHERE id = :id
-        return null;
+        return Database::getConnection();
     }
 
-    public function getAllHoaDon(array $filters = []): array
+    public function getXuLyRepository(): HoaDonXuLyRepository
     {
-        // TODO: SELECT * FROM hoadon ... apply $filters
-        return [];
+        return $this->xuLyRepo;
     }
 
-    public function saveHoaDon(HoaDon $hoaDon): bool
+    // =========================================================================
+    // PHẦN 1: TRA CỨU & TRUY VẤN HÓA ĐƠN (READ / QUERY)
+    // =========================================================================
+
+    public function findHoaDonById(string $id, ?PDO $db = null): ?array
     {
-        // TODO: INSERT/UPDATE hoadon
-        return true;
+        return $this->xuLyRepo->findHoaDonById($id, $db);
     }
 
-    public function deleteHoaDon(string $id): bool
+    public function findHoaDonByMaPhieu(string $maPhieu, ?PDO $db = null): ?array
     {
-        // TODO: DELETE FROM hoadon WHERE id = :id
-        return true;
+        return $this->xuLyRepo->findHoaDonByMaPhieu($maPhieu, $db);
     }
 
-    public function findCTHDById(string $id): ?CTHD
+    public function getCTHDByMaHD(string $maHD, ?PDO $db = null): array
     {
-        // TODO: SELECT * FROM cthd WHERE id = :id
-        return null;
+        return $this->xuLyRepo->getCTHDByMaHD($maHD, $db);
     }
 
-    public function getAllCTHD(array $filters = []): array
+    public function getChiTietDayDuHoaDon(string $maHD, ?PDO $db = null): array
     {
-        // TODO: SELECT * FROM cthd ... apply $filters
-        return [];
+        return $this->xuLyRepo->getChiTietDayDuHoaDon($maHD, $db);
     }
 
-    public function saveCTHD(CTHD $cTHD): bool
+    public function getThongTinPhieuVaKhachHang(string $maPhieu, ?PDO $db = null): ?array
     {
-        // TODO: INSERT/UPDATE cthd
-        return true;
+        return $this->xuLyRepo->getThongTinPhieuVaKhachHang($maPhieu, $db);
     }
 
-    public function deleteCTHD(string $id): bool
+    public function getThanhToanByMaHD(string $maHD, ?PDO $db = null): array
     {
-        // TODO: DELETE FROM cthd WHERE id = :id
-        return true;
+        return $this->xuLyRepo->getThanhToanByMaHD($maHD, $db);
     }
 
+    public function getKhuyenMaiById(string $maKM, ?PDO $db = null): ?array
+    {
+        return $this->xuLyRepo->getKhuyenMaiById($maKM, $db);
+    }
+
+    // =========================================================================
+    // PHẦN 2: THAO TÁC & LƯU TRỮ HÓA ĐƠN (WRITE / COMMAND)
+    // =========================================================================
+
+    public function generateMaHoaDon(?PDO $db = null): string
+    {
+        return $this->xuLyRepo->generateMaHoaDon($db);
+    }
+
+    public function luuHoaDon(
+        string $maHD,
+        string $maPhieu,
+        float $tongTienSauVAT,
+        PDO $db
+    ): bool {
+        return $this->xuLyRepo->luuHoaDon($maHD, $maPhieu, $tongTienSauVAT, $db);
+    }
+
+    public function luuCTHD(
+        string $maHD,
+        string $maPhieu,
+        ?string $maPhong,
+        ?string $maCTDV,
+        int $soDem,
+        int $soLuong,
+        float $donGia,
+        PDO $db
+    ): bool {
+        return $this->xuLyRepo->luuCTHD($maHD, $maPhieu, $maPhong, $maCTDV, $soDem, $soLuong, $donGia, $db);
+    }
 }

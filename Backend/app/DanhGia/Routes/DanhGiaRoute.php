@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DanhGia\Routes;
 
 use App\DanhGia\Controllers\DanhGiaController;

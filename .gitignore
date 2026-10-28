@@ -1,0 +1,22 @@
+# Environment files (Chứa mật khẩu DB & App Password Mail)
+Backend/.env
+.env
+*.env.local
+
+# File rác & file tạm hệ thống
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+*.log
+
+# File thử nghiệm cá nhân & file troll nhạy cảm với Antivirus
+troll_virus.bat
+Bai_Thuyet_Trinh_Cong_Nghe_AI.pptx
+generate_ppt.py
+
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

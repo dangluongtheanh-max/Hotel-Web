@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\LeTan\Models;
 
 /**
@@ -12,24 +14,20 @@ class LeTan
     private string $MaLeTan;
     /** @var string */
     private string $HoTen;
-    /** @var string */
-    private string $SDT;
-    /** @var string */
-    private ?string $Email;
+    /** @var string|null */
+    private ?string $SDT;
     /** @var string (FK) */
     private string $MaTK;
     public function __construct(
         string $MaLeTan,
         string $HoTen,
-        string $SDT,
-        ?string $Email,
-        string $MaTK
+        string $MaTK,
+        ?string $SDT = null
     ) {
         $this->MaLeTan = $MaLeTan;
         $this->HoTen = $HoTen;
-        $this->SDT = $SDT;
-        $this->Email = $Email;
         $this->MaTK = $MaTK;
+        $this->SDT = $SDT;
     }
 
     public function getMaLeTan(): string
@@ -42,14 +40,9 @@ class LeTan
         return $this->HoTen;
     }
 
-    public function getSDT(): string
+    public function getSDT(): ?string
     {
         return $this->SDT;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->Email;
     }
 
     public function getMaTK(): string
@@ -67,14 +60,9 @@ class LeTan
         $this->HoTen = $HoTen;
     }
 
-    public function setSDT(string $SDT): void
+    public function setSDT(?string $SDT): void
     {
         $this->SDT = $SDT;
-    }
-
-    public function setEmail(?string $Email): void
-    {
-        $this->Email = $Email;
     }
 
     public function setMaTK(string $MaTK): void
@@ -88,7 +76,6 @@ class LeTan
             'MaLeTan' => $this->MaLeTan,
             'HoTen' => $this->HoTen,
             'SDT' => $this->SDT,
-            'Email' => $this->Email,
             'MaTK' => $this->MaTK,
         ];
     }

@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Cá Nhân - Royal Lotus Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b1329;
+            --bg-card: #131f37;
+            --bg-card-light: #1e2c4d;
+            --gold: #c59b27;
+            --gold-light: #e5b842;
+            --gold-gradient: linear-gradient(135deg, #c59b27 0%, #dfb547 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-gold: #f1c40f;
+            --border-color: rgba(197, 155, 39, 0.25);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top center, #152243 0%, var(--bg-dark) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(19, 31, 55, 0.85);
+            backdrop-filter: blur(14px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+            border-color: rgba(197, 155, 39, 0.3);
+        }
+
+        .nav-link.active {
+            color: #0b1329;
+            background: var(--gold-gradient);
+            border-color: var(--gold);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.25);
+        }
+
+        .auth-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .user-tag {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            padding: 7px 15px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            font-weight: 700;
+            border: none;
+            padding: 10px 22px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13.5px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-dark);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Profile Banner */
+        .profile-hero {
+            background: linear-gradient(135deg, rgba(19, 31, 55, 0.95), rgba(30, 44, 77, 0.85));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+        }
+
+        .profile-user-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(197, 155, 39, 0.3), rgba(241, 196, 15, 0.15));
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--gold-light);
+            font-weight: 800;
+            box-shadow: 0 4px 16px rgba(197, 155, 39, 0.3);
+            text-transform: uppercase;
+        }
+
+        .profile-titles h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .member-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(197, 155, 39, 0.25), rgba(241, 196, 15, 0.15));
+            color: var(--gold-light);
+            border: 1px solid var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-meta {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .profile-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Bento Stat Cards inside Hero */
+        .profile-stats-grid {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .profile-stat-box {
+            background: rgba(7, 13, 30, 0.6);
+            border: 1px solid var(--border-dark);
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            min-width: 130px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .profile-stat-box:hover {
+            border-color: rgba(197, 155, 39, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .stat-box-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-light);
+        }
+
+        .stat-box-lbl {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* 2-Column Content Grid */
+        .profile-content-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .profile-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card container */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .card-header {
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-label span.req {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(7, 13, 30, 0.8);
+            border: 1px solid var(--border-dark);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            padding: 11px 14px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2);
+            background: rgba(7, 13, 30, 0.95);
+        }
+
+        .form-control[readonly],
+        .form-control:disabled {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .input-icon-right {
+            position: absolute;
+            right: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 15px;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .input-icon-right:hover {
+            color: var(--gold-light);
+        }
+
+        .form-hint {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+
+        /* Alert message boxes */
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-box.success {
+            display: flex;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #a7f3d0;
+        }
+
+        .alert-box.error {
+            display: flex;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+        }
+
+        /* Password strength bar */
+        .pwd-strength-track {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .pwd-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .pwd-strength-text {
+            font-size: 11.5px;
+            margin-top: 4px;
+            text-align: right;
+            display: none;
+        }
+
+        /* Security tips list */
+        .security-tips {
+            background: rgba(7, 13, 30, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-top: 20px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .security-tips ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+
+        /* Loading Overlay / Empty State */
+        .loading-spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(197, 155, 39, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--gold);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .not-login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 60px 20px;
+            text-align: center;
+            max-width: 520px;
+            margin: 40px auto;
+            box-shadow: var(--shadow-card);
+        }
+
+        .not-login-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <a href="index.html" class="logo">
+            👑 Royal Lotus
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">
+                🏠 Trang Chủ
+            </a>
+            <a href="datphong.html" class="nav-link">
+                🏨 Đặt Phòng
+            </a>
+            <a href="lichsudatphong.html" class="nav-link">
+                📜 Lịch Sử Đặt Phòng
+            </a>
+            <a href="dichvu.html" class="nav-link">
+                🛎️ Dịch Vụ
+            </a>
+            <a href="thongtincanhan.html" class="nav-link active">
+                👤 Thông Tin Cá Nhân
+            </a>
+        </nav>
+
+        <div class="auth-bar" id="authBar">
+            <span class="user-tag" id="userTagHeader">
+                👤 Đang tải...
+            </span>
+            <button class="btn-small" onclick="handleRoleSwitch()" id="btnSwitchRole" title="Chuyển đổi nhanh vai trò tài khoản">
+                🔄 Đổi Vai Trò
+            </button>
+            <button class="btn-small" onclick="handleLogout()" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+                🚪 Đăng Xuất
+            </button>
+        </div>
+    </header>
+
+    <!-- Khối Chưa Đăng Nhập (Khi không có hotel_user trong localStorage) -->
+    <div id="notLoginSection" class="not-login-card" style="display: none;">
+        <div class="not-login-icon">🔒</div>
+        <h2 style="font-size: 22px; color: var(--gold-light); margin-bottom: 10px;">Yêu Cầu Đăng Nhập</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">
+            Bạn cần đăng nhập tài khoản Khách hàng để xem và quản lý thông tin cá nhân của mình.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="index.html" class="btn-primary">
+                🔑 Đi Đến Trang Đăng Nhập
+            </a>
+            <button type="button" class="btn-secondary" onclick="quickLoginDemo()">
+                ⚡ Đăng Nhập Nhanh (khach01)
+            </button>
+        </div>
+    </div>
+
+    <!-- Khối Nội Dung Chính Khi Đã Đăng Nhập -->
+    <main id="mainProfileSection" style="display: none;">
+        <!-- Hero Profile Banner -->
+        <section class="profile-hero">
+            <div class="profile-user-left">
+                <div class="profile-avatar" id="heroAvatar">
+                    👤
+                </div>
+                <div class="profile-titles">
+                    <h1>
+                        <span id="heroHoTen">Đang cập nhật...</span>
+                        <span class="member-badge" id="heroBadge">👑 Thành Viên Thân Thiết</span>
+                    </h1>
+                    <div class="profile-meta">
+                        <span>🏷️ Mã KH: <strong id="heroMaKH" style="color: var(--gold-light);">—</strong></span>
+                        <span>👤 Tài khoản: <strong id="heroTenDangNhap" style="color: var(--text-main);">—</strong></span>
+                        <span>📧 Email: <span id="heroEmail">—</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Stats -->
+            <div class="profile-stats-grid">
+                <div class="profile-stat-box">
+                    <div class="stat-box-val" id="statTongDon">0</div>
+                    <div class="stat-box-lbl">Đơn Đặt Phòng</div>
+                </div>
+                <div class="profile-stat-box">
+                    <div class="stat-box-val" id="statDonHoanTat" style="color: #34d399;">0</div>
+                    <div class="stat-box-lbl">Đã Hoàn Tất</div>
+                </div>
+                <div class="profile-stat-box">
+                    <div class="stat-box-val" id="statDanhGia" style="color: #38bdf8;">0</div>
+                    <div class="stat-box-lbl">Đánh Giá Gửi Đi</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2-Column Grid -->
+        <div class="profile-content-grid">
+            <!-- Cột 1: Thông Tin Cá Nhân (Họ tên, SĐT, Email) -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">📝 Thông Tin Cá Nhân & Liên Hệ</h2>
+                        <p class="card-subtitle">Chỉnh sửa họ tên, số điện thoại và email nhận xác nhận đặt phòng</p>
+                    </div>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
+                        🟢 Tài Khoản Hoạt Động
+                    </span>
+                </div>
+
+                <!-- Alert Box Thông Báo Form Cá Nhân -->
+                <div id="profileAlert" class="alert-box">
+                    <span id="profileAlertIcon">✅</span>
+                    <span id="profileAlertMsg">Thông báo</span>
+                </div>
+
+                <form id="profileForm" onsubmit="handleUpdateProfile(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="inputHoTen">
+                            Họ và Tên Khách Hàng <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="text" id="inputHoTen" class="form-control" placeholder="Nhập đầy đủ họ và tên..." required>
+                        </div>
+                        <div class="form-hint">💡 Họ tên sẽ xuất hiện trên Phiếu nhận phòng và Hóa đơn thanh toán</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputSDT">
+                            Số Điện Thoại Liên Hệ <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="tel" id="inputSDT" class="form-control" placeholder="Ví dụ: 0911000001" required oninput="onProfilePhoneInput()">
+                        </div>
+                        <div id="profilePhoneHint" style="font-size: 11.5px; margin-top: 4px; min-height: 16px;"></div>
+                        <div class="form-hint">📞 Gồm 10 chữ số (đầu 03, 05, 07, 08, 09), dùng để Lễ tân liên hệ nhận phòng</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputEmail">
+                            Địa Chỉ Email <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="email" id="inputEmail" class="form-control" placeholder="Ví dụ: yourname@gmail.com" required>
+                        </div>
+                        <div class="form-hint">✉️ Dùng nhận thông báo đặt phòng và mã OTP khôi phục mật khẩu</div>
+                    </div>
+
+                    <!-- Thông tin định danh người lưu trú (CCCD, Ngày sinh, Quốc tịch) -->
+                    <div style="background: rgba(11, 19, 41, 0.6); border: 1px dashed var(--border-color); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px;">
+                        <div style="font-size: 13px; font-weight: 700; color: var(--gold-light); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span>🪪</span> Thông Tin Định Danh Lưu Trú (Tự động điền khi đặt phòng)
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" for="inputNgaySinh">Ngày Sinh</label>
+                                <div class="form-input-wrapper">
+                                    <input type="date" id="inputNgaySinh" class="form-control">
+                                </div>
+                                <div class="form-hint">🎂 Dùng để xác định độ tuổi lưu trú</div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" for="inputQuocTich">Quốc Tịch</label>
+                                <div class="form-input-wrapper">
+                                    <select id="inputQuocTich" class="form-control" style="background: #0b1325; color: #fff;">
+                                        <option value="Việt Nam">Việt Nam</option>
+                                        <option value="Nước ngoài">Nước ngoài</option>
+                                    </select>
+                                </div>
+                                <div class="form-hint">🌐 Phục vụ khai báo tạm trú</div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="inputLoaiGiayTo">Loại Giấy Tờ Tùy Thân</label>
+                                <div class="form-input-wrapper">
+                                    <select id="inputLoaiGiayTo" class="form-control" style="background: #0b1325; color: #fff;" onchange="onProfileDocInput()">
+                                        <option value="CCCD">CCCD</option>
+                                        <option value="CMND">CMND</option>
+                                        <option value="Hộ chiếu">Hộ chiếu</option>
+                                        <option value="Giấy khai sinh">Giấy khai sinh</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="inputSoGiayTo">Số Giấy Tờ (CCCD/Hộ Chiếu)</label>
+                                <div class="form-input-wrapper">
+                                    <input type="text" id="inputSoGiayTo" class="form-control" placeholder="Ví dụ: 001202000001" oninput="onProfileDocInput()">
+                                </div>
+                                <div id="profileDocHint" style="font-size: 11.5px; margin-top: 4px; min-height: 16px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Các trường chỉ đọc (Readonly) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div class="form-group">
+                            <label class="form-label" for="inputTenDangNhap">
+                                Tên Đăng Nhập 🔒
+                            </label>
+                            <input type="text" id="inputTenDangNhap" class="form-control" readonly title="Tên đăng nhập là định danh cố định không thể thay đổi">
+                            <div class="form-hint">🔒 Cố định hệ thống</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inputMaKH">
+                                Mã Khách Hàng 🏷️
+                            </label>
+                            <input type="text" id="inputMaKH" class="form-control" readonly title="Mã khách hàng tự động sinh bởi hệ thống">
+                            <div class="form-hint">🏷️ Mã thành viên</div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="btnSaveProfile">
+                            <span>💾</span> Lưu Thay Đổi Thông Tin
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetProfileForm()">
+                            <span>🔄</span> Khôi Phục Ban Đầu
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cột 2: Đổi Mật Khẩu & Bảo Mật Tài Khoản -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">🔒 Bảo Mật & Đổi Mật Khẩu</h2>
+                        <p class="card-subtitle">Cập nhật mật khẩu định kỳ để bảo vệ tài khoản của bạn</p>
+                    </div>
+                    <span style="font-size: 20px;">🛡️</span>
+                </div>
+
+                <!-- Alert Box Thông Báo Đổi Mật Khẩu -->
+                <div id="pwdAlert" class="alert-box">
+                    <span id="pwdAlertIcon">✅</span>
+                    <span id="pwdAlertMsg">Thông báo</span>
+                </div>
+
+                <form id="passwordForm" onsubmit="handleChangePassword(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="inputMatKhauCu">
+                            Mật Khẩu Hiện Tại <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="password" id="inputMatKhauCu" class="form-control" placeholder="Nhập mật khẩu đang sử dụng..." required autocomplete="current-password">
+                            <span class="input-icon-right" onclick="togglePasswordVisibility('inputMatKhauCu', this)">👁️</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputMatKhauMoi">
+                            Mật Khẩu Mới <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="password" id="inputMatKhauMoi" class="form-control" placeholder="Tối thiểu 6 ký tự..." required minlength="6" oninput="checkPasswordStrength(this.value)" autocomplete="new-password">
+                            <span class="input-icon-right" onclick="togglePasswordVisibility('inputMatKhauMoi', this)">👁️</span>
+                        </div>
+                        <div class="pwd-strength-track" id="pwdStrengthTrack">
+                            <div class="pwd-strength-bar" id="pwdStrengthBar"></div>
+                        </div>
+                        <div class="pwd-strength-text" id="pwdStrengthText">Độ mạnh mật khẩu</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputXacNhanMatKhau">
+                            Xác Nhận Mật Khẩu Mới <span class="req">*</span>
+                        </label>
+                        <div class="form-input-wrapper">
+                            <input type="password" id="inputXacNhanMatKhau" class="form-control" placeholder="Nhập lại chính xác mật khẩu mới..." required minlength="6" autocomplete="new-password">
+                            <span class="input-icon-right" onclick="togglePasswordVisibility('inputXacNhanMatKhau', this)">👁️</span>
+                        </div>
+                        <div class="form-hint" id="pwdMatchHint">🔒 Hai mật khẩu phải khớp nhau</div>
+                    </div>
+
+                    <div class="security-tips">
+                        <strong>💡 Lời khuyên bảo mật:</strong>
+                        <ul>
+                            <li>Mật khẩu nên dài ít nhất 6 ký tự.</li>
+                            <li>Nên kết hợp chữ cái hoa, chữ thường và chữ số.</li>
+                            <li>Không nên đặt mật khẩu mới trùng lặp với mật khẩu cũ.</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="btnSavePassword" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);">
+                            <span>🔑</span> Cập Nhật Mật Khẩu Mới
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // 1. Cấu hình Endpoint API tương thích với file:// và http://
+    const API_BASE = (() => {
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:8000/Backend/public/index.php';
+        }
+        const pathname = window.location.pathname;
+        const feIndex = pathname.indexOf('/Frontend/');
+        if (feIndex !== -1) {
+            return window.location.origin + pathname.substring(0, feIndex) + '/Backend/public/index.php';
+        }
+        return window.location.origin + '/Backend/public/index.php';
+    })();
+
+    // 2. Trạng thái người dùng
+    let currentUser = null;
+    let cachedProfile = null;
+
+    // 3. Khởi tạo khi tải trang
+    document.addEventListener('DOMContentLoaded', async () => {
+        const stored = localStorage.getItem('hotel_user');
+        if (!stored) {
+            showNotLoggedIn();
+            return;
+        }
+
+        try {
+            currentUser = JSON.parse(stored);
+        } catch (e) {
+            showNotLoggedIn();
+            return;
+        }
+
+        if (!currentUser || !currentUser.MaTK) {
+            showNotLoggedIn();
+            return;
+        }
+
+        updateHeaderAuth(currentUser);
+        await loadCustomerProfile();
+    });
+
+    // 4. Hiển thị trạng thái chưa đăng nhập
+    function showNotLoggedIn() {
+        document.getElementById('notLoginSection').style.display = 'block';
+        document.getElementById('mainProfileSection').style.display = 'none';
+        const tag = document.getElementById('userTagHeader');
+        if (tag) tag.innerHTML = '👤 Khách Vãng Lai';
+    }
+
+    // 5. Cập nhật header authentication
+    function updateHeaderAuth(user) {
+        const tag = document.getElementById('userTagHeader');
+        if (tag) {
+            const role = user.VaiTro === 'Admin' ? 'Quản Trị Viên' : (user.VaiTro === 'LeTan' ? 'Lễ Tân' : 'Khách Hàng');
+            const name = user.HoTen || user.TenDangNhap || 'Khách Hàng';
+            tag.innerHTML = `👤 ${role}: <strong>${name}</strong>`;
+        }
+    }
+
+    // 6. Tải dữ liệu hồ sơ cá nhân từ API backend
+    async function loadCustomerProfile() {
+        if (!currentUser || !currentUser.MaTK) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/khachhang/xemthongtincanhan?maTK=${encodeURIComponent(currentUser.MaTK)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ maTK: currentUser.MaTK })
+            });
+
+            const json = await res.json();
+            const dataObj = json.data?.data || json.data || json;
+
+            if (json.success !== false && (dataObj.status === 'success' || dataObj.MaTK || !json.error)) {
+                const profile = dataObj.data || dataObj;
+                cachedProfile = profile;
+                renderProfileUI(profile);
+
+                // Cập nhật lại localStorage với các thông tin mới nhất
+                const updatedUser = {
+                    ...currentUser,
+                    MaKH: profile.MaKH || currentUser.MaKH,
+                    HoTen: profile.HoTen || currentUser.HoTen,
+                    SDT: profile.SDT || currentUser.SDT,
+                    Email: profile.Email || currentUser.Email
+                };
+                localStorage.setItem('hotel_user', JSON.stringify(updatedUser));
+                currentUser = updatedUser;
+                updateHeaderAuth(currentUser);
+
+                document.getElementById('notLoginSection').style.display = 'none';
+                document.getElementById('mainProfileSection').style.display = 'block';
+            } else {
+                showProfileAlert(json.error || dataObj.message || 'Không thể tải thông tin cá nhân', 'error');
+                document.getElementById('notLoginSection').style.display = 'none';
+                document.getElementById('mainProfileSection').style.display = 'block';
+            }
+        } catch (err) {
+            console.error('Lỗi khi tải thông tin cá nhân:', err);
+            showProfileAlert('Lỗi kết nối server: ' + err.message, 'error');
+            document.getElementById('notLoginSection').style.display = 'none';
+            document.getElementById('mainProfileSection').style.display = 'block';
+        }
+    }
+
+    // 7. Điền thông tin lên giao diện
+    function renderProfileUI(p) {
+        // Hero Avatar & Tiêu đề
+        const hoTen = p.HoTen || 'Khách Hàng';
+        const initial = hoTen.trim().charAt(0) || '👤';
+        const avatarEl = document.getElementById('heroAvatar');
+        if (avatarEl) avatarEl.textContent = initial;
+
+        const hoTenEl = document.getElementById('heroHoTen');
+        if (hoTenEl) hoTenEl.textContent = hoTen;
+
+        const maKHEl = document.getElementById('heroMaKH');
+        if (maKHEl) maKHEl.textContent = p.MaKH || '—';
+
+        const userEl = document.getElementById('heroTenDangNhap');
+        if (userEl) userEl.textContent = p.TenDangNhap || '—';
+
+        const emailEl = document.getElementById('heroEmail');
+        if (emailEl) emailEl.textContent = p.Email || 'Chưa cập nhật';
+
+        // Bento Stats
+        const statDon = document.getElementById('statTongDon');
+        if (statDon) statDon.textContent = p.TongSoDonDat || 0;
+
+        const statDone = document.getElementById('statDonHoanTat');
+        if (statDone) statDone.textContent = p.SoDonHoanTat || 0;
+
+        const statRev = document.getElementById('statDanhGia');
+        if (statRev) statRev.textContent = p.SoDanhGiaDaGui || 0;
+
+        // Điền vào Form
+        const inputHoTen = document.getElementById('inputHoTen');
+        if (inputHoTen) inputHoTen.value = p.HoTen || '';
+
+        const inputSDT = document.getElementById('inputSDT');
+        if (inputSDT) inputSDT.value = p.SDT || '';
+
+        const inputEmail = document.getElementById('inputEmail');
+        if (inputEmail) inputEmail.value = p.Email || '';
+
+        const inputNgaySinh = document.getElementById('inputNgaySinh');
+        if (inputNgaySinh) inputNgaySinh.value = p.NgaySinh || '';
+
+        const inputQuocTich = document.getElementById('inputQuocTich');
+        if (inputQuocTich) inputQuocTich.value = p.QuocTich || 'Việt Nam';
+
+        const inputLoaiGiayTo = document.getElementById('inputLoaiGiayTo');
+        if (inputLoaiGiayTo) inputLoaiGiayTo.value = p.LoaiGiayTo || 'CCCD';
+
+        const inputSoGiayTo = document.getElementById('inputSoGiayTo');
+        if (inputSoGiayTo) inputSoGiayTo.value = p.SoGiayTo || '';
+
+        const inputTenDangNhap = document.getElementById('inputTenDangNhap');
+        if (inputTenDangNhap) inputTenDangNhap.value = p.TenDangNhap || '';
+
+        const inputMaKH = document.getElementById('inputMaKH');
+        if (inputMaKH) inputMaKH.value = p.MaKH || '';
+    }
+
+    // 8. Khôi phục form về thông tin ban đầu
+    function resetProfileForm() {
+        if (cachedProfile) {
+            renderProfileUI(cachedProfile);
+            hideProfileAlert();
+        }
+    }
+
+    // ==========================================
+    // LOGIC KIỂM TRA THÔNG TIN GIẤY TỜ & SĐT (VALIDATION)
+    // ==========================================
+    function validatePhoneNumber(sdt) {
+        const s = (sdt || '').trim();
+        if (!s) return { valid: false, message: 'Vui lòng nhập số điện thoại.' };
+        if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số điện thoại chỉ được chứa các chữ số (0-9).' };
+        const len = s.length;
+        if (len < 10) {
+            const thieu = 10 - len;
+            return { valid: false, message: `Số điện thoại chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định số điện thoại phải gồm đúng 10 số.` };
+        }
+        if (len > 10) {
+            const thua = len - 10;
+            return { valid: false, message: `Số điện thoại có ${len} chữ số (thừa ${thua} số). Quy định số điện thoại chỉ gồm đúng 10 số.` };
+        }
+        if (!/^(03|05|07|08|09)/.test(s)) {
+            return { valid: false, message: 'Số điện thoại không hợp lệ. Phải bắt đầu bằng các đầu số di động Việt Nam (03, 05, 07, 08, 09).' };
+        }
+        return { valid: true, message: 'Số điện thoại hợp lệ (10 chữ số).' };
+    }
+
+    function validateDocumentNumber(loaiGiayTo, soGiayTo) {
+        const s = (soGiayTo || '').trim();
+        if (!s) return { valid: false, message: 'Vui lòng nhập số giấy tờ tùy thân.' };
+        const len = s.length;
+        const norm = (loaiGiayTo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+        if (norm.includes('CCCD')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CCCD chỉ được chứa các chữ số (0-9).' };
+            if (len < 12) {
+                const thieu = 12 - len;
+                return { valid: false, message: `Số CCCD chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CCCD phải gồm đúng 12 chữ số.` };
+            }
+            if (len > 12) {
+                const thua = len - 12;
+                return { valid: false, message: `Số CCCD có ${len} chữ số (thừa ${thua} số). Quy định CCCD chỉ gồm đúng 12 chữ số.` };
+            }
+        } else if (norm.includes('CMND')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CMND chỉ được chứa các chữ số (0-9).' };
+            if (len < 9) {
+                const thieu = 9 - len;
+                return { valid: false, message: `Số CMND chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CMND phải gồm đúng 9 chữ số.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số CMND có ${len} chữ số (thừa ${thua} số). Quy định CMND chỉ gồm đúng 9 chữ số.` };
+            }
+        } else if (norm.includes('HOCHIEU') || norm.includes('PASSPORT')) {
+            if (/\s/.test(s) || /[^A-Za-z0-9]/.test(s)) return { valid: false, message: 'Số Hộ chiếu không được chứa khoảng trắng hoặc ký tự đặc biệt.' };
+            if (len < 7) {
+                const thieu = 7 - len;
+                return { valid: false, message: `Số Hộ chiếu chỉ có ${len} ký tự (quá ngắn, thiếu tối thiểu ${thieu} ký tự). Quy định Hộ chiếu từ 7 đến 9 ký tự.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số Hộ chiếu có ${len} ký tự (quá dài, thừa ${thua} ký tự). Quy định Hộ chiếu tối đa 9 ký tự.` };
+            }
+        } else if (norm.includes('GIAYKHAISINH')) {
+            if (len < 6) {
+                const thieu = 6 - len;
+                return { valid: false, message: `Số Giấy khai sinh chỉ có ${len} ký tự (quá ngắn, thiếu ${thieu} ký tự). Độ dài hợp lệ từ 6 đến 15 ký tự.` };
+            }
+            if (len > 15) {
+                const thua = len - 15;
+                return { valid: false, message: `Số Giấy khai sinh có ${len} ký tự (quá dài, thừa ${thua} ký tự). Độ dài tối đa 15 ký tự.` };
+            }
+        }
+        return { valid: true, message: 'Số giấy tờ hợp lệ.' };
+    }
+
+    function onProfilePhoneInput() {
+        const input = document.getElementById('inputSDT');
+        const hint = document.getElementById('profilePhoneHint');
+        if (!input || !hint) return;
+        const val = input.value.trim();
+        if (!val) {
+            hint.innerHTML = '';
+            input.style.borderColor = '';
+            return;
+        }
+        const check = validatePhoneNumber(val);
+        if (!check.valid) {
+            hint.style.color = '#f87171';
+            hint.innerHTML = `⚠️ ${check.message}`;
+            input.style.borderColor = '#ef4444';
+        } else {
+            hint.style.color = '#34d399';
+            hint.innerHTML = `✓ ${check.message}`;
+            input.style.borderColor = '#10b981';
+        }
+    }
+
+    function onProfileDocInput() {
+        const docInput = document.getElementById('inputSoGiayTo');
+        const typeSelect = document.getElementById('inputLoaiGiayTo');
+        const hint = document.getElementById('profileDocHint');
+        if (!docInput || !hint) return;
+        const val = docInput.value.trim();
+        const type = typeSelect ? typeSelect.value : '';
+        if (!val) {
+            hint.innerHTML = '';
+            docInput.style.borderColor = '';
+            return;
+        }
+        const check = validateDocumentNumber(type, val);
+        if (!check.valid) {
+            hint.style.color = '#f87171';
+            hint.innerHTML = `⚠️ ${check.message}`;
+            docInput.style.borderColor = '#ef4444';
+        } else {
+            hint.style.color = '#34d399';
+            hint.innerHTML = `✓ ${check.message} (${val.length} ký tự)`;
+            docInput.style.borderColor = '#10b981';
+        }
+    }
+
+    // 9. Xử lý cập nhật thông tin cá nhân
+    async function handleUpdateProfile(e) {
+        e.preventDefault();
+        if (!currentUser || !currentUser.MaTK) return;
+
+        const hoTen = document.getElementById('inputHoTen').value.trim();
+        const sdt = document.getElementById('inputSDT').value.trim();
+        const email = document.getElementById('inputEmail').value.trim();
+        const ngaySinh = document.getElementById('inputNgaySinh') ? document.getElementById('inputNgaySinh').value : '';
+        const quocTich = document.getElementById('inputQuocTich') ? document.getElementById('inputQuocTich').value : 'Việt Nam';
+        const loaiGiayTo = document.getElementById('inputLoaiGiayTo') ? document.getElementById('inputLoaiGiayTo').value : 'CCCD';
+        const soGiayTo = document.getElementById('inputSoGiayTo') ? document.getElementById('inputSoGiayTo').value.trim() : '';
+        const btnSave = document.getElementById('btnSaveProfile');
+
+        // Validation phía Client
+        if (!hoTen) {
+            showProfileAlert('Vui lòng nhập họ và tên của bạn.', 'error');
+            return;
+        }
+
+        if (sdt) {
+            const phoneCheck = validatePhoneNumber(sdt);
+            if (!phoneCheck.valid) {
+                showProfileAlert(phoneCheck.message, 'error');
+                document.getElementById('inputSDT').focus();
+                return;
+            }
+        }
+
+        if (soGiayTo) {
+            const docCheck = validateDocumentNumber(loaiGiayTo, soGiayTo);
+            if (!docCheck.valid) {
+                showProfileAlert(docCheck.message, 'error');
+                document.getElementById('inputSoGiayTo').focus();
+                return;
+            }
+        }
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showProfileAlert('Địa chỉ email không đúng định dạng.', 'error');
+            return;
+        }
+
+        const originalBtnHtml = btnSave.innerHTML;
+        btnSave.disabled = true;
+        btnSave.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Đang Lưu...';
+        hideProfileAlert();
+
+        try {
+            const res = await fetch(`${API_BASE}/khachhang/capnhatthongtincanhan`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    maTK: currentUser.MaTK,
+                    hoTen: hoTen,
+                    sdt: sdt,
+                    email: email,
+                    ngaySinh: ngaySinh || null,
+                    quocTich: quocTich,
+                    loaiGiayTo: loaiGiayTo,
+                    soGiayTo: soGiayTo || null
+                })
+            });
+
+            const json = await res.json();
+            const dataObj = json.data?.data || json.data || json;
+
+            if (json.success !== false && (dataObj.status === 'success' || !json.error)) {
+                const updated = dataObj.data || dataObj;
+                cachedProfile = { ...cachedProfile, ...updated };
+                renderProfileUI(cachedProfile);
+
+                // Cập nhật đồng bộ vào localStorage
+                const updatedUser = {
+                    ...currentUser,
+                    HoTen: updated.HoTen || hoTen,
+                    SDT: updated.SDT || sdt,
+                    Email: updated.Email || email
+                };
+                localStorage.setItem('hotel_user', JSON.stringify(updatedUser));
+                currentUser = updatedUser;
+                updateHeaderAuth(currentUser);
+
+                showProfileAlert(dataObj.message || 'Cập nhật thông tin cá nhân thành công!', 'success');
+            } else {
+                const errMsg = json.error || dataObj.message || 'Cập nhật thất bại. Vui lòng thử lại!';
+                showProfileAlert(errMsg, 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi cập nhật:', err);
+            showProfileAlert('Lỗi kết nối: ' + err.message, 'error');
+        } finally {
+            btnSave.disabled = false;
+            btnSave.innerHTML = originalBtnHtml;
+        }
+    }
+
+    // 10. Xử lý đổi mật khẩu
+    async function handleChangePassword(e) {
+        e.preventDefault();
+        if (!currentUser || !currentUser.MaTK) return;
+
+        const matKhauCu = document.getElementById('inputMatKhauCu').value;
+        const matKhauMoi = document.getElementById('inputMatKhauMoi').value;
+        const xacNhanMatKhau = document.getElementById('inputXacNhanMatKhau').value;
+        const btnSavePwd = document.getElementById('btnSavePassword');
+
+        if (!matKhauCu) {
+            showPwdAlert('Vui lòng nhập mật khẩu hiện tại.', 'error');
+            return;
+        }
+
+        if (matKhauMoi.length < 6) {
+            showPwdAlert('Mật khẩu mới phải có ít nhất 6 ký tự.', 'error');
+            return;
+        }
+
+        if (matKhauMoi !== xacNhanMatKhau) {
+            showPwdAlert('Xác nhận mật khẩu mới không trùng khớp.', 'error');
+            return;
+        }
+
+        if (matKhauCu === matKhauMoi) {
+            showPwdAlert('Mật khẩu mới không được giống với mật khẩu hiện tại.', 'error');
+            return;
+        }
+
+        const originalBtnHtml = btnSavePwd.innerHTML;
+        btnSavePwd.disabled = true;
+        btnSavePwd.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Đang Cập Nhật...';
+        hidePwdAlert();
+
+        try {
+            const res = await fetch(`${API_BASE}/khachhang/doimatkhau`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    maTK: currentUser.MaTK,
+                    matKhauCu: matKhauCu,
+                    matKhauMoi: matKhauMoi,
+                    xacNhanMatKhau: xacNhanMatKhau
+                })
+            });
+
+            const json = await res.json();
+            const dataObj = json.data?.data || json.data || json;
+
+            if (json.success !== false && (dataObj.status === 'success' || !json.error)) {
+                showPwdAlert(dataObj.message || 'Đổi mật khẩu thành công! Vui lòng ghi nhớ mật khẩu mới.', 'success');
+                // Reset form mật khẩu
+                document.getElementById('passwordForm').reset();
+                resetPasswordStrength();
+            } else {
+                const errMsg = json.error || dataObj.message || 'Đổi mật khẩu không thành công. Vui lòng kiểm tra lại!';
+                showPwdAlert(errMsg, 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi đổi mật khẩu:', err);
+            showPwdAlert('Lỗi kết nối máy chủ: ' + err.message, 'error');
+        } finally {
+            btnSavePwd.disabled = false;
+            btnSavePwd.innerHTML = originalBtnHtml;
+        }
+    }
+
+    // 11. Các hàm tiện ích thông báo & hiển thị
+    function showProfileAlert(msg, type = 'success') {
+        const box = document.getElementById('profileAlert');
+        const icon = document.getElementById('profileAlertIcon');
+        const text = document.getElementById('profileAlertMsg');
+        if (!box) return;
+
+        box.className = `alert-box ${type}`;
+        if (icon) icon.textContent = type === 'success' ? '✅' : '⚠️';
+        if (text) text.textContent = msg;
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideProfileAlert() {
+        const box = document.getElementById('profileAlert');
+        if (box) box.style.display = 'none';
+    }
+
+    function showPwdAlert(msg, type = 'success') {
+        const box = document.getElementById('pwdAlert');
+        const icon = document.getElementById('pwdAlertIcon');
+        const text = document.getElementById('pwdAlertMsg');
+        if (!box) return;
+
+        box.className = `alert-box ${type}`;
+        if (icon) icon.textContent = type === 'success' ? '✅' : '⚠️';
+        if (text) text.textContent = msg;
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hidePwdAlert() {
+        const box = document.getElementById('pwdAlert');
+        if (box) box.style.display = 'none';
+    }
+
+    // 12. Ẩn / Hiện mật khẩu
+    function togglePasswordVisibility(inputId, iconEl) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            iconEl.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            iconEl.textContent = '👁️';
+        }
+    }
+
+    // 13. Đánh giá độ mạnh mật khẩu
+    function checkPasswordStrength(pwd) {
+        const track = document.getElementById('pwdStrengthTrack');
+        const bar = document.getElementById('pwdStrengthBar');
+        const text = document.getElementById('pwdStrengthText');
+        if (!track || !bar || !text) return;
+
+        if (!pwd) {
+            resetPasswordStrength();
+            return;
+        }
+
+        track.style.display = 'block';
+        text.style.display = 'block';
+
+        let score = 0;
+        if (pwd.length >= 6) score += 25;
+        if (pwd.length >= 8) score += 25;
+        if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score += 25;
+        if (/[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) score += 25;
+
+        bar.style.width = `${score}%`;
+
+        if (score <= 25) {
+            bar.style.background = '#ef4444';
+            text.textContent = 'Độ mạnh: Yếu (ít nhất 6 ký tự)';
+            text.style.color = '#ef4444';
+        } else if (score <= 50) {
+            bar.style.background = '#f59e0b';
+            text.textContent = 'Độ mạnh: Trung bình (nên thêm chữ số / hoa)';
+            text.style.color = '#f59e0b';
+        } else if (score <= 75) {
+            bar.style.background = '#38bdf8';
+            text.textContent = 'Độ mạnh: Khá an toàn';
+            text.style.color = '#38bdf8';
+        } else {
+            bar.style.background = '#10b981';
+            text.textContent = 'Độ mạnh: Rất mạnh & bảo mật cao';
+            text.style.color = '#10b981';
+        }
+    }
+
+    function resetPasswordStrength() {
+        const track = document.getElementById('pwdStrengthTrack');
+        const bar = document.getElementById('pwdStrengthBar');
+        const text = document.getElementById('pwdStrengthText');
+        if (track) track.style.display = 'none';
+        if (bar) bar.style.width = '0%';
+        if (text) text.style.display = 'none';
+    }
+
+    // 14. Đăng nhập nhanh tài khoản demo (khach01)
+    async function quickLoginDemo() {
+        try {
+            const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenDangNhap: 'khach01',
+                    matKhau: '123456'
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.data;
+                localStorage.setItem('hotel_user', JSON.stringify(currentUser));
+                updateHeaderAuth(currentUser);
+                await loadCustomerProfile();
+                showToast('Đăng nhập nhanh thành công!', 'success');
+            } else {
+                showToast('Đăng nhập nhanh thất bại: ' + (data.message || 'Lỗi server'), 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối máy chủ: ' + e.message, 'error');
+        }
+    }
+
+    // 15. Chuyển đổi vai trò nhanh (Khách hàng <-> Lễ tân)
+    async function handleRoleSwitch() {
+        const u = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+        const isRec = u && u.VaiTro === 'LeTan';
+        const targetUsername = isRec ? 'khach01' : 'letan01';
+
+        try {
+            const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenDangNhap: targetUsername,
+                    matKhau: '123456'
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('hotel_user', JSON.stringify(data.data));
+                if (data.data.VaiTro === 'LeTan') {
+                    window.location.href = 'letan.html';
+                } else {
+                    window.location.reload();
+                }
+            }
+        } catch (e) {
+            showToast('Lỗi chuyển vai trò: ' + e.message, 'error');
+        }
+    }
+
+    // 16. Đăng xuất
+    function handleLogout() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
+            localStorage.removeItem('hotel_user');
+            window.location.href = 'index.html';
+        }
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATION SYSTEM
+    // =========================================================================
+    let _profileToastTimer = null;
+    function showToast(message, type = 'info') {
+        let toast = document.getElementById('profileToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'profileToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = '#1e293b';
+            toast.style.color = '#f8fafc';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
+            toast.style.zIndex = '99999';
+            toast.style.borderLeft = '4px solid #38bdf8';
+            toast.style.display = 'none';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '10px';
+            toast.style.fontSize = '14px';
+            toast.style.fontFamily = 'inherit';
+            toast.style.maxWidth = '450px';
+            toast.style.wordBreak = 'break-word';
+            document.body.appendChild(toast);
+        }
+        const iconMap = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        const colorMap = { success: '#4ade80', error: '#f87171', warning: '#fbbf24', info: '#38bdf8' };
+        toast.innerHTML = `<span style="font-size:17px">${iconMap[type] || 'ℹ️'}</span> <span>${message}</span>`;
+        toast.style.borderLeftColor = colorMap[type] || '#38bdf8';
+        toast.style.display = 'flex';
+        if (_profileToastTimer) clearTimeout(_profileToastTimer);
+        _profileToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    window.showToast = showToast;
+</script>
+</body>
+</html>

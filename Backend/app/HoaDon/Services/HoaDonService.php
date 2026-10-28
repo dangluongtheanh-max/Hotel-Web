@@ -1,45 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HoaDon\Services;
 
 use App\HoaDon\Repositories\HoaDonRepository;
 
 /**
- * Service (business logic) cho module HoaDon.
- * Cac module khac muon dung du lieu cua module nay PHAI goi qua Service nay,
- * khong duoc goi thang Repository/Model de giu tinh dong goi giua cac module.
+ * Facade Service cho module HoaDon.
+ * Đóng vai trò lớp trung gian điều phối và chuyển tiếp sang HoaDonXuLyService.
+ * Giữ nguyên 100% public API để đảm bảo Controller và hệ thống hoạt động ổn định.
  */
 class HoaDonService
 {
     private HoaDonRepository $repository;
+    private HoaDonXuLyService $xuLyService;
 
-    public function __construct(HoaDonRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        ?HoaDonRepository $repository = null,
+        ?HoaDonXuLyService $xuLyService = null
+    ) {
+        $this->repository = $repository ?? new HoaDonRepository();
+        $this->xuLyService = $xuLyService ?? new HoaDonXuLyService($this->repository);
     }
 
-    public function taoHoaDon(array $params = [])
+    public function getXuLyService(): HoaDonXuLyService
     {
-        // TODO: taoHoaDon
-        return null;
+        return $this->xuLyService;
     }
 
-    public function xemHoaDon(array $params = [])
+    // =========================================================================
+    // DELEGATE SANG PHẦN 1: TRA CỨU & TÍNH TOÁN CHI PHÍ (READ / QUERY)
+    // =========================================================================
+
+    public function xemHoaDon(array $params = []): array
     {
-        // TODO: xemHoaDon
-        return null;
+        return $this->xuLyService->xemHoaDon($params);
     }
 
-    public function xemCTHD(array $params = [])
+    public function xemCTHD(array $params = []): array
     {
-        // TODO: xemCTHD
-        return null;
+        return $this->xuLyService->xemCTHD($params);
     }
 
-    public function timHoaDon(array $params = [])
+    public function timHoaDon(array $params = []): array
     {
-        // TODO: timHoaDon
-        return null;
+        return $this->xuLyService->timHoaDon($params);
     }
 
+    // =========================================================================
+    // DELEGATE SANG PHẦN 2: KHỞI TẠO & LƯU TRỮ HÓA ĐƠN (WRITE / COMMAND)
+    // =========================================================================
+
+    public function taoHoaDon(array $params = []): array
+    {
+        return $this->xuLyService->taoHoaDon($params);
+    }
 }

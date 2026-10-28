@@ -1,0 +1,2816 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch Vụ Khách Sạn - Royal Lotus Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b1329;
+            --bg-card: #131f37;
+            --bg-card-light: #1e2c4d;
+            --gold: #c59b27;
+            --gold-light: #e5b842;
+            --gold-gradient: linear-gradient(135deg, #c59b27 0%, #dfb547 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-gold: #f1c40f;
+            --border-color: rgba(197, 155, 39, 0.25);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top center, #152243 0%, var(--bg-dark) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(19, 31, 55, 0.85);
+            backdrop-filter: blur(14px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 7px 14px;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .user-tag {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            padding: 7px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        .btn-gold {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            font-weight: 700;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(197, 155, 39, 0.35);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.5);
+        }
+
+        /* Hero Banner */
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+            padding: 20px 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* In-house guest status card */
+        .staying-card {
+            background: rgba(19, 31, 55, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .staying-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .staying-badge-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(197, 155, 39, 0.15);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .staying-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .staying-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .stay-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .stay-chip-active {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #34d399;
+        }
+
+        .stay-chip-future {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .stay-toggle-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: var(--gold-light);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stay-toggle-btn:hover {
+            background: rgba(197, 155, 39, 0.2);
+            border-color: var(--gold);
+            color: #fff;
+        }
+
+        .stay-rooms-list {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 140px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        /* Service Category Navigation Tabs */
+        .service-tabs-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .service-category-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            border-radius: 18px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-category-card:hover {
+            border-color: rgba(197, 155, 39, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-category-card.active {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(19, 31, 55, 0.95) 0%, rgba(30, 44, 77, 0.95) 100%);
+            box-shadow: 0 10px 30px rgba(197, 155, 39, 0.25);
+        }
+
+        .service-category-card.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold-gradient);
+        }
+
+        .cat-icon-box {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .cat-info h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .service-category-card.active .cat-info h3 {
+            color: var(--gold-light);
+        }
+
+        .cat-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .cat-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--gold-light);
+            margin-top: 6px;
+        }
+
+        /* Service View Sections */
+        .service-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .service-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header-box {
+            background: rgba(19, 31, 55, 0.6);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .service-item-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-color);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+        }
+
+        .item-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(197, 155, 39, 0.12);
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+            border: 1px solid rgba(197, 155, 39, 0.2);
+        }
+
+        .item-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .item-mota {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+        }
+
+        .item-mota-chitiet {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-dark);
+            gap: 12px;
+        }
+
+        .item-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-gold);
+        }
+
+        .item-price span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .btn-order-now {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-order-now:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.4);
+        }
+
+        .info-card-box {
+            background: rgba(19, 31, 55, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .info-card-box .icon {
+            font-size: 28px;
+        }
+
+        .info-card-box h4 {
+            font-size: 16px;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+        }
+
+        .info-card-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 24, 0.82);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .form-row {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0d172e;
+            border: 1px solid var(--border-dark);
+            color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+        }
+
+        /* Quantity selector */
+        .qty-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qty-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card-light);
+            border: 1px solid var(--border-dark);
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .qty-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        .qty-input {
+            width: 70px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            background: #0d172e;
+            border: 1px solid var(--border-dark);
+            color: var(--gold-light);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .total-box {
+            background: rgba(197, 155, 39, 0.08);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .total-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-gold);
+        }
+
+        .billing-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            padding: 11px 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-submit {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            border: none;
+            padding: 11px 26px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(197, 155, 39, 0.35);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.5);
+        }
+
+        /* Success Dialog */
+        .success-box {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid var(--success);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 16px;
+        }
+
+        .success-msg {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .order-summary-card {
+            background: #0d172e;
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            margin-bottom: 22px;
+            font-size: 13px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .summary-row.bold {
+            color: var(--gold-light);
+            font-weight: 700;
+            border-top: 1px dashed var(--border-dark);
+            padding-top: 8px;
+            margin-top: 8px;
+            margin-bottom: 0;
+            font-size: 15px;
+        }
+
+        .summary-row span:last-child {
+            color: var(--text-main);
+        }
+
+        .summary-row.bold span:last-child {
+            color: var(--text-gold);
+        }
+
+        .empty-menu {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        /* Laundry Specific Styles */
+        .laundry-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .laundry-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .laundry-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .laundry-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .laundry-card:hover {
+            border-color: rgba(197, 155, 39, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .laundry-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .laundry-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .laundry-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .laundry-card-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-gold);
+            margin-bottom: 6px;
+        }
+
+        .laundry-card-price span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .laundry-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        .laundry-qty-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card-light);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .laundry-qty-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            width: 30px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .laundry-qty-btn:hover {
+            color: var(--gold-light);
+            background: rgba(197, 155, 39, 0.15);
+        }
+
+        .laundry-qty-num {
+            width: 36px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .btn-add-laundry {
+            flex-grow: 1;
+            background: rgba(197, 155, 39, 0.15);
+            border: 1px solid var(--border-color);
+            color: var(--gold-light);
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-add-laundry:hover {
+            background: var(--gold-gradient);
+            color: #0b1329;
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.3);
+        }
+
+        /* Laundry Cart Sticky Panel */
+        .laundry-cart-panel {
+            background: rgba(19, 31, 55, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 22px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .laundry-cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .laundry-cart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .laundry-cart-badge {
+            background: rgba(197, 155, 39, 0.2);
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            gap: 10px;
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .cart-item-calc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .cart-item-subtotal {
+            font-weight: 700;
+            color: var(--gold-light);
+            white-space: nowrap;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .cart-item-remove:hover {
+            opacity: 1;
+        }
+
+        .cart-empty-text {
+            text-align: center;
+            padding: 30px 10px;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .cart-summary-total {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-summary-total-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .cart-summary-total-val {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-gold);
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-cart-cancel {
+            flex: 1;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cart-cancel:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-cart-submit {
+            flex: 2;
+            background: var(--gold-gradient);
+            border: none;
+            color: #0b1329;
+            padding: 11px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(197, 155, 39, 0.35);
+        }
+
+        .btn-cart-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(197, 155, 39, 0.5);
+        }
+
+        .btn-cart-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+        <a href="index.html" class="logo">
+            <span>⚜️</span> Royal Lotus Hotel
+        </a>
+
+        <nav class="nav-links">
+            <span id="customerNavLinksDichvu">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="datphong.html" class="nav-link">Đặt phòng</a>
+                <a href="lichsudatphong.html" class="nav-link">Lịch sử đặt phòng</a>
+                <a href="thongtincanhan.html" class="nav-link">👤 Thông tin cá nhân</a>
+                <a href="danhgia.html" class="nav-link">⭐ Đánh giá của tôi</a>
+                <a href="dichvu.html" class="nav-link active">🛎️ Dịch Vụ</a>
+            </span>
+            <span id="receptionistNavAreaDichvu" style="display: none;">
+                <a href="letan.html" class="nav-link" style="color:var(--gold-light); font-weight:700;">🛎️ Quầy Lễ Tân</a>
+            </span>
+        </nav>
+
+        <div class="auth-bar" id="authSection">
+            <!-- Dynamic user status rendered here -->
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>DỊCH VỤ TIỆN ÍCH KHÁCH SẠN</h1>
+        <p>Nâng tầm kỳ nghỉ của quý khách với các dịch vụ tiện nghi chuẩn 5 sao: Ẩm thực phục vụ tận phòng, Giặt ủi chuyên nghiệp và Thuê xe máy tự do khám phá.</p>
+    </section>
+
+    <!-- Staying Guest Status Banner -->
+    <div id="stayingStatusContainer">
+        <!-- Rendered by JavaScript -->
+    </div>
+
+    <!-- 3 Main Service Selector Tabs -->
+    <div class="service-tabs-wrapper">
+        <div class="service-category-card active" id="tabFood" onclick="switchServiceTab('food')">
+            <div class="cat-icon-box">🍽️</div>
+            <div class="cat-info">
+                <h3>Đặt Đồ Ăn Tại Phòng</h3>
+                <p>Món ăn nóng hổi giao tận phòng</p>
+                <span class="cat-badge">⏱ Giao trong 15–20 phút</span>
+            </div>
+        </div>
+
+        <div class="service-category-card" id="tabLaundry" onclick="switchServiceTab('laundry')">
+            <div class="cat-icon-box">🧺</div>
+            <div class="cat-info">
+                <h3>Dịch Vụ Giặt Ủi</h3>
+                <p>Giặt hấp, sấy khô & ủi phẳng phiu</p>
+                <span class="cat-badge">👕 Nhận & trả tận phòng</span>
+            </div>
+        </div>
+
+        <div class="service-category-card" id="tabBike" onclick="switchServiceTab('bike')">
+            <div class="cat-icon-box">🛵</div>
+            <div class="cat-info">
+                <h3>Thuê Xe Máy</h3>
+                <p>Xe tay ga & xe số đời mới tiết kiệm xăng</p>
+                <span class="cat-badge">🛡️ Kèm 2 mũ bảo hiểm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 1: ĐẶT ĐỒ ĂN -->
+    <section class="service-section active" id="sectionFood">
+        <div class="section-header-box">
+            <h2 class="section-title">🍽️ Thực Đơn Món Ăn Phục Vụ Tại Phòng</h2>
+            <div style="font-size:13px; color:var(--text-muted);">
+                ⏱ Thời gian chuẩn bị & giao phòng dự kiến: <strong style="color:var(--gold-light);">15–20 phút</strong>
+            </div>
+        </div>
+
+        <div class="service-grid" id="foodMenuGrid">
+            <div class="empty-menu">Đang tải thực đơn món ăn...</div>
+        </div>
+    </section>
+
+    <!-- TAB 2: GIẶT ỦI -->
+    <section class="service-section" id="sectionLaundry">
+        <div class="section-header-box">
+            <h2 class="section-title">🧺 Dịch Vụ Giặt Ủi Quần Áo Theo Từng Món</h2>
+            <div style="font-size:13px; color:var(--text-muted);">
+                Bảng giá niêm yết cố định • <strong style="color:var(--gold-light);">Giao nhận & trả tận phòng trong ngày</strong>
+            </div>
+        </div>
+
+        <div class="laundry-layout">
+            <!-- Cột trái: Danh sách các loại đồ giặt ủi và chọn số lượng -->
+            <div>
+                <div style="font-size:14px; font-weight:700; color:var(--gold-light); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <span>👔</span> Danh Mục Các Loại Đồ Giặt Ủi (Bảng giá cố định):
+                </div>
+                <div class="laundry-items-grid" id="laundryGrid">
+                    <div class="empty-menu">Đang tải danh mục giặt ủi...</div>
+                </div>
+
+                <div class="info-card-box" style="margin-top:24px;">
+                    <div class="icon">💡</div>
+                    <div>
+                        <h4>Quy trình phục vụ Dịch vụ Giặt ủi</h4>
+                        <p>Sau khi quý khách xác nhận đơn đặt dịch vụ, nhân viên khách sạn sẽ đến nhận đồ giặt trực tiếp tại phòng trong vòng <strong>15–20 phút</strong>. Toàn bộ trang phục được giặt sấy / giặt hấp thơm tho, ủi phẳng phiu và giao trả tận phòng cho quý khách trong ngày.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Phiếu đặt đồ giặt ủi tạm tính và xác nhận -->
+            <div>
+                <div class="laundry-cart-panel">
+                    <div class="laundry-cart-header">
+                        <div class="laundry-cart-title">
+                            <span>🧺</span> Đơn Giặt Ủi
+                        </div>
+                        <span class="laundry-cart-badge" id="laundryCartBadge">0 món</span>
+                    </div>
+
+                    <div id="laundryCartItemsContainer">
+                        <div class="cart-empty-text">
+                            Chưa có loại đồ nào trong đơn giặt.<br>Vui lòng chọn số lượng và nhấn <strong>"Thêm vào đơn"</strong> ở danh mục bên trái.
+                        </div>
+                    </div>
+
+                    <div id="laundryCartFormDetails" style="display:none;">
+                        <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border-dark);">
+                            <label class="form-label" for="laundryRoomSelect">Phòng nhận & giao đồ giặt (chỉ áp dụng phòng đang ở):</label>
+                            <select id="laundryRoomSelect" class="form-control" style="padding:10px 12px; font-size:13px;">
+                                <!-- Điền tự động theo danh sách phòng đang lưu trú -->
+                            </select>
+                            <div id="laundryLockNotice" style="display:none; margin-top:8px; font-size:12px; color:var(--warning); line-height:1.4; background:rgba(245, 158, 11, 0.1); border:1px solid rgba(245, 158, 11, 0.3); padding:8px 10px; border-radius:6px;"></div>
+                        </div>
+
+                        <div style="margin-top:14px;">
+                            <label class="form-label" for="laundryNoteInput">Yêu cầu riêng / Ghi chú (nếu có):</label>
+                            <textarea id="laundryNoteInput" class="form-control" rows="2" placeholder="Ví dụ: giặt riêng áo trắng, nước xả thơm, ủi gấp..."></textarea>
+                        </div>
+
+                        <div class="cart-summary-total">
+                            <span class="cart-summary-total-label">Tổng tiền giặt ủi:</span>
+                            <span class="cart-summary-total-val" id="laundryCartTotalVal">0 đ</span>
+                        </div>
+
+                        <div class="billing-note" style="margin-top:14px; margin-bottom:0;">
+                            <span>ℹ️</span>
+                            <span><strong>Quy tắc thanh toán:</strong> Quý khách không cần thanh toán ngay. Chi phí giặt ủi sẽ được tự động cộng vào hóa đơn khi làm thủ tục trả phòng (check-out).</span>
+                        </div>
+
+                        <div class="cart-actions">
+                            <button type="button" class="btn-cart-cancel" onclick="clearLaundryCart()">Hủy</button>
+                            <button type="button" class="btn-cart-submit" id="btnConfirmLaundry" onclick="submitLaundryOrder()">Xác nhận đặt dịch vụ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 3: THUÊ XE MÁY -->
+    <section class="service-section" id="sectionBike">
+        <div class="section-header-box">
+            <h2 class="section-title">🛵 Dịch Vụ Thuê Xe Máy Khám Phá</h2>
+            <div style="font-size:13px; color:var(--text-muted);">
+                Thủ tục nhanh gọn: <strong style="color:var(--gold-light);">Nhận xe ngay tại sảnh khách sạn</strong>
+            </div>
+        </div>
+
+        <div class="service-grid" id="bikeGrid">
+            <div class="empty-menu">Đang tải danh mục xe máy...</div>
+        </div>
+
+        <div class="info-card-box">
+            <div class="icon">🗺️</div>
+            <div>
+                <h4>Chính sách & Tiện ích đi kèm khi thuê xe</h4>
+                <p>Tất cả các dòng xe cho thuê đều được bảo dưỡng định kỳ, trang bị sẵn <strong>2 mũ bảo hiểm đạt chuẩn</strong>, <strong>áo mưa</strong> và <strong>1 lít xăng</strong> sẵn sàng. Quý khách chỉ cần liên hệ quầy Lễ tân hoặc đăng ký trực tiếp để nhận chìa khóa xe.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal 1: Đặt món ăn -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">🍽️ Xác Nhận Đặt Món Ăn</h3>
+            <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+        </div>
+
+        <div id="modalOrderContent">
+            <div class="form-row">
+                <div style="font-size:18px; font-weight:700; color:var(--text-main); margin-bottom:4px;" id="modalFoodName">Tên món ăn</div>
+                <div style="font-size:13px; color:var(--gold-light);" id="modalFoodPrice">Đơn giá: 0 đ / phần</div>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Số lượng đặt:</label>
+                <div class="qty-wrapper">
+                    <button type="button" class="qty-btn" onclick="adjustQty(-1)">−</button>
+                    <input type="number" id="orderQtyInput" class="qty-input" value="1" min="1" max="20" onchange="onQtyChange()">
+                    <button type="button" class="qty-btn" onclick="adjustQty(1)">+</button>
+                    <span style="font-size:13px; color:var(--text-muted);">phần</span>
+                </div>
+            </div>
+
+            <div class="form-row" id="roomSelectRow">
+                <label class="form-label" for="orderRoomSelect">Phòng nhận món ăn:</label>
+                <select id="orderRoomSelect" class="form-control">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label" for="orderNoteInput">Yêu cầu riêng / Ghi chú (nếu có):</label>
+                <textarea id="orderNoteInput" class="form-control" rows="2" placeholder="Ví dụ: không hành, ít cay, mang thêm 2 ly đá lạnh..."></textarea>
+            </div>
+
+            <div class="total-box">
+                <span class="total-label">Tổng tiền dự kiến:</span>
+                <span class="total-amount" id="modalTotalAmount">0 đ</span>
+            </div>
+
+            <div class="billing-note">
+                <span>ℹ️</span>
+                <span><strong>Quy tắc thanh toán:</strong> Quý khách không cần thanh toán ngay. Chi phí món ăn sẽ được tự động cộng vào hóa đơn khi quý khách làm thủ tục trả phòng (check-out).</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeOrderModal()">Hủy</button>
+                <button type="button" class="btn-submit" id="btnConfirmOrder" onclick="submitFoodOrder()">Đặt ngay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Thông báo đặt thành công -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+        <div class="success-box">
+            <div class="success-icon">✓</div>
+            <div class="success-msg" id="successMessageText">
+                Đặt món thành công! Món ăn sẽ được chuẩn bị và giao đến phòng bạn trong khoảng 15–20 phút.
+            </div>
+
+            <div class="order-summary-card" id="successOrderDetails">
+                <!-- Populated dynamically -->
+            </div>
+
+            <button type="button" class="btn-gold" style="width:100%;" onclick="closeSuccessModal()">Đã hiểu & Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3: Đăng nhập nhanh cho khách -->
+<div class="modal-overlay" id="quickLoginModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Đăng Nhập Khách Hàng</h3>
+            <button class="modal-close" onclick="closeQuickLoginModal()">&times;</button>
+        </div>
+        <div>
+            <div class="form-row">
+                <label class="form-label">Tên đăng nhập:</label>
+                <input type="text" id="loginUsername" class="form-control" placeholder="Ví dụ: khach02">
+            </div>
+            <div class="form-row">
+                <label class="form-label">Mật khẩu:</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Nhập mật khẩu (123456)">
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:18px;">
+                💡 <em>Gợi ý test:</em> Đăng nhập tài khoản <strong>khach02</strong> (Mật khẩu: <strong>123456</strong>) - Đang lưu trú phòng <strong>P002 (Deluxe)</strong>.
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeQuickLoginModal()">Đóng</button>
+                <button type="button" class="btn-submit" onclick="submitQuickLogin()">Đăng nhập</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 4: Đăng Ký Thuê Xe Máy -->
+<div class="modal-overlay" id="bikeRentalModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">🛵 Đăng Ký Thuê Xe Máy Khám Phá</h3>
+            <button class="modal-close" onclick="closeBikeRentalModal()">&times;</button>
+        </div>
+
+        <div id="modalBikeContent">
+            <div class="form-row">
+                <div style="font-size:18px; font-weight:700; color:var(--text-main); margin-bottom:4px;" id="modalBikeName">Dòng xe máy</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:14px; color:var(--gold-light); font-weight:700;" id="modalBikePrice">Đơn giá: 0 đ / ngày</span>
+                    <span style="font-size:12px; color:var(--success); font-weight:600;" id="modalBikeStock">Có sẵn: 10 xe</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label" for="bikeRoomSelect">Phòng nhận xe (đang lưu trú):</label>
+                <select id="bikeRoomSelect" class="form-control" onchange="onBikeRoomChanged()">
+                    <!-- Populated dynamically -->
+                </select>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:4px;" id="bikeRoomCheckoutNotice">
+                    Hạn trả phòng: ...
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Số lượng xe muốn thuê:</label>
+                <div class="qty-wrapper">
+                    <button type="button" class="qty-btn" onclick="adjustBikeQty(-1)">−</button>
+                    <input type="number" id="bikeQtyInput" class="qty-input" value="1" min="1" max="10" onchange="calculateBikeRentalCost()">
+                    <button type="button" class="qty-btn" onclick="adjustBikeQty(1)">+</button>
+                    <span style="font-size:13px; color:var(--text-muted);">chiếc xe</span>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;" class="form-row">
+                <div>
+                    <label class="form-label" for="bikeNhanTime">Thời gian nhận xe:</label>
+                    <input type="datetime-local" id="bikeNhanTime" class="form-control" onchange="calculateBikeRentalCost()">
+                </div>
+                <div>
+                    <label class="form-label" for="bikeTraTime">Thời gian trả xe:</label>
+                    <input type="datetime-local" id="bikeTraTime" class="form-control" onchange="calculateBikeRentalCost()">
+                </div>
+            </div>
+
+            <div class="total-box" style="margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:13px;">
+                    <span class="total-label" style="font-size:13px;">Thời gian thuê tính phí:</span>
+                    <strong style="color:var(--text-main);" id="bikeRentalDurationText">0 ngày</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span class="total-label">Tổng chi phí dự kiến:</span>
+                    <span class="total-amount" id="bikeTotalAmount">0 đ</span>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top:12px;">
+                <label class="form-label" for="bikeNoteInput">Yêu cầu thêm (nếu có):</label>
+                <textarea id="bikeNoteInput" class="form-control" rows="2" placeholder="Ví dụ: Cần 2 mũ bảo hiểm (1 người lớn, 1 trẻ em), nhận xe lúc 8h sáng tại sảnh..."></textarea>
+            </div>
+
+            <div class="billing-note">
+                <span>ℹ️</span>
+                <span><strong>Quy tắc thanh toán:</strong> Quý khách không cần thanh toán ngay. Chi phí thuê xe sẽ được tự động cộng vào hóa đơn khi làm thủ tục trả phòng (check-out). Nhận xe và chìa khóa tại quầy Lễ tân.</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeBikeRentalModal()">Hủy</button>
+                <button type="button" class="btn-submit" id="btnConfirmBike" onclick="submitBikeRental()">Xác nhận thuê xe</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 5: Thông báo dịch vụ chưa khả dụng trước giờ nhận phòng -->
+<div class="modal-overlay" id="serviceLockModal">
+    <div class="modal-card" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="lockModalTitle" style="color: var(--gold-light); display: flex; align-items: center; gap: 8px;">
+                <span>🛎️</span> Thông Báo Dịch Vụ
+            </h3>
+            <button class="modal-close" onclick="closeServiceLockModal()">&times;</button>
+        </div>
+        <div style="padding: 6px 0;">
+            <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; background: rgba(197, 155, 39, 0.08); border: 1px solid rgba(197, 155, 39, 0.25); border-radius: 12px; padding: 16px;">
+                <div style="font-size: 30px; line-height: 1;">🏨</div>
+                <div style="font-size: 13.5px; line-height: 1.6; color: var(--text-main);" id="lockModalBody">
+                    <!-- Nội dung giải thích thân thiện được chèn bằng JS -->
+                </div>
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-dark);">
+                🛵 <em>Gợi ý di chuyển:</em> Quý khách hoàn toàn có thể đăng ký trước xe máy tại tab <strong>"🛵 Thuê xe máy"</strong> để khách sạn chuẩn bị sẵn xe khi quý khách đến nơi.
+            </div>
+            <div class="modal-actions" style="justify-content: flex-end;">
+                <button type="button" class="btn-gold" style="min-width: 130px;" onclick="closeServiceLockModal()">Đã hiểu & Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Nhận diện API Base URL
+    const API_BASE = window.location.protocol === 'file:' 
+        ? 'http://localhost:8000/Backend/public/index.php' 
+        : '/Backend/public/index.php';
+
+    // State
+    let currentUser = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+    let allServices = [];
+    let foodList = [];
+    let laundryList = [];
+    let bikeList = [];
+    let inHouseRooms = [];
+    let currentSelectedFood = null;
+    let currentSelectedBike = null;
+
+    // Định dạng ngày giờ chuẩn Việt Nam: DD/MM/YYYY HH:mm
+    function formatDateTime(str) {
+        if (!str) return '-';
+        const d = new Date(str.includes(' ') && !str.includes('T') ? str.replace(' ', 'T') : str);
+        if (isNaN(d.getTime())) return str;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    // Định dạng ngày: DD/MM/YYYY
+    function formatDateOnly(str) {
+        if (!str) return '-';
+        const d = new Date(str.includes(' ') && !str.includes('T') ? str.replace(' ', 'T') : str);
+        if (isNaN(d.getTime())) return str;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Khởi tạo
+    document.addEventListener('DOMContentLoaded', () => {
+        renderAuthSection();
+        loadAllServices();
+        checkInHouseStay();
+
+        // Mở trực tiếp tab theo URL param hoặc hash nếu có (ví dụ dichvu.html?tab=laundry)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab') || window.location.hash.replace('#', '');
+        if (tabParam === 'laundry') {
+            switchServiceTab('laundry');
+        } else if (tabParam === 'bike') {
+            switchServiceTab('bike');
+        }
+    });
+
+    // Chuyển đổi giữa 3 Tab dịch vụ
+    function switchServiceTab(tab) {
+        document.querySelectorAll('.service-category-card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.service-section').forEach(s => s.classList.remove('active'));
+
+        if (tab === 'food') {
+            document.getElementById('tabFood').classList.add('active');
+            document.getElementById('sectionFood').classList.add('active');
+        } else if (tab === 'laundry') {
+            document.getElementById('tabLaundry').classList.add('active');
+            document.getElementById('sectionLaundry').classList.add('active');
+        } else if (tab === 'bike') {
+            document.getElementById('tabBike').classList.add('active');
+            document.getElementById('sectionBike').classList.add('active');
+        }
+    }
+
+    function isReceptionistRole() {
+        return currentUser && (currentUser.VaiTro === 'LeTan' || currentUser.VaiTro === 'Admin');
+    }
+
+    // 1. Hiển thị thông tin đăng nhập & phân quyền ẩn hiện chức năng
+    function renderAuthSection() {
+        const sec = document.getElementById('authSection');
+        const custNav = document.getElementById('customerNavLinksDichvu');
+        const recArea = document.getElementById('receptionistNavAreaDichvu');
+        const isRec = isReceptionistRole();
+
+        // Ẩn/Hiện nav
+        if (isRec) {
+            if (custNav) custNav.style.display = 'none';
+            if (recArea) recArea.style.display = 'inline-flex';
+        } else {
+            if (custNav) custNav.style.display = 'inline-flex';
+            if (recArea) recArea.style.display = 'none';
+        }
+
+        const switcherBtnHtml = isRec
+            ? `<button class="btn-small" onclick="toggleRoleSwitchDichvu()" style="background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #93c5fd; font-weight:700;">👤 Test Khách Hàng</button>`
+            : `<button class="btn-small" onclick="toggleRoleSwitchDichvu()" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; font-weight:700;">🛎️ Test Lễ Tân</button>`;
+
+        if (currentUser) {
+            sec.innerHTML = `
+                <span class="user-tag">👤 ${currentUser.HoTen || currentUser.TenDangNhap} (${currentUser.VaiTro || 'Khách hàng'})</span>
+                ${switcherBtnHtml}
+                <button class="btn-small" onclick="handleLogout()">Đăng xuất</button>
+            `;
+        } else {
+            sec.innerHTML = `
+                ${switcherBtnHtml}
+                <button class="btn-gold" onclick="openQuickLoginModal()">Đăng nhập</button>
+            `;
+        }
+    }
+
+    async function toggleRoleSwitchDichvu() {
+        if (isReceptionistRole()) {
+            // Chuyển sang khách hàng
+            try {
+                const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenDangNhap: 'khach01', matKhau: '123456' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.data;
+                    localStorage.setItem('hotel_user', JSON.stringify(currentUser));
+                    renderAuthSection();
+                    checkInHouseStay();
+                }
+            } catch(e) {}
+        } else {
+            // Chuyển sang Lễ tân và điều hướng về letan.html
+            try {
+                const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenDangNhap: 'letan01', matKhau: '123456' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('hotel_user', JSON.stringify(data.data));
+                }
+            } catch(e) {}
+            window.location.href = 'letan.html';
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('hotel_user');
+        currentUser = null;
+        renderAuthSection();
+        checkInHouseStay();
+    }
+
+    function openQuickLoginModal() {
+        document.getElementById('quickLoginModal').classList.add('active');
+        document.getElementById('loginUsername').focus();
+    }
+
+    function closeQuickLoginModal() {
+        document.getElementById('quickLoginModal').classList.remove('active');
+    }
+
+    async function submitQuickLogin() {
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+        if (!u || !p) {
+            showToast('Vui lòng nhập tên đăng nhập và mật khẩu.', 'warning');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tenDangNhap: u, matKhau: p })
+            });
+            const data = await res.json();
+            if (data.status === 'success' || data.success) {
+                const userData = data.data?.data || data.data || data;
+                localStorage.setItem('hotel_user', JSON.stringify(userData));
+                currentUser = userData;
+                closeQuickLoginModal();
+                renderAuthSection();
+                checkInHouseStay();
+                showToast('Đăng nhập thành công!', 'success');
+            } else {
+                showToast(data.message || 'Đăng nhập không thành công.', 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi đăng nhập:', err);
+            showToast('Không thể kết nối đến máy chủ.', 'error');
+        }
+    }
+
+    // 2. Kiểm tra thông tin lưu trú của khách
+    async function checkInHouseStay() {
+        const container = document.getElementById('stayingStatusContainer');
+
+        if (!currentUser) {
+            container.innerHTML = `
+                <div class="staying-card" style="border-color: rgba(59, 130, 246, 0.4); background: rgba(19, 31, 55, 0.9);">
+                    <div class="staying-info">
+                        <div class="staying-badge-icon" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">ℹ️</div>
+                        <div>
+                            <div class="staying-title" style="color: #60a5fa;">Vui lòng đăng nhập tài khoản</div>
+                            <div class="staying-desc">Quý khách cần đăng nhập để hệ thống xác nhận phòng đang lưu trú trước khi giao món ăn tận phòng.</div>
+                        </div>
+                    </div>
+                    <button class="btn-small" style="border-color:#60a5fa; color:#93c5fd;" onclick="openQuickLoginModal()">Đăng nhập ngay</button>
+                </div>
+            `;
+            inHouseRooms = [];
+            return;
+        }
+
+        try {
+            const maTK = currentUser.MaTK || '';
+            const maKH = currentUser.MaKH || '';
+            const res = await fetch(`${API_BASE}/dichvu/phong-dang-luu-tru?maTK=${encodeURIComponent(maTK)}&maKH=${encodeURIComponent(maKH)}`);
+            const json = await res.json();
+            const resultData = json.data?.data || json.data || [];
+
+            inHouseRooms = Array.isArray(resultData) ? resultData : [];
+
+            if (inHouseRooms.length > 0) {
+                const activeStays = inHouseRooms.filter(r => (r.TrangThaiPhieu || r.TrangThai) === 'DangLuuTru');
+                const futureStays = inHouseRooms.filter(r => ['DaDat', 'DaDatPhong'].includes(r.TrangThaiPhieu || r.TrangThai));
+
+                let titleSummaryParts = [];
+                let detailedChips = [];
+
+                if (activeStays.length > 0) {
+                    if (activeStays.length <= 2) {
+                        const rDesc = activeStays.map(r => `Phòng <b>${r.MaPhong}</b> [${r.MaPhieu}] (Hạn: ${formatDateTime(r.ThoiGianTraPhong)})`).join(', ');
+                        titleSummaryParts.push(`<span class="stay-chip stay-chip-active">🏨 Đang ở: ${rDesc}</span>`);
+                    } else {
+                        titleSummaryParts.push(`<span class="stay-chip stay-chip-active">🏨 Đang ở: <b>${activeStays.length} phòng</b> (Gần nhất: Phòng ${activeStays[0].MaPhong})</span>`);
+                    }
+                    activeStays.forEach(r => {
+                        detailedChips.push(`<span class="stay-chip stay-chip-active">🏨 Phòng <b>${r.MaPhong}</b> [${r.MaPhieu}] • Hạn trả: ${formatDateTime(r.ThoiGianTraPhong)}</span>`);
+                    });
+                }
+
+                const hasManyRooms = (activeStays.length + futureStays.length) > 2;
+
+                if (futureStays.length > 0) {
+                    if (futureStays.length <= 2 && activeStays.length === 0) {
+                        const fDesc = futureStays.map(r => `Phòng <b>${r.MaPhong}</b> [${r.MaPhieu}] (${formatDateTime(r.ThoiGianNhanPhong)} - ${formatDateTime(r.ThoiGianTraPhong)})`).join(', ');
+                        titleSummaryParts.push(`<span class="stay-chip stay-chip-future">📅 Đã đặt trước: ${fDesc}</span>`);
+                    } else {
+                        const nearest = futureStays[0];
+                        titleSummaryParts.push(`<span class="stay-chip stay-chip-future">📅 Đã đặt trước: <b>${futureStays.length} phòng</b></span> <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">(Sắp tới: Phòng <b>${nearest.MaPhong}</b> nhận lúc ${formatDateTime(nearest.ThoiGianNhanPhong)})</span>`);
+                    }
+                    futureStays.forEach(r => {
+                        detailedChips.push(`<span class="stay-chip stay-chip-future">📅 Phòng <b>${r.MaPhong}</b> [${r.MaPhieu}] • ${formatDateTime(r.ThoiGianNhanPhong)} → ${formatDateTime(r.ThoiGianTraPhong)}</span>`);
+                    });
+                }
+
+                let descHtml = '';
+                let badgeHtml = '';
+                if (activeStays.length > 0 && futureStays.length > 0) {
+                    descHtml = `Quý khách có phòng đang lưu trú (sử dụng được Món ăn, Giặt ủi, Thuê xe) và phòng đặt trước (có thể đăng ký trước Thuê xe máy).`;
+                    badgeHtml = `<div style="font-size:12px; color:var(--gold-light); font-weight:600; background:rgba(197, 155, 39, 0.1); padding:6px 14px; border-radius:20px; border:1px solid var(--border-color); white-space:nowrap;">✓ Đang lưu trú - Đủ điều kiện toàn bộ dịch vụ</div>`;
+                } else if (activeStays.length > 0) {
+                    descHtml = `Quý khách đang lưu trú tại khách sạn: Đủ điều kiện sử dụng toàn bộ dịch vụ (Ẩm thực tận phòng, Giặt ủi và Thuê xe máy).`;
+                    badgeHtml = `<div style="font-size:12px; color:#10b981; font-weight:600; background:rgba(16, 185, 129, 0.1); padding:6px 14px; border-radius:20px; border:1px solid rgba(16, 185, 129, 0.3); white-space:nowrap;">✓ Đang lưu trú - Mở khóa toàn bộ dịch vụ</div>`;
+                } else {
+                    descHtml = `Quý khách có phòng đã đặt trước nhưng chưa nhận phòng: <strong>Có thể đăng ký trước Thuê xe máy</strong> đón tiếp. Dịch vụ Đặt món và Giặt ủi sẽ mở khóa ngay khi quý khách làm thủ tục nhận phòng (Check-in).`;
+                    badgeHtml = `<div style="font-size:12px; color:#60a5fa; font-weight:600; background:rgba(59, 130, 246, 0.1); padding:6px 14px; border-radius:20px; border:1px solid rgba(59, 130, 246, 0.3); white-space:nowrap;">🛵 Đặt trước xe máy khả dụng</div>`;
+                }
+
+                const toggleBtnHtml = hasManyRooms
+                    ? `<button type="button" class="stay-toggle-btn" onclick="toggleStayRoomsDetail()" id="btnToggleStayRooms">📋 Xem chi tiết (${inHouseRooms.length} phòng) ▾</button>`
+                    : '';
+
+                const detailsListHtml = hasManyRooms
+                    ? `<div id="stayRoomsDetailCollapse" class="stay-rooms-list" style="display:none;">${detailedChips.join('')}</div>`
+                    : '';
+
+                container.innerHTML = `
+                    <div class="staying-card" style="flex-direction:column; align-items:stretch;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                            <div class="staying-info">
+                                <div class="staying-badge-icon">🛎️</div>
+                                <div>
+                                    <div class="staying-title">
+                                        ${titleSummaryParts.join('')}
+                                        ${toggleBtnHtml}
+                                    </div>
+                                    <div class="staying-desc">${descHtml}</div>
+                                </div>
+                            </div>
+                            ${badgeHtml}
+                        </div>
+                        ${detailsListHtml}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="staying-card" style="border-color: rgba(245, 158, 11, 0.4);">
+                        <div class="staying-info">
+                            <div class="staying-badge-icon" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">⚠️</div>
+                            <div>
+                                <div class="staying-title" style="color: var(--warning);">Chưa có phòng đang lưu trú hoặc đặt trước</div>
+                                <div class="staying-desc">Tài khoản <strong>${currentUser.HoTen || currentUser.TenDangNhap}</strong> hiện không có phòng nào đang lưu trú (DangLuuTru) hoặc đặt trước (DaDat). Quý khách vẫn có thể xem danh mục dịch vụ, nhưng đặt món / thuê xe yêu cầu có thông tin phòng tại khách sạn.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-small" onclick="quickSwitchToStayingGuest()">Đăng nhập Khách Lưu Trú (khach02)</button>
+                        </div>
+                    </div>
+                `;
+            }
+            renderLaundryCart();
+        } catch (err) {
+            console.error('Lỗi kiểm tra lưu trú:', err);
+        }
+    }
+
+    function toggleStayRoomsDetail() {
+        const box = document.getElementById('stayRoomsDetailCollapse');
+        const btn = document.getElementById('btnToggleStayRooms');
+        if (!box) return;
+        if (box.style.display === 'none' || !box.style.display) {
+            box.style.display = 'flex';
+            if (btn) btn.innerHTML = 'Thu gọn ▴';
+        } else {
+            box.style.display = 'none';
+            if (btn) btn.innerHTML = `📋 Xem chi tiết (${(inHouseRooms || []).length} phòng) ▾`;
+        }
+    }
+
+    async function quickSwitchToStayingGuest() {
+        document.getElementById('loginUsername').value = 'khach02';
+        document.getElementById('loginPassword').value = '123456';
+        await submitQuickLogin();
+    }
+
+    // 3. Tải tất cả các dịch vụ (Đặt đồ ăn, Giặt ủi, Thuê xe máy)
+    async function loadAllServices() {
+        try {
+            const res = await fetch(`${API_BASE}/dichvu/tatca`);
+            const json = await res.json();
+            const list = json.data?.data || json.data || [];
+            allServices = Array.isArray(list) ? list : [];
+
+            // Phân loại các dịch vụ
+            const foodService = allServices.find(s => s.MaDV === 'DVDoAn');
+            const laundryService = allServices.find(s => s.MaDV === 'DVGiatUi');
+            const bikeService = allServices.find(s => s.MaDV === 'DVThueXe');
+
+            foodList = foodService?.ChiTiet || [];
+            laundryList = laundryService?.ChiTiet || [];
+            bikeList = bikeService?.ChiTiet || [];
+
+            renderFoodMenu();
+            renderLaundryGrid();
+            renderBikeGrid();
+        } catch (err) {
+            console.error('Lỗi tải danh mục dịch vụ:', err);
+        }
+    }
+
+    // Render Tab Đặt đồ ăn
+    function renderFoodMenu() {
+        const grid = document.getElementById('foodMenuGrid');
+        if (foodList.length === 0) {
+            grid.innerHTML = `<div class="empty-menu">Hiện chưa có món ăn nào trong thực đơn.</div>`;
+            return;
+        }
+
+        const foodIcons = {
+            'CTDVDoAn01': '🥩',
+            'CTDVDoAn02': '🍗',
+            'CTDVDoAn03': '🍜',
+            'CTDVDoAn04': '🍝',
+            'CTDVDoAn05': '🥖',
+            'CTDVDoAn06': '🍊'
+        };
+
+        grid.innerHTML = foodList.map(item => {
+            const icon = foodIcons[item.MaCTDV] || '🍽️';
+            return `
+                <div class="service-item-card">
+                    <div>
+                        <div class="item-badge">
+                            <span>${icon}</span> Ẩm thực tại phòng
+                        </div>
+                        <h3 class="item-name">${item.TenCTDV}</h3>
+                        <div class="item-mota">${item.MoTa || ''}</div>
+                        <div class="item-mota-chitiet">${item.MoTaChiTiet || ''}</div>
+                    </div>
+                    <div class="item-footer">
+                        <div class="item-price">
+                            ${Number(item.DonGia).toLocaleString('vi-VN')} <span>đ / phần</span>
+                        </div>
+                        <button type="button" class="btn-order-now" onclick="openOrderModal('${item.MaCTDV}')">
+                            <span>Đặt món</span> ➜
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Biến lưu trữ giỏ đồ giặt ủi: { [maCTDV]: soLuong }
+    let laundryCart = {};
+
+    // Render Tab Giặt ủi: Hiển thị 8 loại đồ và bảng giá cố định
+    function renderLaundryGrid() {
+        const grid = document.getElementById('laundryGrid');
+        if (laundryList.length === 0) {
+            grid.innerHTML = `<div class="empty-menu">Hiện chưa có danh mục giặt ủi.</div>`;
+            return;
+        }
+
+        const laundryIcons = {
+            'CTDVGiatUi01': '👕', // Áo thun
+            'CTDVGiatUi02': '🩳', // Quần ngắn
+            'CTDVGiatUi03': '👖', // Quần dài
+            'CTDVGiatUi04': '👔', // Áo sơ mi
+            'CTDVGiatUi05': '🧥', // Áo khoác
+            'CTDVGiatUi06': '🛁', // Khăn
+            'CTDVGiatUi07': '🧦', // Vớ
+            'CTDVGiatUi08': '🩲'  // Đồ lót
+        };
+
+        const unitNames = {
+            'CTDVGiatUi06': 'cái',
+            'CTDVGiatUi07': 'đôi'
+        };
+
+        grid.innerHTML = laundryList.map(item => {
+            const icon = laundryIcons[item.MaCTDV] || '🧺';
+            const unit = unitNames[item.MaCTDV] || 'món';
+            return `
+                <div class="laundry-card">
+                    <div>
+                        <div class="laundry-card-header">
+                            <div class="laundry-card-icon">${icon}</div>
+                            <div>
+                                <h4 class="laundry-card-title">${item.TenCTDV}</h4>
+                                <div style="font-size:12px; color:var(--text-muted);">${item.MoTa || ''}</div>
+                            </div>
+                        </div>
+                        <div class="laundry-card-price">
+                            ${Number(item.DonGia).toLocaleString('vi-VN')} <span>đ / ${unit}</span>
+                        </div>
+                    </div>
+
+                    <div class="laundry-card-actions">
+                        <div class="laundry-qty-box">
+                            <button type="button" class="laundry-qty-btn" onclick="stepLaundryCardInput('${item.MaCTDV}', -1)">−</button>
+                            <input type="number" id="laundry_qty_${item.MaCTDV}" class="laundry-qty-num" value="1" min="1" max="50">
+                            <button type="button" class="laundry-qty-btn" onclick="stepLaundryCardInput('${item.MaCTDV}', 1)">+</button>
+                        </div>
+                        <button type="button" class="btn-add-laundry" onclick="addToLaundryCart('${item.MaCTDV}')">
+                            <span>➕ Thêm vào đơn</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        renderLaundryCart();
+    }
+
+    function stepLaundryCardInput(maCTDV, delta) {
+        const input = document.getElementById(`laundry_qty_${maCTDV}`);
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        val += delta;
+        if (val < 1) val = 1;
+        if (val > 50) val = 50;
+        input.value = val;
+    }
+
+    function addToLaundryCart(maCTDV) {
+        const input = document.getElementById(`laundry_qty_${maCTDV}`);
+        const qty = parseInt(input?.value) || 1;
+
+        if (!laundryCart[maCTDV]) {
+            laundryCart[maCTDV] = 0;
+        }
+        laundryCart[maCTDV] += qty;
+        if (laundryCart[maCTDV] > 99) laundryCart[maCTDV] = 99;
+
+        if (input) input.value = 1;
+        renderLaundryCart();
+    }
+
+    function updateCartItemQty(maCTDV, delta) {
+        if (!laundryCart[maCTDV]) return;
+        laundryCart[maCTDV] += delta;
+        if (laundryCart[maCTDV] <= 0) {
+            delete laundryCart[maCTDV];
+        }
+        renderLaundryCart();
+    }
+
+    function removeCartItem(maCTDV) {
+        delete laundryCart[maCTDV];
+        renderLaundryCart();
+    }
+
+    function clearLaundryCart() {
+        laundryCart = {};
+        renderLaundryCart();
+    }
+
+    function renderLaundryCart() {
+        const container = document.getElementById('laundryCartItemsContainer');
+        const formDetails = document.getElementById('laundryCartFormDetails');
+        const badge = document.getElementById('laundryCartBadge');
+        const totalValEl = document.getElementById('laundryCartTotalVal');
+        const roomSelect = document.getElementById('laundryRoomSelect');
+
+        if (!container || !formDetails || !badge || !totalValEl) return;
+
+        const keys = Object.keys(laundryCart);
+        const totalDistinctTypes = keys.length;
+
+        badge.textContent = `${totalDistinctTypes} loại đồ`;
+
+        if (totalDistinctTypes === 0) {
+            container.innerHTML = `
+                <div class="cart-empty-text">
+                    Chưa có loại đồ nào trong đơn giặt.<br>Vui lòng chọn số lượng và nhấn <strong>"Thêm vào đơn"</strong> ở danh mục bên trái.
+                </div>
+            `;
+            formDetails.style.display = 'none';
+            totalValEl.textContent = '0 đ';
+            return;
+        }
+
+        formDetails.style.display = 'block';
+
+        let grandTotal = 0;
+        container.innerHTML = keys.map(code => {
+            const item = laundryList.find(i => i.MaCTDV === code);
+            if (!item) return '';
+            const qty = laundryCart[code];
+            const unitPrice = Number(item.DonGia);
+            const subtotal = unitPrice * qty;
+            grandTotal += subtotal;
+
+            return `
+                <div class="cart-item-row">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.TenCTDV}</div>
+                        <div class="cart-item-calc">${unitPrice.toLocaleString('vi-VN')} đ × ${qty} = <strong>${subtotal.toLocaleString('vi-VN')} đ</strong></div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <div class="laundry-qty-box" style="transform:scale(0.85); transform-origin:right center;">
+                            <button type="button" class="laundry-qty-btn" onclick="updateCartItemQty('${code}', -1)">−</button>
+                            <span class="laundry-qty-num" style="display:inline-block; line-height:30px;">${qty}</span>
+                            <button type="button" class="laundry-qty-btn" onclick="updateCartItemQty('${code}', 1)">+</button>
+                        </div>
+                        <button type="button" class="cart-item-remove" onclick="removeCartItem('${code}')" title="Xóa món này">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        totalValEl.textContent = `${grandTotal.toLocaleString('vi-VN')} đ`;
+
+        if (roomSelect) {
+            const stayingRooms = (inHouseRooms || []).filter(r => (r.TrangThaiPhieu || r.TrangThai) === 'DangLuuTru');
+            const advanceRooms = (inHouseRooms || []).filter(r => ['DaDat', 'DaDatPhong'].includes(r.TrangThaiPhieu || r.TrangThai));
+            const lockNotice = document.getElementById('laundryLockNotice');
+
+            if (stayingRooms.length > 0) {
+                roomSelect.disabled = false;
+                roomSelect.innerHTML = stayingRooms.map(r => {
+                    return `<option value="${r.MaPhieu}|${r.MaPhong}">[Phiếu ${r.MaPhieu}] Phòng ${r.MaPhong} (${r.TenLoaiPhong}) - Đang ở • Hạn trả: ${formatDateTime(r.ThoiGianTraPhong)}</option>`;
+                }).join('');
+                if (lockNotice) lockNotice.style.display = 'none';
+            } else if (advanceRooms.length > 0) {
+                const r = advanceRooms[0];
+                roomSelect.disabled = true;
+                roomSelect.innerHTML = `<option value="">⚠️ [Phiếu ${r.MaPhieu}] Phòng ${r.MaPhong} - Đã đặt trước (chưa nhận phòng)</option>`;
+                if (lockNotice) {
+                    lockNotice.style.display = 'block';
+                    lockNotice.innerHTML = `⚠️ Quý khách có phòng đặt trước <strong>Phòng ${r.MaPhong} [Phiếu ${r.MaPhieu}]</strong> (dự kiến nhận: <strong>${formatDateTime(r.ThoiGianNhanPhong)}</strong>) nhưng chưa làm thủ tục nhận phòng. Dịch vụ giặt ủi sẽ khả dụng sau khi quý khách làm thủ tục nhận phòng tại khách sạn.`;
+                }
+            } else {
+                roomSelect.disabled = true;
+                roomSelect.innerHTML = `<option value="">(Cần đăng nhập tài khoản lưu trú)</option>`;
+                if (lockNotice) lockNotice.style.display = 'none';
+            }
+        }
+    }
+
+    async function submitLaundryOrder() {
+        if (!currentUser) {
+            showToast('Quý khách vui lòng đăng nhập tài khoản khách hàng để đặt dịch vụ giặt ủi.', 'warning');
+            openQuickLoginModal();
+            return;
+        }
+
+        const stayingRooms = (inHouseRooms || []).filter(r => (r.TrangThaiPhieu || r.TrangThai) === 'DangLuuTru');
+        if (stayingRooms.length === 0) {
+            const advanceRooms = (inHouseRooms || []).filter(r => ['DaDat', 'DaDatPhong'].includes(r.TrangThaiPhieu || r.TrangThai));
+            if (advanceRooms.length > 0) {
+                const r = advanceRooms[0];
+                showServiceLockModal(
+                    'Dịch Vụ Giặt Ủi Quần Áo',
+                    `Quý khách hiện có <strong>Phòng ${r.MaPhong}</strong> (Phiếu <strong>${r.MaPhieu}</strong>) đang ở trạng thái <em>Đã đặt trước</em> (dự kiến nhận phòng: <strong>${formatDateTime(r.ThoiGianNhanPhong)}</strong>).<br><br>Dịch vụ giặt ủi yêu cầu nhân viên buồng phòng đến trực tiếp phòng của quý khách để nhận quần áo, do đó dịch vụ chỉ khả dụng khi quý khách <strong>đã hoàn tất thủ tục nhận phòng (Check-in)</strong> tại Lễ tân.<br><br>Quý khách vui lòng gửi yêu cầu giặt ủi sau khi làm thủ tục nhận phòng nhé!`
+                );
+            } else {
+                showServiceLockModal(
+                    'Chưa Có Phòng Lưu Trú',
+                    `Rất tiếc! Quý khách hiện không có phòng nào đang lưu trú tại khách sạn để sử dụng dịch vụ giặt ủi.<br><br>Quý khách vui lòng đặt phòng hoặc đăng nhập tài khoản có thông tin phòng tại khách sạn.`
+                );
+            }
+            return;
+        }
+
+        const keys = Object.keys(laundryCart);
+        if (keys.length === 0) {
+            showToast('Đơn giặt ủi của quý khách hiện đang trống. Vui lòng chọn ít nhất 1 loại đồ giặt.', 'warning');
+            return;
+        }
+
+        const roomSelect = document.getElementById('laundryRoomSelect');
+        const selectedVal = roomSelect ? roomSelect.value : (stayingRooms[0] ? `${stayingRooms[0].MaPhieu}|${stayingRooms[0].MaPhong}` : '');
+        let selectedMaPhieu = '';
+        let selectedMaPhong = selectedVal;
+        if (selectedVal.includes('|')) {
+            [selectedMaPhieu, selectedMaPhong] = selectedVal.split('|');
+        }
+
+        const noteInput = document.getElementById('laundryNoteInput');
+        const note = noteInput ? noteInput.value.trim() : '';
+
+        const danhSachDo = keys.map(code => ({
+            maCTDV: code,
+            soLuong: laundryCart[code]
+        }));
+
+        const btn = document.getElementById('btnConfirmLaundry');
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý đơn giặt...';
+
+        try {
+            const payload = {
+                maTK: currentUser.MaTK || '',
+                maKH: currentUser.MaKH || '',
+                maPhieu: selectedMaPhieu,
+                maPhong: selectedMaPhong,
+                ghiChu: note,
+                danhSachDo: danhSachDo
+            };
+
+            const res = await fetch(`${API_BASE}/dichvu/dat-giatui`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            const resData = data.data || data;
+
+            if (data.status === 'success' || data.success) {
+                clearLaundryCart();
+                if (noteInput) noteInput.value = '';
+                showLaundrySuccessModal(resData.data || resData);
+            } else {
+                showToast(data.message || resData.message || 'Đặt dịch vụ giặt ủi không thành công.', 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi gửi đặt giặt ủi:', err);
+            showToast('Không thể kết nối đến máy chủ đặt dịch vụ giặt ủi.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Xác nhận đặt dịch vụ';
+        }
+    }
+
+    function showLaundrySuccessModal(orderData) {
+        const msgText = document.getElementById('successMessageText');
+        msgText.textContent = 'Đặt dịch vụ giặt ủi thành công! Đồ giặt của bạn đã được ghi nhận và chi phí sẽ được cộng vào hóa đơn khi trả phòng.';
+
+        const details = document.getElementById('successOrderDetails');
+        const itemsHtml = (orderData.chiTietDonGiat || []).map(item => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px;">
+                <span>• <strong>${item.tenCTDV}</strong> (${item.soLuong} cái/món × ${Number(item.donGia).toLocaleString('vi-VN')} đ)</span>
+                <span style="color:var(--gold-light); font-weight:700;">${Number(item.thanhTien).toLocaleString('vi-VN')} đ</span>
+            </div>
+        `).join('');
+
+        details.innerHTML = `
+            <div class="summary-row">
+                <span>Dịch vụ:</span>
+                <strong>Giặt ủi quần áo theo từng món</strong>
+            </div>
+            <div class="summary-row">
+                <span>Phòng nhận & giao:</span>
+                <span><strong>Phòng ${orderData.maPhong}</strong> (Mã phiếu: ${orderData.maPhieu})</span>
+            </div>
+            <div style="margin: 12px 0; padding: 10px 0; border-top: 1px dashed var(--border-dark); border-bottom: 1px dashed var(--border-dark);">
+                <div style="font-weight:700; color:var(--text-main); margin-bottom:8px; font-size:13px;">Danh sách đồ giặt đã ghi nhận:</div>
+                ${itemsHtml}
+            </div>
+            ${orderData.ghiChuChung ? `
+            <div class="summary-row">
+                <span>Ghi chú riêng:</span>
+                <span><em>${orderData.ghiChuChung}</em></span>
+            </div>` : ''}
+            <div class="summary-row bold">
+                <span>Tổng chi phí (cộng vào hóa đơn trả phòng):</span>
+                <span>${Number(orderData.tongTien).toLocaleString('vi-VN')} đ</span>
+            </div>
+        `;
+
+        document.getElementById('successModal').classList.add('active');
+    }
+
+    // Render Tab Thuê xe máy
+    function renderBikeGrid() {
+        const grid = document.getElementById('bikeGrid');
+        if (bikeList.length === 0) {
+            grid.innerHTML = `<div class="empty-menu">Hiện chưa có danh mục xe máy cho thuê.</div>`;
+            return;
+        }
+
+        const bikeIcons = {
+            'CTDVThueXe01': '🛵',
+            'CTDVThueXe02': '🏍️'
+        };
+
+        grid.innerHTML = bikeList.map(item => {
+            const icon = bikeIcons[item.MaCTDV] || '🛵';
+            const stock = parseInt(item.SoLuongTon) || 0;
+            const isOutOfStock = stock <= 0;
+            return `
+                <div class="service-item-card">
+                    <div>
+                        <div class="item-badge">
+                            <span>${icon}</span> Thuê xe máy tự lái
+                        </div>
+                        <h3 class="item-name">${item.TenCTDV}</h3>
+                        <div class="item-mota">${item.MoTa || ''}</div>
+                        <div class="item-mota-chitiet">${item.MoTaChiTiet || ''}</div>
+                        <div style="margin-top: 10px; font-size: 13px; color: ${isOutOfStock ? '#ef4444' : '#10b981'}; font-weight: 600;">
+                            ${isOutOfStock ? '⚠️ Tạm hết xe' : `✓ Có sẵn trong kho: <strong>${stock} xe</strong>`}
+                        </div>
+                    </div>
+                    <div class="item-footer">
+                        <div class="item-price">
+                            ${Number(item.DonGia).toLocaleString('vi-VN')} <span>đ / ngày</span>
+                        </div>
+                        <button type="button" class="btn-order-now" ${isOutOfStock ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''} onclick="openBikeRentalModal('${item.MaCTDV}')">
+                            <span>Thuê xe ngay</span> ➜
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Modal Thuê Xe Máy
+    function openBikeRentalModal(maCTDV) {
+        if (!currentUser) {
+            showToast('Quý khách vui lòng đăng nhập tài khoản khách hàng để thuê xe máy.', 'warning');
+            openQuickLoginModal();
+            return;
+        }
+
+        if (!inHouseRooms || inHouseRooms.length === 0) {
+            showToast('Rất tiếc! Quý khách hiện không có phòng nào đang lưu trú hoặc đặt trước tại khách sạn để sử dụng dịch vụ thuê xe máy.', 'warning');
+            return;
+        }
+
+        const bike = bikeList.find(b => b.MaCTDV === maCTDV);
+        if (!bike) {
+            showToast('Không tìm thấy thông tin loại xe máy này.', 'error');
+            return;
+        }
+
+        currentSelectedBike = bike;
+        document.getElementById('modalBikeName').textContent = bike.TenCTDV;
+        document.getElementById('modalBikePrice').textContent = `Đơn giá: ${Number(bike.DonGia).toLocaleString('vi-VN')} đ / ngày`;
+        document.getElementById('modalBikeStock').textContent = `Có sẵn: ${bike.SoLuongTon || 0} xe`;
+        document.getElementById('bikeQtyInput').value = 1;
+        document.getElementById('bikeQtyInput').max = Math.max(1, parseInt(bike.SoLuongTon) || 1);
+        document.getElementById('bikeNoteInput').value = '';
+
+        const roomSelect = document.getElementById('bikeRoomSelect');
+        roomSelect.innerHTML = inHouseRooms.map(r => {
+            const isStaying = (r.TrangThaiPhieu || r.TrangThai) === 'DangLuuTru';
+            const tag = isStaying ? 'Đang ở' : 'Đã đặt trước';
+            const timeTag = isStaying 
+                ? `Hạn trả: ${formatDateTime(r.ThoiGianTraPhong)}` 
+                : `${formatDateTime(r.ThoiGianNhanPhong)} - ${formatDateTime(r.ThoiGianTraPhong)}`;
+            return `<option value="${r.MaPhieu}|${r.MaPhong}">[Phiếu ${r.MaPhieu}] Phòng ${r.MaPhong} (${r.TenLoaiPhong}) - ${tag} • ${timeTag}</option>`;
+        }).join('');
+
+        onBikeRoomChanged();
+        document.getElementById('bikeRentalModal').classList.add('active');
+    }
+
+    function closeBikeRentalModal() {
+        document.getElementById('bikeRentalModal').classList.remove('active');
+        currentSelectedBike = null;
+    }
+
+    function adjustBikeQty(delta) {
+        const input = document.getElementById('bikeQtyInput');
+        let current = parseInt(input.value) || 1;
+        current += delta;
+        if (current < 1) current = 1;
+        const max = currentSelectedBike ? (parseInt(currentSelectedBike.SoLuongTon) || 1) : 10;
+        if (current > max) current = max;
+        input.value = current;
+        calculateBikeRentalCost();
+    }
+
+    function onBikeRoomChanged() {
+        const roomSelect = document.getElementById('bikeRoomSelect');
+        const selectedVal = roomSelect ? roomSelect.value : '';
+        let room = null;
+        if (selectedVal.includes('|')) {
+            const [p, r] = selectedVal.split('|');
+            room = inHouseRooms.find(item => item.MaPhieu === p && item.MaPhong === r);
+        } else {
+            room = inHouseRooms.find(item => item.MaPhong === selectedVal);
+        }
+        if (!room && inHouseRooms.length > 0) room = inHouseRooms[0];
+        
+        const noticeEl = document.getElementById('bikeRoomCheckoutNotice');
+        const traInput = document.getElementById('bikeTraTime');
+        const nhanInput = document.getElementById('bikeNhanTime');
+
+        const pad = n => String(n).padStart(2, '0');
+        const toLocalISO = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+        if (room) {
+            const isStaying = (room.TrangThaiPhieu || room.TrangThai) === 'DangLuuTru';
+            const checkinISO = room.ThoiGianNhanPhong ? room.ThoiGianNhanPhong.replace(' ', 'T').substring(0, 16) : '';
+            const checkoutISO = room.ThoiGianTraPhong ? room.ThoiGianTraPhong.replace(' ', 'T').substring(0, 16) : '';
+
+            if (isStaying) {
+                const now = new Date();
+                const checkoutDt = room.ThoiGianTraPhong ? new Date(room.ThoiGianTraPhong.replace(' ', 'T')) : null;
+
+                // Kiểm tra nếu phòng đang lưu trú nhưng đã quá hạn trả phòng
+                if (checkoutDt && checkoutDt <= now) {
+                    noticeEl.innerHTML = `<span style="color:#ef4444; font-weight:600;">⚠️ Phòng <strong>${room.MaPhong}</strong> [Phiếu <strong>${room.MaPhieu}</strong>] đã quá hạn lưu trú (ngày trả: <strong>${formatDateTime(room.ThoiGianTraPhong)}</strong>). Vui lòng liên hệ Lễ tân gia hạn hoặc chọn phiếu đặt phòng khác!</span>`;
+                    nhanInput.disabled = true;
+                    traInput.disabled = true;
+                    document.getElementById('btnConfirmBike').disabled = true;
+                    document.getElementById('bikeRentalDurationText').innerHTML = `<span style="color:#ef4444;">Phòng đã hết hạn lưu trú</span>`;
+                    document.getElementById('bikeTotalAmount').textContent = '0 đ';
+                    return;
+                }
+
+                nhanInput.disabled = false;
+                traInput.disabled = false;
+                noticeEl.innerHTML = `Đang lưu trú phòng <strong>${room.MaPhong}</strong> [Phiếu <strong>${room.MaPhieu}</strong>] • Hạn trả xe tối đa: <strong style="color:var(--gold-light);">${formatDateTime(room.ThoiGianTraPhong)}</strong>`;
+                
+                const start = new Date(now.getTime() + 15 * 60 * 1000); // 15 phút sau
+                const end = new Date(start.getTime() + 24 * 3600 * 1000); // 24 giờ sau
+                
+                if (checkoutDt) {
+                    const actualEnd = end > checkoutDt ? checkoutDt : end;
+                    traInput.max = checkoutISO;
+                    nhanInput.max = checkoutISO;
+                    nhanInput.min = toLocalISO(now);
+                    nhanInput.value = toLocalISO(start);
+                    traInput.value = toLocalISO(actualEnd);
+                } else {
+                    nhanInput.value = toLocalISO(start);
+                    traInput.value = toLocalISO(end);
+                    traInput.removeAttribute('max');
+                }
+            } else {
+                nhanInput.disabled = false;
+                traInput.disabled = false;
+                noticeEl.innerHTML = `Phòng đặt trước <strong>${room.MaPhong}</strong> [Phiếu <strong>${room.MaPhieu}</strong>] • Thời gian lưu trú: <strong style="color:var(--gold-light);">${formatDateTime(room.ThoiGianNhanPhong)}</strong> đến <strong style="color:var(--gold-light);">${formatDateTime(room.ThoiGianTraPhong)}</strong>`;
+                
+                nhanInput.min = checkinISO;
+                nhanInput.max = checkoutISO;
+                traInput.min = checkinISO;
+                traInput.max = checkoutISO;
+
+                nhanInput.value = checkinISO;
+                traInput.value = checkoutISO;
+            }
+        } else {
+            noticeEl.textContent = '';
+            traInput.removeAttribute('max');
+            nhanInput.removeAttribute('min');
+        }
+
+        calculateBikeRentalCost();
+    }
+
+    function calculateBikeRentalCost() {
+        if (!currentSelectedBike) return;
+
+        const nhanVal = document.getElementById('bikeNhanTime').value;
+        const traVal = document.getElementById('bikeTraTime').value;
+        const qty = parseInt(document.getElementById('bikeQtyInput').value) || 1;
+        const durationText = document.getElementById('bikeRentalDurationText');
+        const totalAmountText = document.getElementById('bikeTotalAmount');
+        const btn = document.getElementById('btnConfirmBike');
+
+        if (!nhanVal || !traVal) {
+            durationText.textContent = 'Chưa chọn đủ thời gian';
+            totalAmountText.textContent = '0 đ';
+            btn.disabled = true;
+            return;
+        }
+
+        const dtNhan = new Date(nhanVal);
+        const dtTra = new Date(traVal);
+        const diffMs = dtTra - dtNhan;
+
+        if (diffMs <= 0) {
+            durationText.innerHTML = `<span style="color:#ef4444;">Thời gian trả xe phải sau thời gian nhận!</span>`;
+            totalAmountText.textContent = '0 đ';
+            btn.disabled = true;
+            return;
+        }
+
+        // Kiểm tra với hạn phòng
+        const roomSelect = document.getElementById('bikeRoomSelect');
+        const selectedVal = roomSelect ? roomSelect.value : '';
+        let room = null;
+        if (selectedVal.includes('|')) {
+            const [p, r] = selectedVal.split('|');
+            room = inHouseRooms.find(item => item.MaPhieu === p && item.MaPhong === r);
+        } else {
+            room = inHouseRooms.find(item => item.MaPhong === selectedVal);
+        }
+
+        if (room) {
+            const isStaying = (room.TrangThaiPhieu || room.TrangThai) === 'DangLuuTru';
+            if (!isStaying && room.ThoiGianNhanPhong) {
+                const dtCheckin = new Date(room.ThoiGianNhanPhong.replace(' ', 'T'));
+                if (dtNhan < dtCheckin) {
+                    durationText.innerHTML = `<span style="color:#ef4444;">Thời gian nhận xe không được sớm hơn giờ nhận phòng (${formatDateTime(room.ThoiGianNhanPhong)})!</span>`;
+                    totalAmountText.textContent = '0 đ';
+                    btn.disabled = true;
+                    return;
+                }
+            }
+            if (room.ThoiGianTraPhong) {
+                const dtCheckout = new Date(room.ThoiGianTraPhong.replace(' ', 'T'));
+                if (dtTra > dtCheckout) {
+                    durationText.innerHTML = `<span style="color:#ef4444;">Vượt quá hạn trả phòng (${formatDateTime(room.ThoiGianTraPhong)})!</span>`;
+                    totalAmountText.textContent = '0 đ';
+                    btn.disabled = true;
+                    return;
+                }
+            }
+        }
+
+        const diffHours = Math.round(diffMs / (1000 * 3600));
+        let days = Math.ceil(diffMs / (1000 * 3600 * 24));
+        if (days < 1) days = 1;
+
+        durationText.textContent = `${days} ngày (${diffHours} giờ)`;
+
+        const donGia = Number(currentSelectedBike.DonGia) || 0;
+        const total = donGia * qty * days;
+        totalAmountText.textContent = `${total.toLocaleString('vi-VN')} đ`;
+        btn.disabled = false;
+    }
+
+    async function submitBikeRental() {
+        if (!currentSelectedBike) return;
+
+        const nhanVal = document.getElementById('bikeNhanTime').value;
+        const traVal = document.getElementById('bikeTraTime').value;
+        const qty = parseInt(document.getElementById('bikeQtyInput').value) || 1;
+        const roomVal = document.getElementById('bikeRoomSelect').value;
+        const note = document.getElementById('bikeNoteInput').value.trim();
+        const btn = document.getElementById('btnConfirmBike');
+
+        let selectedMaPhieu = '';
+        let selectedMaPhong = roomVal;
+        if (roomVal.includes('|')) {
+            [selectedMaPhieu, selectedMaPhong] = roomVal.split('|');
+        }
+
+        if (!nhanVal || !traVal) {
+            showToast('Vui lòng chọn thời gian nhận xe và thời gian trả xe.', 'warning');
+            return;
+        }
+
+        if (new Date(traVal) <= new Date(nhanVal)) {
+            showToast('Thời gian trả xe phải sau thời gian nhận xe.', 'warning');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý đăng ký xe...';
+
+        try {
+            const payload = {
+                maTK: currentUser.MaTK || '',
+                maKH: currentUser.MaKH || '',
+                maPhieu: selectedMaPhieu,
+                maPhong: selectedMaPhong,
+                maCTDV: currentSelectedBike.MaCTDV,
+                soLuongXe: qty,
+                thoiGianNhan: nhanVal.replace('T', ' ') + ':00',
+                thoiGianTra: traVal.replace('T', ' ') + ':00',
+                ghiChu: note
+            };
+
+            const res = await fetch(`${API_BASE}/dichvu/dat-thuexe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            const resData = data.data || data;
+
+            if (resData.status === 'success' || data.success) {
+                closeBikeRentalModal();
+                showBikeRentalSuccessModal(resData.data || resData);
+                await loadAllServices(); // Làm mới tồn kho hiển thị
+            } else {
+                showToast(resData.message || data.message || 'Đăng ký thuê xe không thành công.', 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi đặt thuê xe máy:', err);
+            showToast('Không thể kết nối đến máy chủ đặt xe máy.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Xác nhận thuê xe';
+        }
+    }
+
+    function showBikeRentalSuccessModal(orderData) {
+        const msgText = document.getElementById('successMessageText');
+        msgText.textContent = 'Đăng ký thuê xe máy thành công! Quý khách vui lòng liên hệ quầy Lễ tân tại sảnh khách sạn để nhận chìa khóa và mũ bảo hiểm.';
+
+        const details = document.getElementById('successOrderDetails');
+        details.innerHTML = `
+            <div class="summary-row">
+                <span>Dịch vụ:</span>
+                <strong>Thuê xe máy tự lái (${orderData.tenXe})</strong>
+            </div>
+            <div class="summary-row">
+                <span>Số lượng xe thuê:</span>
+                <strong>${orderData.soLuongXe} chiếc (${Number(orderData.donGiaNgay).toLocaleString('vi-VN')} đ/ngày)</strong>
+            </div>
+            <div class="summary-row">
+                <span>Thời gian nhận xe:</span>
+                <span>${orderData.thoiGianNhan}</span>
+            </div>
+            <div class="summary-row">
+                <span>Thời gian trả xe:</span>
+                <span>${orderData.thoiGianTra} (${orderData.soNgay} ngày)</span>
+            </div>
+            <div class="summary-row">
+                <span>Phòng lưu trú đại diện:</span>
+                <span><strong>Phòng ${orderData.maPhong}</strong> (Mã phiếu: ${orderData.maPhieu})</span>
+            </div>
+            ${orderData.ghiChu ? `
+            <div class="summary-row">
+                <span>Ghi chú lưu vết:</span>
+                <span><em>${orderData.ghiChu}</em></span>
+            </div>` : ''}
+            <div class="summary-row bold">
+                <span>Tổng chi phí (cộng vào hóa đơn trả phòng):</span>
+                <span>${Number(orderData.tongTien).toLocaleString('vi-VN')} đ</span>
+            </div>
+        `;
+
+        document.getElementById('successModal').classList.add('active');
+    }
+
+    // 4. Modal Đặt món ăn
+    function openOrderModal(maCTDV) {
+        if (!currentUser) {
+            showToast('Quý khách vui lòng đăng nhập tài khoản khách hàng để đặt món ăn.', 'warning');
+            openQuickLoginModal();
+            return;
+        }
+
+        const stayingRooms = (inHouseRooms || []).filter(r => (r.TrangThaiPhieu || r.TrangThai) === 'DangLuuTru');
+        if (stayingRooms.length === 0) {
+            const advanceRooms = (inHouseRooms || []).filter(r => ['DaDat', 'DaDatPhong'].includes(r.TrangThaiPhieu || r.TrangThai));
+            if (advanceRooms.length > 0) {
+                const r = advanceRooms[0];
+                showServiceLockModal(
+                    'Dịch Vụ Đặt Món Ăn Tận Phòng',
+                    `Quý khách hiện có <strong>Phòng ${r.MaPhong}</strong> (Phiếu <strong>${r.MaPhieu}</strong>) đang ở trạng thái <em>Đã đặt trước</em> (dự kiến nhận phòng: <strong>${formatDateTime(r.ThoiGianNhanPhong)}</strong>).<br><br>Món ăn tại khách sạn được các đầu bếp chế biến nóng sốt và giao tận phòng trong 15–20 phút, nên dịch vụ chỉ khả dụng khi quý khách <strong>đã hoàn tất thủ tục nhận phòng (Check-in)</strong> tại Lễ tân.<br><br>Quý khách vui lòng đặt món sau khi làm thủ tục nhận phòng nhé!`
+                );
+            } else {
+                showServiceLockModal(
+                    'Chưa Có Phòng Lưu Trú',
+                    `Rất tiếc! Quý khách hiện không có phòng nào đang lưu trú tại khách sạn để sử dụng dịch vụ phục vụ món ăn tận phòng.<br><br>Quý khách vui lòng đặt phòng hoặc đăng nhập tài khoản có thông tin phòng tại khách sạn.`
+                );
+            }
+            return;
+        }
+
+        const food = foodList.find(f => f.MaCTDV === maCTDV);
+        if (!food) {
+            showToast('Không tìm thấy thông tin món ăn.', 'error');
+            return;
+        }
+
+        currentSelectedFood = food;
+        document.getElementById('modalFoodName').textContent = food.TenCTDV;
+        document.getElementById('modalFoodPrice').textContent = `Đơn giá: ${Number(food.DonGia).toLocaleString('vi-VN')} đ / phần`;
+        document.getElementById('orderQtyInput').value = 1;
+        document.getElementById('orderNoteInput').value = '';
+
+        const roomSelect = document.getElementById('orderRoomSelect');
+        roomSelect.innerHTML = stayingRooms.map(r => {
+            return `<option value="${r.MaPhieu}|${r.MaPhong}">[Phiếu ${r.MaPhieu}] Phòng ${r.MaPhong} (${r.TenLoaiPhong}) - Đang ở • Hạn trả: ${formatDateTime(r.ThoiGianTraPhong)}</option>`;
+        }).join('');
+
+        updateModalTotal();
+        document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+        currentSelectedFood = null;
+    }
+
+    function adjustQty(delta) {
+        const input = document.getElementById('orderQtyInput');
+        let current = parseInt(input.value) || 1;
+        current += delta;
+        if (current < 1) current = 1;
+        if (current > 20) current = 20;
+        input.value = current;
+        updateModalTotal();
+    }
+
+    function onQtyChange() {
+        const input = document.getElementById('orderQtyInput');
+        let current = parseInt(input.value) || 1;
+        if (current < 1) current = 1;
+        if (current > 20) current = 20;
+        input.value = current;
+        updateModalTotal();
+    }
+
+    function updateModalTotal() {
+        if (!currentSelectedFood) return;
+        const qty = parseInt(document.getElementById('orderQtyInput').value) || 1;
+        const total = Number(currentSelectedFood.DonGia) * qty;
+        document.getElementById('modalTotalAmount').textContent = `${total.toLocaleString('vi-VN')} đ`;
+    }
+
+    // 5. Gửi yêu cầu đặt món
+    async function submitFoodOrder() {
+        if (!currentSelectedFood) return;
+
+        const qty = parseInt(document.getElementById('orderQtyInput').value) || 1;
+        const roomVal = document.getElementById('orderRoomSelect').value;
+        const note = document.getElementById('orderNoteInput').value.trim();
+        const btn = document.getElementById('btnConfirmOrder');
+
+        let selectedMaPhieu = '';
+        let selectedMaPhong = roomVal;
+        if (roomVal.includes('|')) {
+            [selectedMaPhieu, selectedMaPhong] = roomVal.split('|');
+        }
+
+        if (qty <= 0) {
+            showToast('Số lượng món ăn phải từ 1 trở lên.', 'warning');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý...';
+
+        try {
+            const payload = {
+                maTK: currentUser.MaTK || '',
+                maKH: currentUser.MaKH || '',
+                maPhieu: selectedMaPhieu,
+                maPhong: selectedMaPhong,
+                maCTDV: currentSelectedFood.MaCTDV,
+                soLuong: qty,
+                ghiChu: note
+            };
+
+            const res = await fetch(`${API_BASE}/dichvu/datmon`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            const resData = data.data || data;
+
+            if (resData.status === 'success' || data.success) {
+                closeOrderModal();
+                showSuccessModal(resData.data || resData, currentSelectedFood);
+            } else {
+                showToast(resData.message || data.message || 'Đặt món không thành công.', 'error');
+            }
+        } catch (err) {
+            console.error('Lỗi gửi đặt món:', err);
+            showToast('Không thể kết nối đến máy chủ đặt món.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Đặt ngay';
+        }
+    }
+
+    // 6. Hiển thị thông báo thành công
+    function showSuccessModal(orderData, foodItem) {
+        const msgText = document.getElementById('successMessageText');
+        msgText.textContent = 'Đặt món thành công! Món ăn sẽ được chuẩn bị và giao đến phòng bạn trong khoảng 15–20 phút.';
+
+        const details = document.getElementById('successOrderDetails');
+        details.innerHTML = `
+            <div class="summary-row">
+                <span>Món ăn:</span>
+                <strong>${orderData.tenMonAn || foodItem.TenCTDV}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Phòng nhận món:</span>
+                <span><strong>Phòng ${orderData.maPhong}</strong></span>
+            </div>
+            <div class="summary-row">
+                <span>Số lượng:</span>
+                <span>${orderData.soLuong} phần × ${Number(orderData.donGia).toLocaleString('vi-VN')} đ</span>
+            </div>
+            ${orderData.ghiChu ? `
+            <div class="summary-row">
+                <span>Yêu cầu riêng:</span>
+                <span><em>${orderData.ghiChu}</em></span>
+            </div>` : ''}
+            <div class="summary-row bold">
+                <span>Thành tiền (tính vào hóa đơn):</span>
+                <span>${Number(orderData.thanhTien).toLocaleString('vi-VN')} đ</span>
+            </div>
+        `;
+
+        document.getElementById('successModal').classList.add('active');
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.remove('active');
+    }
+
+    function showServiceLockModal(title, messageHtml) {
+        document.getElementById('lockModalTitle').innerHTML = `<span>🛎️</span> ${title}`;
+        document.getElementById('lockModalBody').innerHTML = messageHtml;
+        document.getElementById('serviceLockModal').classList.add('active');
+    }
+
+    function closeServiceLockModal() {
+        document.getElementById('serviceLockModal').classList.remove('active');
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATION SYSTEM
+    // =========================================================================
+    let _dichvuToastTimer = null;
+    function showToast(message, type = 'info') {
+        let toast = document.getElementById('dichvuToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'dichvuToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = '#1e293b';
+            toast.style.color = '#f8fafc';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
+            toast.style.zIndex = '99999';
+            toast.style.borderLeft = '4px solid #38bdf8';
+            toast.style.display = 'none';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '10px';
+            toast.style.fontSize = '14px';
+            toast.style.fontFamily = 'inherit';
+            toast.style.maxWidth = '450px';
+            toast.style.wordBreak = 'break-word';
+            document.body.appendChild(toast);
+        }
+        const iconMap = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        const colorMap = { success: '#4ade80', error: '#f87171', warning: '#fbbf24', info: '#38bdf8' };
+        toast.innerHTML = `<span style="font-size:17px">${iconMap[type] || 'ℹ️'}</span> <span>${message}</span>`;
+        toast.style.borderLeftColor = colorMap[type] || '#38bdf8';
+        toast.style.display = 'flex';
+        if (_dichvuToastTimer) clearTimeout(_dichvuToastTimer);
+        _dichvuToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    window.showToast = showToast;
+</script>
+
+</body>
+</html>

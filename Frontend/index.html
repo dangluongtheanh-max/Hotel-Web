@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Đặt Phòng - Test Đăng Nhập & Đăng Ký</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 440px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            color: #3182ce;
+            border-bottom-color: #3182ce;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2d3748;
+            font-size: 22px;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 11px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: #2b6cb0;
+        }
+        .result-box {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            word-wrap: break-word;
+            display: none;
+        }
+        .error {
+            background-color: #fff5f5;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+        .success {
+            background-color: #f0fff4;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+        pre {
+            background: #edf2f7;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 8px 0 0;
+            font-size: 12px;
+            color: #2d3748;
+        }
+        .steps-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding: 0 4px;
+        }
+        .step-dot {
+            font-size: 12px;
+            font-weight: 700;
+            color: #a0aec0;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #edf2f7;
+            transition: all 0.2s ease;
+        }
+        .step-dot.active {
+            color: #ffffff;
+            background: #3182ce;
+        }
+        .step-dot.done {
+            color: #ffffff;
+            background: #38a169;
+        }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+            margin: 0 6px;
+        }
+        .step-line.done {
+            background: #38a169;
+        }
+        .otp-input {
+            letter-spacing: 8px;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 800;
+            font-family: "Courier New", Courier, monospace;
+            padding: 8px 12px;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <button class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Đăng Nhập</button>
+            <button class="tab-btn" id="tabRegisterBtn" onclick="switchTab('register')">Đăng Ký</button>
+
+            <!-- CHỨC NĂNG ADMIN -->
+            <span id="adminTabArea" style="display: none; gap: 6px;">
+                <a href="admin.html" class="tab-btn" style="text-decoration:none; color:#f59e0b; font-weight:800; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b;">👑 Quản Trị (Admin)</a>
+                <a href="letan.html" class="tab-btn" style="text-decoration:none; color:#10b981; font-weight:700; background: rgba(16, 185, 129, 0.15);">🛎️ Quầy Lễ Tân</a>
+            </span>
+
+            <!-- CHỨC NĂNG LỄ TÂN (Ẩn khi là khách hàng) -->
+            <span id="receptionistTabArea" style="display: none; gap: 6px;">
+                <a href="letan.html" class="tab-btn" style="text-decoration:none; color:#10b981; font-weight:700; background: rgba(16, 185, 129, 0.15);">🛎️ Quầy Lễ Tân</a>
+                <a href="datphong.html?mode=quay" class="tab-btn" style="text-decoration:none; color:#b45309; font-weight:700;">🏨 Đặt Phòng Tại Quầy</a>
+            </span>
+
+            <!-- CHỨC NĂNG KHÁCH HÀNG (Ẩn khi là lễ tân) -->
+            <span id="customerTabArea" style="display: inline-flex; gap: 6px;">
+                <a href="datphong.html" class="tab-btn" style="text-decoration:none; color:#b45309; font-weight:700;">🏨 Đặt Phòng</a>
+                <a href="thongtincanhan.html" class="tab-btn" style="text-decoration:none; color:#8b5cf6; font-weight:700;">👤 Thông Tin Cá Nhân</a>
+                <a href="lichsudatphong.html" class="tab-btn" style="text-decoration:none; color:#2563eb; font-weight:700;">📜 Lịch Sử Đặt Phòng</a>
+                <a href="dichvu.html" class="tab-btn" style="text-decoration:none; color:#c59b27; font-weight:700;">🛎️ Dịch Vụ</a>
+            </span>
+        </div>
+
+        <!-- NÚT DUY NHẤT CHUYỂN QUA LẠI GIỮA KHÁCH HÀNG VÀ LỄ TÂN -->
+        <button class="tab-btn" id="btnIndexRoleSwitcher" onclick="toggleIndexRoleSwitch()" style="font-weight: 700; transition: all 0.2s;"></button>
+    </div>
+
+    <!-- 1. MÀN HÌNH ĐĂNG NHẬP -->
+    <div id="loginSection" class="form-section active">
+        <h2>Đăng Nhập Hệ Thống</h2>
+        <div class="form-group">
+            <label for="loginTenDangNhap">Tên đăng nhập:</label>
+            <input type="text" id="loginTenDangNhap" placeholder="Ví dụ: khach01 hoặc admin">
+        </div>
+        <div class="form-group">
+            <label for="loginMatKhau">Mật khẩu:</label>
+            <input type="password" id="loginMatKhau" placeholder="Nhập mật khẩu">
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+            <a href="javascript:void(0)" onclick="openForgotPassword()" style="color: #3182ce; font-size: 13px; text-decoration: none; font-weight: 500;">Quên mật khẩu?</a>
+        </div>
+        <button class="submit-btn" onclick="handleLogin()">Đăng Nhập</button>
+    </div>
+
+    <!-- 2. MÀN HÌNH ĐĂNG KÝ KHÁCH HÀNG -->
+    <div id="registerSection" class="form-section">
+        <h2>Đăng Ký Tài Khoản Khách Hàng</h2>
+        <div class="form-group">
+            <label for="regHoTen">Họ và tên: <span style="color:red">*</span></label>
+            <input type="text" id="regHoTen" placeholder="Ví dụ: Nguyễn Văn An">
+        </div>
+        <div class="form-group">
+            <label for="regSDT">Số điện thoại (10 số): <span style="color:red">*</span></label>
+            <input type="text" id="regSDT" placeholder="Ví dụ: 0912345678" maxlength="10">
+        </div>
+        <div class="form-group">
+            <label for="regEmail">Email: <span style="color:red">*</span></label>
+            <input type="email" id="regEmail" placeholder="Ví dụ: khachhang@gmail.com">
+        </div>
+        <div class="form-group">
+            <label for="regTenDangNhap">Tên đăng nhập: <span style="color:red">*</span></label>
+            <input type="text" id="regTenDangNhap" placeholder="Nhập tên đăng nhập">
+        </div>
+        <div class="form-group">
+            <label for="regMatKhau">Mật khẩu: <span style="color:red">*</span></label>
+            <input type="password" id="regMatKhau" placeholder="Nhập mật khẩu">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+                <label for="regNgaySinh">Ngày sinh (Tùy chọn):</label>
+                <input type="date" id="regNgaySinh">
+            </div>
+            <div class="form-group">
+                <label for="regQuocTich">Quốc tịch (Tùy chọn):</label>
+                <select id="regQuocTich" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; background: white;">
+                    <option value="Việt Nam">Việt Nam</option>
+                    <option value="Nước ngoài">Nước ngoài</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+                <label for="regLoaiGiayTo">Loại giấy tờ (Tùy chọn):</label>
+                <select id="regLoaiGiayTo" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; background: white;">
+                    <option value="CCCD">CCCD</option>
+                    <option value="CMND">CMND</option>
+                    <option value="Hộ chiếu">Hộ chiếu</option>
+                    <option value="Giấy khai sinh">Giấy khai sinh</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="regSoGiayTo">Số CCCD / Hộ chiếu (Tùy chọn):</label>
+                <input type="text" id="regSoGiayTo" placeholder="Ví dụ: 001202000001">
+            </div>
+        </div>
+        <button class="submit-btn" style="background-color: #38a169;" onclick="handleRegister()">Tạo Tài Khoản Khách Hàng</button>
+    </div>
+
+    <!-- 3. MÀN HÌNH QUÊN MẬT KHẨU (3 BƯỚC) -->
+    <div id="forgotPasswordSection" class="form-section">
+        <h2>Khôi Phục Mật Khẩu</h2>
+
+        <!-- Chỉ báo các bước -->
+        <div class="steps-bar">
+            <div class="step-dot active" id="stepDot1">1. Email</div>
+            <div class="step-line" id="stepLine1"></div>
+            <div class="step-dot" id="stepDot2">2. OTP</div>
+            <div class="step-line" id="stepLine2"></div>
+            <div class="step-dot" id="stepDot3">3. Mật khẩu</div>
+        </div>
+
+        <!-- BƯỚC 1: Nhập email -->
+        <div id="forgotStep1">
+            <p style="font-size: 14px; color: #4a5568; margin-bottom: 14px; line-height: 1.5;">
+                Nhập địa chỉ email tài khoản khách hàng đã đăng ký để nhận mã xác nhận OTP gồm 6 chữ số qua Gmail.
+            </p>
+            <div class="form-group">
+                <label for="forgotEmail">Địa chỉ Email: <span style="color:red">*</span></label>
+                <input type="email" id="forgotEmail" placeholder="Ví dụ: an@gmail.com">
+            </div>
+            <button class="submit-btn" id="btnSendOtp" onclick="handleSendOtp()">Gửi Mã Xác Nhận OTP</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="javascript:void(0)" onclick="backToLogin()" style="color: #718096; font-size: 13px; text-decoration: none;">← Quay lại Đăng nhập</a>
+            </div>
+        </div>
+
+        <!-- BƯỚC 2: Nhập OTP -->
+        <div id="forgotStep2" style="display: none;">
+            <p style="font-size: 13px; color: #4a5568; margin-bottom: 12px; line-height: 1.5;">
+                Mã xác nhận 6 chữ số đã được gửi đến: <strong id="displayTargetEmail" style="color: #2b6cb0;"></strong>
+            </p>
+            <div class="form-group">
+                <label for="forgotOtp">Nhập mã OTP: <span style="color:red">*</span></label>
+                <input type="text" id="forgotOtp" class="otp-input" placeholder="••••••" maxlength="6" autocomplete="one-time-code">
+                <small style="color: #718096; font-size: 12px; display: block; margin-top: 5px;">Mã có hiệu lực trong 5 phút. Tối đa 5 lần thử.</small>
+            </div>
+            <button class="submit-btn" id="btnVerifyOtp" onclick="handleVerifyOtp()">Xác Nhận OTP</button>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-size: 13px;">
+                <button type="button" id="btnResendOtp" onclick="handleResendOtp()" style="background: none; border: none; color: #3182ce; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600;">Gửi lại mã</button>
+                <a href="javascript:void(0)" onclick="goToForgotStep(1)" style="color: #718096; text-decoration: none;">Đổi email khác</a>
+            </div>
+        </div>
+
+        <!-- BƯỚC 3: Đặt mật khẩu mới -->
+        <div id="forgotStep3" style="display: none;">
+            <p style="font-size: 14px; color: #4a5568; margin-bottom: 14px; line-height: 1.5;">
+                Mã OTP chính xác! Quý khách vui lòng nhập mật khẩu mới cho tài khoản.
+            </p>
+            <div class="form-group">
+                <label for="forgotNewPassword">Mật khẩu mới (tối thiểu 6 ký tự): <span style="color:red">*</span></label>
+                <input type="password" id="forgotNewPassword" placeholder="Nhập mật khẩu mới">
+            </div>
+            <div class="form-group">
+                <label for="forgotConfirmPassword">Xác nhận mật khẩu mới: <span style="color:red">*</span></label>
+                <input type="password" id="forgotConfirmPassword" placeholder="Nhập lại mật khẩu mới">
+            </div>
+            <button class="submit-btn" id="btnResetPassword" style="background-color: #38a169;" onclick="handleResetPassword()">Cập Nhật Mật Khẩu Mới</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="javascript:void(0)" onclick="backToLogin()" style="color: #718096; font-size: 13px; text-decoration: none;">Hủy & Quay lại Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hộp hiển thị kết quả -->
+    <div id="resultBox" class="result-box"></div>
+</div>
+
+<script>
+    // Tự động nhận diện API Base URL tương thích cả file://, localhost:8000 và XAMPP Apache
+    const API_BASE = (() => {
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:8000/Backend/public/index.php';
+        }
+        const pathname = window.location.pathname;
+        const feIndex = pathname.indexOf('/Frontend/');
+        if (feIndex !== -1) {
+            return pathname.substring(0, feIndex) + '/Backend/public/index.php';
+        }
+        return '/Backend/public/index.php';
+    })();
+
+    // State quản lý khôi phục mật khẩu
+    let forgotState = {
+        email: '',
+        resetToken: '',
+        cooldownSeconds: 0,
+        timerInterval: null
+    };
+
+    function isIndexReceptionistRole() {
+        const u = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+        return u && (u.VaiTro === 'LeTan' || u.VaiTro === 'Admin');
+    }
+
+    function updateIndexRoleUI() {
+        const switcherBtn = document.getElementById('btnIndexRoleSwitcher');
+        const adminArea = document.getElementById('adminTabArea');
+        const recArea = document.getElementById('receptionistTabArea');
+        const custArea = document.getElementById('customerTabArea');
+        const u = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+        const isAdmin = u && u.VaiTro === 'Admin';
+        const isRec = u && u.VaiTro === 'LeTan';
+
+        if (switcherBtn) {
+            if (isAdmin) {
+                switcherBtn.innerHTML = '👑 Vai Trò: Admin';
+                switcherBtn.style.background = 'rgba(245, 158, 11, 0.15)';
+                switcherBtn.style.color = '#f59e0b';
+                switcherBtn.style.borderColor = '#f59e0b';
+                switcherBtn.title = 'Đang đăng nhập với vai trò Quản Trị Viên';
+            } else if (isRec) {
+                switcherBtn.innerHTML = '👤 Test Khách Hàng';
+                switcherBtn.style.background = 'rgba(59, 130, 246, 0.15)';
+                switcherBtn.style.color = '#2563eb';
+                switcherBtn.style.borderColor = '#3b82f6';
+                switcherBtn.title = 'Nhấn để chuyển sang vai trò Khách Hàng (ẩn chức năng lễ tân)';
+            } else {
+                switcherBtn.innerHTML = '🛎️ Test Lễ Tân';
+                switcherBtn.style.background = 'rgba(16, 185, 129, 0.15)';
+                switcherBtn.style.color = '#059669';
+                switcherBtn.style.borderColor = '#10b981';
+                switcherBtn.title = 'Nhấn để chuyển sang vai trò Lễ Tân (ẩn chức năng khách hàng)';
+            }
+        }
+
+        if (isAdmin) {
+            if (adminArea) adminArea.style.display = 'inline-flex';
+            if (recArea) recArea.style.display = 'none';
+            if (custArea) custArea.style.display = 'none';
+        } else if (isRec) {
+            if (adminArea) adminArea.style.display = 'none';
+            if (recArea) recArea.style.display = 'inline-flex';
+            if (custArea) custArea.style.display = 'none';
+        } else {
+            if (adminArea) adminArea.style.display = 'none';
+            if (recArea) recArea.style.display = 'none';
+            if (custArea) custArea.style.display = 'inline-flex';
+        }
+    }
+
+    async function toggleIndexRoleSwitch() {
+        const switcherBtn = document.getElementById('btnIndexRoleSwitcher');
+        if (switcherBtn) switcherBtn.disabled = true;
+
+        const isRec = isIndexReceptionistRole();
+        const targetUsername = isRec ? 'khach01' : 'letan01';
+
+        try {
+            const res = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenDangNhap: targetUsername,
+                    matKhau: '123456'
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('hotel_user', JSON.stringify(data.data));
+                updateIndexRoleUI();
+            }
+        } catch (e) {}
+
+        if (switcherBtn) switcherBtn.disabled = false;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateIndexRoleUI();
+    });
+
+    function switchTab(tabName) {
+        const loginSection = document.getElementById('loginSection');
+        const registerSection = document.getElementById('registerSection');
+        const forgotSection = document.getElementById('forgotPasswordSection');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const resultBox = document.getElementById('resultBox');
+
+        resultBox.style.display = 'none';
+        forgotSection.classList.remove('active');
+
+        if (tabName === 'login') {
+            loginSection.classList.add('active');
+            registerSection.classList.remove('active');
+            tabLoginBtn.classList.add('active');
+            tabRegisterBtn.classList.remove('active');
+        } else {
+            loginSection.classList.remove('active');
+            registerSection.classList.add('active');
+            tabLoginBtn.classList.remove('active');
+            tabRegisterBtn.classList.add('active');
+        }
+    }
+
+    function openForgotPassword() {
+        const loginSection = document.getElementById('loginSection');
+        const registerSection = document.getElementById('registerSection');
+        const forgotSection = document.getElementById('forgotPasswordSection');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const resultBox = document.getElementById('resultBox');
+
+        loginSection.classList.remove('active');
+        registerSection.classList.remove('active');
+        tabLoginBtn.classList.remove('active');
+        tabRegisterBtn.classList.remove('active');
+        forgotSection.classList.add('active');
+
+        resultBox.style.display = 'none';
+
+        // Điền trước email nếu người dùng đã nhập bên đăng nhập/đăng ký
+        const preEmail = document.getElementById('regEmail').value.trim();
+        if (preEmail && !document.getElementById('forgotEmail').value) {
+            document.getElementById('forgotEmail').value = preEmail;
+        }
+
+        goToForgotStep(1);
+    }
+
+    function backToLogin() {
+        switchTab('login');
+    }
+
+    function goToForgotStep(step) {
+        const step1 = document.getElementById('forgotStep1');
+        const step2 = document.getElementById('forgotStep2');
+        const step3 = document.getElementById('forgotStep3');
+        const dot1 = document.getElementById('stepDot1');
+        const dot2 = document.getElementById('stepDot2');
+        const dot3 = document.getElementById('stepDot3');
+        const line1 = document.getElementById('stepLine1');
+        const line2 = document.getElementById('stepLine2');
+        const resultBox = document.getElementById('resultBox');
+
+        resultBox.style.display = 'none';
+
+        step1.style.display = step === 1 ? 'block' : 'none';
+        step2.style.display = step === 2 ? 'block' : 'none';
+        step3.style.display = step === 3 ? 'block' : 'none';
+
+        dot1.className = 'step-dot' + (step === 1 ? ' active' : (step > 1 ? ' done' : ''));
+        dot2.className = 'step-dot' + (step === 2 ? ' active' : (step > 2 ? ' done' : ''));
+        dot3.className = 'step-dot' + (step === 3 ? ' active' : '');
+
+        line1.className = 'step-line' + (step > 1 ? ' done' : '');
+        line2.className = 'step-line' + (step > 2 ? ' done' : '');
+
+        if (step === 2) {
+            document.getElementById('displayTargetEmail').textContent = forgotState.email;
+            document.getElementById('forgotOtp').value = '';
+            document.getElementById('forgotOtp').focus();
+        } else if (step === 3) {
+            document.getElementById('forgotNewPassword').value = '';
+            document.getElementById('forgotConfirmPassword').value = '';
+            document.getElementById('forgotNewPassword').focus();
+        }
+    }
+
+    function startCooldown(seconds = 60) {
+        forgotState.cooldownSeconds = seconds;
+        const resendBtn = document.getElementById('btnResendOtp');
+        if (!resendBtn) return;
+
+        resendBtn.disabled = true;
+        resendBtn.style.color = '#a0aec0';
+        resendBtn.style.cursor = 'not-allowed';
+
+        if (forgotState.timerInterval) {
+            clearInterval(forgotState.timerInterval);
+        }
+
+        resendBtn.textContent = `Gửi lại mã (${forgotState.cooldownSeconds}s)`;
+
+        forgotState.timerInterval = setInterval(() => {
+            forgotState.cooldownSeconds--;
+            if (forgotState.cooldownSeconds <= 0) {
+                clearInterval(forgotState.timerInterval);
+                forgotState.timerInterval = null;
+                resendBtn.disabled = false;
+                resendBtn.style.color = '#3182ce';
+                resendBtn.style.cursor = 'pointer';
+                resendBtn.textContent = 'Gửi lại mã';
+            } else {
+                resendBtn.textContent = `Gửi lại mã (${forgotState.cooldownSeconds}s)`;
+            }
+        }, 1000);
+    }
+
+    // Xử lý gửi API Đăng Nhập
+    async function handleLogin() {
+        const tenDangNhap = document.getElementById('loginTenDangNhap').value.trim();
+        const matKhau = document.getElementById('loginMatKhau').value;
+        const resultBox = document.getElementById('resultBox');
+
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang xác thực...';
+
+        try {
+            const response = await fetch(`${API_BASE}/taikhoan/dangnhap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenDangNhap: tenDangNhap,
+                    matKhau: matKhau
+                })
+            });
+
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    localStorage.setItem('hotel_user', JSON.stringify(data.data));
+                    updateIndexRoleUI();
+                    const isAdmin = data.data?.VaiTro === 'Admin';
+                    const isRec = data.data?.VaiTro === 'LeTan';
+                    let linksHtml = '';
+                    if (isAdmin) {
+                        linksHtml = '<a href="admin.html" style="background:linear-gradient(135deg, #c59b27, #dfb547); color:#070d1e; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:800;">👑 Quản Trị Hệ Thống (Admin) ➜</a><a href="letan.html" style="background:#10b981; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:700;">🛎️ Quầy Lễ Tân ➜</a>';
+                    } else if (isRec) {
+                        linksHtml = '<a href="letan.html" style="background:#10b981; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:700;">🛎️ Quầy Lễ Tân ➜</a><a href="datphong.html?mode=quay" style="background:#b45309; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;">🏨 Đặt Phòng Tại Quầy ➜</a>';
+                    } else {
+                        linksHtml = '<a href="datphong.html" style="background:#3182ce; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;">🏨 Đặt Phòng ➜</a><a href="thongtincanhan.html" style="background:#8b5cf6; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;">👤 Thông Tin Cá Nhân ➜</a><a href="lichsudatphong.html" style="background:#4a5568; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;">📜 Xem Lịch Sử ➜</a><a href="dichvu.html" style="background:#c59b27; color:#0b1329; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:700;">🛎️ Dịch Vụ ➜</a>';
+                    }
+                    resultBox.innerHTML = '<strong>Đăng nhập thành công!</strong><br>Xin chào: ' + (data.data?.VaiTro || '') + ' - ' + (data.data?.TenDangNhap || '') + '<br><div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">' + linksHtml + '</div>';
+                } else {
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Lỗi:</strong> ' + data.message;
+                }
+            } catch (e) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối:</strong> ' + error.message;
+        }
+    }
+
+    // ==========================================
+    // LOGIC KIỂM TRA THÔNG TIN GIẤY TỜ & SĐT (VALIDATION)
+    // ==========================================
+    function validatePhoneNumber(sdt) {
+        const s = (sdt || '').trim();
+        if (!s) return { valid: false, message: 'Vui lòng nhập số điện thoại.' };
+        if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số điện thoại chỉ được chứa các chữ số (0-9).' };
+        const len = s.length;
+        if (len < 10) {
+            const thieu = 10 - len;
+            return { valid: false, message: `Số điện thoại chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định số điện thoại phải gồm đúng 10 số.` };
+        }
+        if (len > 10) {
+            const thua = len - 10;
+            return { valid: false, message: `Số điện thoại có ${len} chữ số (thừa ${thua} số). Quy định số điện thoại chỉ gồm đúng 10 số.` };
+        }
+        if (!/^(03|05|07|08|09)/.test(s)) {
+            return { valid: false, message: 'Số điện thoại không hợp lệ. Phải bắt đầu bằng các đầu số di động Việt Nam (03, 05, 07, 08, 09).' };
+        }
+        return { valid: true, message: 'Số điện thoại hợp lệ.' };
+    }
+
+    function validateDocumentNumber(loaiGiayTo, soGiayTo) {
+        const s = (soGiayTo || '').trim();
+        if (!s) return { valid: false, message: 'Vui lòng nhập số giấy tờ tùy thân.' };
+        const len = s.length;
+        const norm = (loaiGiayTo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+        if (norm.includes('CCCD')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CCCD chỉ được chứa các chữ số (0-9).' };
+            if (len < 12) {
+                const thieu = 12 - len;
+                return { valid: false, message: `Số CCCD chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CCCD phải gồm đúng 12 chữ số.` };
+            }
+            if (len > 12) {
+                const thua = len - 12;
+                return { valid: false, message: `Số CCCD có ${len} chữ số (thừa ${thua} số). Quy định CCCD chỉ gồm đúng 12 chữ số.` };
+            }
+        } else if (norm.includes('CMND')) {
+            if (!/^[0-9]+$/.test(s)) return { valid: false, message: 'Số CMND chỉ được chứa các chữ số (0-9).' };
+            if (len < 9) {
+                const thieu = 9 - len;
+                return { valid: false, message: `Số CMND chỉ có ${len} chữ số (thiếu ${thieu} số). Quy định CMND phải gồm đúng 9 chữ số.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số CMND có ${len} chữ số (thừa ${thua} số). Quy định CMND chỉ gồm đúng 9 chữ số.` };
+            }
+        } else if (norm.includes('HOCHIEU') || norm.includes('PASSPORT')) {
+            if (/\s/.test(s) || /[^A-Za-z0-9]/.test(s)) return { valid: false, message: 'Số Hộ chiếu không được chứa khoảng trắng hoặc ký tự đặc biệt.' };
+            if (len < 7) {
+                const thieu = 7 - len;
+                return { valid: false, message: `Số Hộ chiếu chỉ có ${len} ký tự (quá ngắn, thiếu tối thiểu ${thieu} ký tự). Quy định Hộ chiếu từ 7 đến 9 ký tự.` };
+            }
+            if (len > 9) {
+                const thua = len - 9;
+                return { valid: false, message: `Số Hộ chiếu có ${len} ký tự (quá dài, thừa ${thua} ký tự). Quy định Hộ chiếu tối đa 9 ký tự.` };
+            }
+        } else if (norm.includes('GIAYKHAISINH')) {
+            if (len < 6) {
+                const thieu = 6 - len;
+                return { valid: false, message: `Số Giấy khai sinh chỉ có ${len} ký tự (quá ngắn, thiếu ${thieu} ký tự). Độ dài hợp lệ từ 6 đến 15 ký tự.` };
+            }
+            if (len > 15) {
+                const thua = len - 15;
+                return { valid: false, message: `Số Giấy khai sinh có ${len} ký tự (quá dài, thừa ${thua} ký tự). Độ dài tối đa 15 ký tự.` };
+            }
+        }
+        return { valid: true, message: 'Hợp lệ.' };
+    }
+
+    // Xử lý gửi API Đăng Ký Khách Hàng
+    async function handleRegister() {
+        const hoTen       = document.getElementById('regHoTen').value.trim();
+        const sdt         = document.getElementById('regSDT').value.trim();
+        const email       = document.getElementById('regEmail').value.trim();
+        const tenDangNhap = document.getElementById('regTenDangNhap').value.trim();
+        const matKhau     = document.getElementById('regMatKhau').value;
+        const ngaySinh    = document.getElementById('regNgaySinh') ? document.getElementById('regNgaySinh').value : '';
+        const quocTich    = document.getElementById('regQuocTich') ? document.getElementById('regQuocTich').value : 'Việt Nam';
+        const loaiGiayTo  = document.getElementById('regLoaiGiayTo') ? document.getElementById('regLoaiGiayTo').value : 'CCCD';
+        const soGiayTo    = document.getElementById('regSoGiayTo') ? document.getElementById('regSoGiayTo').value.trim() : '';
+        const resultBox   = document.getElementById('resultBox');
+
+        resultBox.style.display = 'block';
+
+        if (!hoTen) {
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi:</strong> Vui lòng nhập họ và tên.';
+            document.getElementById('regHoTen').focus();
+            return;
+        }
+
+        const phoneCheck = validatePhoneNumber(sdt);
+        if (!phoneCheck.valid) {
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi:</strong> ' + phoneCheck.message;
+            document.getElementById('regSDT').focus();
+            return;
+        }
+
+        if (soGiayTo) {
+            const docCheck = validateDocumentNumber(loaiGiayTo, soGiayTo);
+            if (!docCheck.valid) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi:</strong> ' + docCheck.message;
+                document.getElementById('regSoGiayTo').focus();
+                return;
+            }
+        }
+
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang tiến hành đăng ký...';
+
+        try {
+            const response = await fetch(`${API_BASE}/khachhang/dangky`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    hoTen: hoTen,
+                    sdt: sdt,
+                    email: email,
+                    tenDangNhap: tenDangNhap,
+                    matKhau: matKhau,
+                    ngaySinh: ngaySinh || null,
+                    quocTich: quocTich,
+                    loaiGiayTo: loaiGiayTo,
+                    soGiayTo: soGiayTo || null
+                })
+            });
+
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = '<strong>Đăng ký thành công!</strong><br>' + data.message + '<br><pre>' + JSON.stringify(data.data, null, 2) + '</pre>';
+                } else {
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Đăng ký thất bại:</strong> ' + data.message;
+                }
+            } catch (e) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối:</strong> ' + error.message;
+        }
+    }
+
+    // =========================================================
+    // XỬ LÝ KHÔI PHỤC MẬT KHẨU (FORGOT PASSWORD)
+    // =========================================================
+
+    // 1. Gửi OTP
+    async function handleSendOtp() {
+        const emailInput = document.getElementById('forgotEmail');
+        const email = emailInput.value.trim();
+        const btn = document.getElementById('btnSendOtp');
+        const resultBox = document.getElementById('resultBox');
+
+        if (!email) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Vui lòng nhập địa chỉ email.';
+            emailInput.focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = 'Đang kết nối SMTP gửi email...';
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang gửi mã xác nhận đến email của bạn. Vui lòng chờ trong giây lát...';
+
+        try {
+            const response = await fetch(`${API_BASE}/taikhoan/quenmatkhau`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'gui_otp',
+                    email: email
+                })
+            });
+
+            const text = await response.text();
+            btn.disabled = false;
+            btn.innerHTML = 'Gửi Mã Xác Nhận OTP';
+
+            try {
+                const data = JSON.parse(text);
+                const message = data.message || data.data?.message || (data.success ? 'Đã gửi mã xác nhận thành công.' : 'Gửi mã xác nhận thất bại.');
+                if (data.success) {
+                    forgotState.email = email;
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = '<strong>Thành công:</strong> ' + message;
+                    goToForgotStep(2);
+                    startCooldown(60);
+                } else {
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Lỗi:</strong> ' + message;
+                }
+            } catch (e) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            btn.disabled = false;
+            btn.innerHTML = 'Gửi Mã Xác Nhận OTP';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối server:</strong> ' + error.message;
+        }
+    }
+
+    // Gửi lại mã khi ở Bước 2
+    async function handleResendOtp() {
+        if (forgotState.cooldownSeconds > 0) return;
+        const resendBtn = document.getElementById('btnResendOtp');
+        const resultBox = document.getElementById('resultBox');
+        const email = forgotState.email || document.getElementById('displayTargetEmail')?.textContent?.trim() || document.getElementById('forgotEmail')?.value?.trim();
+
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Đang gửi lại...';
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang gửi lại mã xác minh mới...';
+
+        try {
+            const response = await fetch(`${API_BASE}/taikhoan/quenmatkhau`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'gui_otp',
+                    email: email
+                })
+            });
+
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                const message = data.message || data.data?.message || (data.success ? 'Mã OTP mới đã được gửi!' : 'Gửi lại mã thất bại.');
+                if (data.success) {
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = '<strong>Thành công:</strong> ' + message;
+                    startCooldown(60);
+                } else {
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = 'Gửi lại mã';
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Lỗi:</strong> ' + message;
+                }
+            } catch (e) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Gửi lại mã';
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Gửi lại mã';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối:</strong> ' + error.message;
+        }
+    }
+
+    // 2. Xác minh mã OTP
+    async function handleVerifyOtp() {
+        const otpInput = document.getElementById('forgotOtp');
+        const otp = otpInput.value.replace(/\s+/g, '').trim();
+        const btn = document.getElementById('btnVerifyOtp');
+        const resultBox = document.getElementById('resultBox');
+        const email = forgotState.email || document.getElementById('displayTargetEmail')?.textContent?.trim() || document.getElementById('forgotEmail')?.value?.trim();
+
+        if (!otp) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Vui lòng nhập mã OTP gồm 6 chữ số.';
+            otpInput.focus();
+            return;
+        }
+
+        if (!/^[0-9]{6}$/.test(otp)) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Mã OTP phải gồm đúng 6 chữ số.';
+            otpInput.focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = 'Đang kiểm tra...';
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang xác minh mã OTP...';
+
+        try {
+            const response = await fetch(`${API_BASE}/taikhoan/quenmatkhau`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'xacminh_otp',
+                    email: email,
+                    otp: otp
+                })
+            });
+
+            const text = await response.text();
+            btn.disabled = false;
+            btn.innerHTML = 'Xác Nhận OTP';
+
+            try {
+                const data = JSON.parse(text);
+                const token = data.data?.reset_token || data.data?.data?.reset_token || data.reset_token;
+                const message = data.message || data.data?.message || (data.success ? 'Xác minh thành công.' : 'Xác minh thất bại.');
+                if (data.success && token) {
+                    forgotState.email = email;
+                    forgotState.resetToken = token;
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = '<strong>Thành công:</strong> ' + message;
+                    goToForgotStep(3);
+                } else {
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Lỗi:</strong> ' + message;
+                }
+            } catch (e) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            btn.disabled = false;
+            btn.innerHTML = 'Xác Nhận OTP';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối:</strong> ' + error.message;
+        }
+    }
+
+    // 3. Đặt mật khẩu mới
+    async function handleResetPassword() {
+        const newPass = document.getElementById('forgotNewPassword').value;
+        const confirmPass = document.getElementById('forgotConfirmPassword').value;
+        const btn = document.getElementById('btnResetPassword');
+        const resultBox = document.getElementById('resultBox');
+        const email = forgotState.email || document.getElementById('displayTargetEmail')?.textContent?.trim() || document.getElementById('forgotEmail')?.value?.trim();
+
+        if (!newPass) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Vui lòng nhập mật khẩu mới.';
+            document.getElementById('forgotNewPassword').focus();
+            return;
+        }
+
+        if (newPass.length < 6) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Mật khẩu mới phải có tối thiểu 6 ký tự.';
+            document.getElementById('forgotNewPassword').focus();
+            return;
+        }
+
+        if (newPass !== confirmPass) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = 'Mật khẩu xác nhận không khớp.';
+            document.getElementById('forgotConfirmPassword').focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = 'Đang lưu mật khẩu mới...';
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box';
+        resultBox.innerHTML = 'Đang cập nhật mật khẩu vào hệ thống...';
+
+        try {
+            const response = await fetch(`${API_BASE}/taikhoan/quenmatkhau`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'datlai_matkhau',
+                    email: email,
+                    reset_token: forgotState.resetToken,
+                    matKhauMoi: newPass,
+                    xacNhanMatKhau: confirmPass
+                })
+            });
+
+            const text = await response.text();
+            btn.disabled = false;
+            btn.innerHTML = 'Cập Nhật Mật Khẩu Mới';
+
+            try {
+                const data = JSON.parse(text);
+                const message = data.message || data.data?.message || (data.success ? 'Đổi mật khẩu thành công!' : 'Đổi mật khẩu thất bại.');
+                if (data.success) {
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = `<strong>Đổi mật khẩu thành công!</strong><br>${message}<br><button type="button" class="submit-btn" style="margin-top:12px; background:#3182ce;" onclick="backToLogin()">Đăng Nhập Bằng Mật Khẩu Mới Ngay</button>`;
+                    
+                    // Điền trước mật khẩu mới vào ô đăng nhập
+                    document.getElementById('loginMatKhau').value = '';
+                } else {
+                    resultBox.className = 'result-box error';
+                    resultBox.innerHTML = '<strong>Lỗi:</strong> ' + message;
+                }
+            } catch (e) {
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = '<strong>Lỗi phản hồi Backend:</strong><br><code>' + text + '</code>';
+            }
+        } catch (error) {
+            btn.disabled = false;
+            btn.innerHTML = 'Cập Nhật Mật Khẩu Mới';
+            resultBox.className = 'result-box error';
+            resultBox.innerHTML = '<strong>Lỗi kết nối:</strong> ' + error.message;
+        }
+    }
+</script>
+
+</body>
+</html>

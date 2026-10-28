@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Admin\Models;
 
 /**
@@ -12,25 +14,21 @@ class Admin
     private string $MaAdmin;
     /** @var string */
     private string $HoTen;
-    /** @var string */
-    private string $SDT;
-    /** @var string */
-    private string $Email;
+    /** @var string|null */
+    private ?string $SDT;
     /** @var string (FK) */
     private string $MaTK;
 
     public function __construct(
         string $MaAdmin,
         string $HoTen,
-        string $SDT,
-        string $Email,
-        string $MaTK
+        string $MaTK,
+        ?string $SDT = null
     ) {
         $this->MaAdmin = $MaAdmin;
         $this->HoTen = $HoTen;
-        $this->SDT = $SDT;
-        $this->Email = $Email;
         $this->MaTK = $MaTK;
+        $this->SDT = $SDT;
     }
 
     public function getMaAdmin(): string
@@ -43,14 +41,9 @@ class Admin
         return $this->HoTen;
     }
 
-    public function getSDT(): string
+    public function getSDT(): ?string
     {
         return $this->SDT;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->Email;
     }
 
     public function getMaTK(): string
@@ -68,14 +61,9 @@ class Admin
         $this->HoTen = $HoTen;
     }
 
-    public function setSDT(string $SDT): void
+    public function setSDT(?string $SDT): void
     {
         $this->SDT = $SDT;
-    }
-
-    public function setEmail(string $Email): void
-    {
-        $this->Email = $Email;
     }
 
     public function setMaTK(string $MaTK): void
@@ -89,7 +77,6 @@ class Admin
             'MaAdmin' => $this->MaAdmin,
             'HoTen' => $this->HoTen,
             'SDT' => $this->SDT,
-            'Email' => $this->Email,
             'MaTK' => $this->MaTK,
         ];
     }

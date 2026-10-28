@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DanhGia\Models;
 
 /**
@@ -20,6 +22,8 @@ class DanhGia
     private string $MaKH;
     /** @var string (FK) */
     private string $MaPhieu;
+    /** @var string (FK) */
+    private string $MaPhong;
 
     public function __construct(
         string $MaDanhGia,
@@ -27,7 +31,8 @@ class DanhGia
         string $NoiDung,
         \DateTimeInterface $NgayDanhGia,
         string $MaKH,
-        string $MaPhieu
+        string $MaPhieu,
+        string $MaPhong
     ) {
         $this->MaDanhGia = $MaDanhGia;
         $this->SoSao = $SoSao;
@@ -35,6 +40,7 @@ class DanhGia
         $this->NgayDanhGia = $NgayDanhGia;
         $this->MaKH = $MaKH;
         $this->MaPhieu = $MaPhieu;
+        $this->MaPhong = $MaPhong;
     }
 
     public function getMaDanhGia(): string
@@ -67,6 +73,11 @@ class DanhGia
         return $this->MaPhieu;
     }
 
+    public function getMaPhong(): string
+    {
+        return $this->MaPhong;
+    }
+
     public function setMaDanhGia(string $MaDanhGia): void
     {
         $this->MaDanhGia = $MaDanhGia;
@@ -97,6 +108,11 @@ class DanhGia
         $this->MaPhieu = $MaPhieu;
     }
 
+    public function setMaPhong(string $MaPhong): void
+    {
+        $this->MaPhong = $MaPhong;
+    }
+
     public function toArray(): array
     {
         return [
@@ -106,6 +122,7 @@ class DanhGia
             'NgayDanhGia' => $this->NgayDanhGia,
             'MaKH' => $this->MaKH,
             'MaPhieu' => $this->MaPhieu,
+            'MaPhong' => $this->MaPhong,
         ];
     }
 }

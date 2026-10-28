@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DatPhong\Models;
 
 class PhieuNhanPhong
@@ -8,6 +10,7 @@ class PhieuNhanPhong
     private \DateTimeInterface $NgayLap;
     private string $KenhDat;
     private string $TrangThai;
+    private ?\DateTimeInterface $ThoiGianHetHan;
     private string $MaKH;
     private ?string $MaLeTan;
     private ?string $MaKM;
@@ -19,7 +22,8 @@ class PhieuNhanPhong
         string $TrangThai,
         string $MaKH,
         ?string $MaLeTan = null,
-        ?string $MaKM = null
+        ?string $MaKM = null,
+        ?\DateTimeInterface $ThoiGianHetHan = null
     ) {
         $this->MaPhieu = $MaPhieu;
         $this->NgayLap = $NgayLap;
@@ -28,6 +32,7 @@ class PhieuNhanPhong
         $this->MaKH = $MaKH;
         $this->MaLeTan = $MaLeTan;
         $this->MaKM = $MaKM;
+        $this->ThoiGianHetHan = $ThoiGianHetHan;
     }
 
     public function getMaPhieu(): string
@@ -100,6 +105,16 @@ class PhieuNhanPhong
         $this->MaKM = $MaKM;
     }
 
+    public function getThoiGianHetHan(): ?\DateTimeInterface
+    {
+        return $this->ThoiGianHetHan;
+    }
+
+    public function setThoiGianHetHan(?\DateTimeInterface $ThoiGianHetHan): void
+    {
+        $this->ThoiGianHetHan = $ThoiGianHetHan;
+    }
+
     public function toArray(): array
     {
         return [
@@ -107,6 +122,7 @@ class PhieuNhanPhong
             'NgayLap' => $this->NgayLap,
             'KenhDat' => $this->KenhDat,
             'TrangThai' => $this->TrangThai,
+            'ThoiGianHetHan' => $this->ThoiGianHetHan ? $this->ThoiGianHetHan->format('Y-m-d H:i:s') : null,
             'MaKH' => $this->MaKH,
             'MaLeTan' => $this->MaLeTan,
             'MaKM' => $this->MaKM,

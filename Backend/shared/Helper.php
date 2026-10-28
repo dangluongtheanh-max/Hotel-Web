@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shared;
 
 /**
- * Cac ham tien ich dung chung toan he thong.
+ * Các hàm tiện ích dùng chung toàn hệ thống.
  */
 class Helper
 {

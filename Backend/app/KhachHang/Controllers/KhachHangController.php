@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\KhachHang\Controllers;
 
 use App\KhachHang\Services\KhachHangService;
@@ -20,8 +22,12 @@ class KhachHangController
 
     public function dangKy($request, $response)
     {
-        $result = $this->service->dangKy($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->dangKy($request->all());
+            return Response::json($response, $result);
+        } catch (\Exception $e) {
+            return Response::error($response, $e->getMessage());
+        }
     }
 
     public function xemDSPhong($request, $response)
@@ -74,14 +80,35 @@ class KhachHangController
 
     public function xemThongTinCaNhan($request, $response)
     {
-        $result = $this->service->xemThongTinCaNhan($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->xemThongTinCaNhan($request->all());
+            return Response::json($response, $result);
+        } catch (\Throwable $e) {
+            $code = is_numeric($e->getCode()) && (int)$e->getCode() >= 400 && (int)$e->getCode() < 600 ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $code);
+        }
     }
 
     public function capNhatThongTinCaNhan($request, $response)
     {
-        $result = $this->service->capNhatThongTinCaNhan($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->capNhatThongTinCaNhan($request->all());
+            return Response::json($response, $result);
+        } catch (\Throwable $e) {
+            $code = is_numeric($e->getCode()) && (int)$e->getCode() >= 400 && (int)$e->getCode() < 600 ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $code);
+        }
+    }
+
+    public function doiMatKhau($request, $response)
+    {
+        try {
+            $result = $this->service->doiMatKhau($request->all());
+            return Response::json($response, $result);
+        } catch (\Throwable $e) {
+            $code = is_numeric($e->getCode()) && (int)$e->getCode() >= 400 && (int)$e->getCode() < 600 ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $code);
+        }
     }
 
     public function themDanhGia($request, $response)
@@ -94,6 +121,27 @@ class KhachHangController
     {
         $result = $this->service->xoaDanhGia($request->all());
         return Response::json($response, $result);
+    }
+
+    public function timTheoSDT($request, $response)
+    {
+        try {
+            $params = $request->all();
+            $sdt = $params['sdt'] ?? ($params['SDT'] ?? '');
+            $khach = $this->service->timTheoSDT($sdt);
+            if (!$khach) {
+                return Response::json($response, [
+                    'found' => false,
+                    'message' => 'Không tìm thấy khách hàng với số điện thoại này.'
+                ]);
+            }
+            return Response::json($response, [
+                'found' => true,
+                'data' => $khach
+            ]);
+        } catch (\Exception $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
 }

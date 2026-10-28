@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\HoaDon\Controllers;
 
 use App\HoaDon\Services\HoaDonService;
 use Shared\Response;
+use Exception;
 
 /**
  * Controller cho module HoaDon.
- * Chi nhan request, goi Service xu ly, tra ve response - khong chua business logic.
+ * Chỉ nhận request, gọi Service xử lý, trả về response - không chứa business logic.
  */
 class HoaDonController
 {
@@ -20,26 +23,45 @@ class HoaDonController
 
     public function taoHoaDon($request, $response)
     {
-        $result = $this->service->taoHoaDon($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->taoHoaDon($request->all());
+            $data = (isset($result['data'])) ? $result['data'] : $result;
+            return Response::json($response, $data);
+        } catch (Exception $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
     public function xemHoaDon($request, $response)
     {
-        $result = $this->service->xemHoaDon($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->xemHoaDon($request->all());
+            $data = (isset($result['data'])) ? $result['data'] : $result;
+            return Response::json($response, $data);
+        } catch (Exception $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
     public function xemCTHD($request, $response)
     {
-        $result = $this->service->xemCTHD($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->xemCTHD($request->all());
+            $data = (isset($result['data'])) ? $result['data'] : $result;
+            return Response::json($response, $data);
+        } catch (Exception $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
 
     public function timHoaDon($request, $response)
     {
-        $result = $this->service->timHoaDon($request->all());
-        return Response::json($response, $result);
+        try {
+            $result = $this->service->timHoaDon($request->all());
+            $data = (isset($result['data'])) ? $result['data'] : $result;
+            return Response::json($response, $data);
+        } catch (Exception $e) {
+            return Response::error($response, $e->getMessage(), 400);
+        }
     }
-
 }

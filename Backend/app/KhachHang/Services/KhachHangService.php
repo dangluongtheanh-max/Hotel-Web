@@ -1,99 +1,77 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\KhachHang\Services;
 
 use App\KhachHang\Repositories\KhachHangRepository;
+use App\TaiKhoan\Repositories\TaiKhoanRepository;
 
 /**
- * Service (business logic) cho module KhachHang.
- * Cac module khac muon dung du lieu cua module nay PHAI goi qua Service nay,
- * khong duoc goi thang Repository/Model de giu tinh dong goi giua cac module.
+ * Service Facade cho module KhachHang.
+ * Duy trì 100% tương thích ngược cho toàn bộ codebase và các bài test.
+ * Ủy quyền toàn bộ xử lý nghiệp vụ logic sang KhachHangXuLyService.
  */
 class KhachHangService
 {
-    private KhachHangRepository $repository;
+    private KhachHangRepository $khachHangRepo;
+    private KhachHangXuLyService $xuLyService;
 
-    public function __construct(KhachHangRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        ?KhachHangRepository $khachHangRepo = null,
+        ?TaiKhoanRepository $taiKhoanRepo = null,
+        ?KhachHangXuLyService $xuLyService = null
+    ) {
+        $this->khachHangRepo = $khachHangRepo ?? new KhachHangRepository();
+        $xuLyRepo = $this->khachHangRepo->getXuLyRepository();
+        $this->xuLyService = $xuLyService ?? new KhachHangXuLyService($xuLyRepo, $taiKhoanRepo);
     }
 
-    public function dangKy(array $params = [])
+    public function getXuLyService(): KhachHangXuLyService
     {
-        // TODO: dangKy
-        return null;
+        return $this->xuLyService;
     }
 
-    public function xemDSPhong(array $params = [])
+    // =========================================================================
+    // PHẦN 1: TRA CỨU & VALIDATION ĐỊNH DẠNG (READ / VALIDATION)
+    // =========================================================================
+
+    public function xemThongTinCaNhan(array $params = []): array
     {
-        // TODO: xemDSPhong
-        return null;
+        return $this->xuLyService->xemThongTinCaNhan($params);
     }
 
-    public function xemCTPhong(array $params = [])
+    public function timTheoSDT(string $sdt): ?array
     {
-        // TODO: xemCTPhong
-        return null;
+        return $this->xuLyService->timTheoSDT($sdt);
     }
 
-    public function datPhong(array $params = [])
+    public function validateSDT(string $sdt, string $prefix = ''): void
     {
-        // TODO: datPhong
-        return null;
+        $this->xuLyService->validateSDT($sdt, $prefix);
     }
 
-    public function thanhToan(array $params = [])
+    public function validateSoGiayTo(?string $loaiGiayTo, ?string $soGiayTo, string $prefix = ''): void
     {
-        // TODO: thanhToan
-        return null;
+        $this->xuLyService->validateSoGiayTo($loaiGiayTo, $soGiayTo, $prefix);
     }
 
-    public function huyDatPhong(array $params = [])
+    // =========================================================================
+    // PHẦN 2: THAO TÁC ĐĂNG KÝ, CẬP NHẬT HỒ SƠ & MẬT KHẨU (WRITE / COMMAND)
+    // =========================================================================
+
+    public function dangKy(array $params = []): array
     {
-        // TODO: huyDatPhong
-        return null;
+        return $this->xuLyService->dangKy($params);
     }
 
-    public function xemLichSuDatPhong(array $params = [])
+    public function capNhatThongTinCaNhan(array $params = []): array
     {
-        // TODO: xemLichSuDatPhong
-        return null;
+        return $this->xuLyService->capNhatThongTinCaNhan($params);
     }
 
-    public function xemHoaDon(array $params = [])
+    public function doiMatKhau(array $params = []): array
     {
-        // TODO: xemHoaDon
-        return null;
+        return $this->xuLyService->doiMatKhau($params);
     }
-
-    public function xemCTHD(array $params = [])
-    {
-        // TODO: xemCTHD
-        return null;
-    }
-
-    public function xemThongTinCaNhan(array $params = [])
-    {
-        // TODO: xemThongTinCaNhan
-        return null;
-    }
-
-    public function capNhatThongTinCaNhan(array $params = [])
-    {
-        // TODO: capNhatThongTinCaNhan
-        return null;
-    }
-
-    public function themDanhGia(array $params = [])
-    {
-        // TODO: themDanhGia
-        return null;
-    }
-
-    public function xoaDanhGia(array $params = [])
-    {
-        // TODO: xoaDanhGia
-        return null;
-    }
-
 }

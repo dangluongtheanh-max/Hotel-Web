@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\KhachHang\Models;
 
 /**
@@ -12,25 +14,37 @@ class KhachHang
     private string $MaKH;
     /** @var string */
     private string $HoTen;
+    /** @var string|null */
+    private ?string $SDT;
+    /** @var string|null (FK) */
+    private ?string $MaTK;
+    /** @var string|null */
+    private ?string $NgaySinh;
     /** @var string */
-    private string $SDT;
+    private string $QuocTich;
     /** @var string */
-    private string $Email;
-    /** @var string (FK) */
-    private string $MaTK;
+    private string $LoaiGiayTo;
+    /** @var string|null */
+    private ?string $SoGiayTo;
 
     public function __construct(
         string $MaKH,
         string $HoTen,
-        string $SDT,
-        string $Email,
-        string $MaTK
+        ?string $SDT = null,
+        ?string $MaTK = null,
+        ?string $NgaySinh = null,
+        string $QuocTich = 'Việt Nam',
+        string $LoaiGiayTo = 'CCCD',
+        ?string $SoGiayTo = null
     ) {
         $this->MaKH = $MaKH;
         $this->HoTen = $HoTen;
         $this->SDT = $SDT;
-        $this->Email = $Email;
         $this->MaTK = $MaTK;
+        $this->NgaySinh = $NgaySinh;
+        $this->QuocTich = $QuocTich;
+        $this->LoaiGiayTo = $LoaiGiayTo;
+        $this->SoGiayTo = $SoGiayTo;
     }
 
     public function getMaKH(): string
@@ -43,19 +57,34 @@ class KhachHang
         return $this->HoTen;
     }
 
-    public function getSDT(): string
+    public function getSDT(): ?string
     {
         return $this->SDT;
     }
 
-    public function getEmail(): string
-    {
-        return $this->Email;
-    }
-
-    public function getMaTK(): string
+    public function getMaTK(): ?string
     {
         return $this->MaTK;
+    }
+
+    public function getNgaySinh(): ?string
+    {
+        return $this->NgaySinh;
+    }
+
+    public function getQuocTich(): string
+    {
+        return $this->QuocTich;
+    }
+
+    public function getLoaiGiayTo(): string
+    {
+        return $this->LoaiGiayTo;
+    }
+
+    public function getSoGiayTo(): ?string
+    {
+        return $this->SoGiayTo;
     }
 
     public function setMaKH(string $MaKH): void
@@ -68,19 +97,34 @@ class KhachHang
         $this->HoTen = $HoTen;
     }
 
-    public function setSDT(string $SDT): void
+    public function setSDT(?string $SDT): void
     {
         $this->SDT = $SDT;
     }
 
-    public function setEmail(string $Email): void
-    {
-        $this->Email = $Email;
-    }
-
-    public function setMaTK(string $MaTK): void
+    public function setMaTK(?string $MaTK): void
     {
         $this->MaTK = $MaTK;
+    }
+
+    public function setNgaySinh(?string $NgaySinh): void
+    {
+        $this->NgaySinh = $NgaySinh;
+    }
+
+    public function setQuocTich(string $QuocTich): void
+    {
+        $this->QuocTich = $QuocTich;
+    }
+
+    public function setLoaiGiayTo(string $LoaiGiayTo): void
+    {
+        $this->LoaiGiayTo = $LoaiGiayTo;
+    }
+
+    public function setSoGiayTo(?string $SoGiayTo): void
+    {
+        $this->SoGiayTo = $SoGiayTo;
     }
 
     public function toArray(): array
@@ -89,8 +133,11 @@ class KhachHang
             'MaKH' => $this->MaKH,
             'HoTen' => $this->HoTen,
             'SDT' => $this->SDT,
-            'Email' => $this->Email,
             'MaTK' => $this->MaTK,
+            'NgaySinh' => $this->NgaySinh,
+            'QuocTich' => $this->QuocTich,
+            'LoaiGiayTo' => $this->LoaiGiayTo,
+            'SoGiayTo' => $this->SoGiayTo,
         ];
     }
 }

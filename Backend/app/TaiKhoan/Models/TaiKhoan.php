@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\TaiKhoan\Models;
 
 /**
@@ -103,6 +105,7 @@ class TaiKhoan
             'MaTK' => $this->MaTK,
             'TenDangNhap' => $this->TenDangNhap,
             'Email' => $this->Email,
+            'SDT' => $this->SDT,
             'TrangThaiTaiKhoan' => $this->TrangThaiTaiKhoan,
             'VaiTro' => $this->VaiTro,
         ];
