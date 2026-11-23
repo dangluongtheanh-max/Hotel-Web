@@ -106,7 +106,8 @@ class LeTanController
             $result = $this->service->tinhTienHoanHuyPhong($request->all());
             return Response::json($response, $result);
         } catch (\Exception $e) {
-            return Response::error($response, $e->getMessage(), 400);
+            $status = ($e->getCode() >= 400 && $e->getCode() < 600) ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $status);
         }
     }
 
@@ -116,7 +117,8 @@ class LeTanController
             $result = $this->service->huyPhieu($request->all());
             return Response::json($response, $result);
         } catch (\Exception $e) {
-            return Response::error($response, $e->getMessage(), 400);
+            $status = ($e->getCode() >= 400 && $e->getCode() < 600) ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $status);
         }
     }
 

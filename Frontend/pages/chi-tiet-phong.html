@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkyHotel - Chi tiết phòng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+<script src="../js/theme.js?v=1"></script>
+  <link rel="stylesheet" href="../css/chi-tiet-phong.css">
+  <link rel="stylesheet" href="../css/theme.css">
+</head>
+<body data-page="detail">
+
+<main class="wrap">
+  <!-- Điều hướng Breadcrumb & Nút quay lại -->
+  <nav class="dt-nav-bar" aria-label="Đường dẫn">
+    <div class="dt-crumb">
+      <a data-go="home">Trang chủ</a>
+      <i>/</i>
+      <a data-go="rooms">Phòng nghỉ</a>
+      <i>/</i>
+      <b id="crumb-room-name">Chi tiết phòng</b>
+    </div>
+    <a class="back" id="back-btn">← Quay lại danh sách phòng</a>
+  </nav>
+
+  <div id="detail-error" class="dt-error" role="alert" hidden></div>
+
+  <div id="room-details">
+    <!-- Banner ảnh Carousel -->
+    <div class="slider-container">
+      <div class="slider" id="main" role="region" aria-roledescription="carousel" aria-label="Ảnh phòng">
+        <div class="slides" id="slides"></div>
+        <button type="button" class="nav prev" id="prev" aria-label="Ảnh trước">‹</button>
+        <button type="button" class="nav next" id="next" aria-label="Ảnh sau">›</button>
+        <div class="count" id="count"></div>
+        <button type="button" class="pp" id="pp" aria-label="Tạm dừng tự động lướt">❚❚</button>
+        <div class="bar"><i id="bar"></i></div>
+        <div class="room-tier-badge" id="room-tier-badge">5-Star Luxury</div>
+      </div>
+      <div class="thumbs" id="thumbs" role="tablist" aria-label="Danh sách ảnh thu nhỏ"></div>
+    </div>
+
+    <!-- Header thông tin phòng -->
+    <div class="room-header">
+      <div class="room-eyebrow">HẠNG PHÒNG NGHỈ DƯỠNG · SKY HOTEL QUẬN 10</div>
+      <div class="room-title-row">
+        <h1 id="room-name"></h1>
+        <div class="room-rating-badge" id="room-rating-badge"></div>
+      </div>
+      <div class="room-tagline" id="room-tagline"></div>
+      <div class="room-view" id="room-view"></div>
+      <div class="meta" id="room-meta"></div>
+    </div>
+
+    <!-- Bố cục 2 cột chính -->
+    <div class="cols">
+      <!-- Cột trái: Thông tin đầy đủ & chi tiết -->
+      <div class="detail-main">
+        <!-- Điểm nhấn không gian & Mô tả -->
+        <section class="dt-section" aria-labelledby="sec-overview">
+          <h2 id="sec-overview">Điểm nhấn không gian & Giới thiệu</h2>
+          <p class="room-description" id="room-description"></p>
+          <div class="room-fulldesc" id="room-fulldesc"></div>
+          <div class="highlights-grid" id="room-highlights"></div>
+        </section>
+
+        <!-- Bảng thông số kỹ thuật & Bố cục -->
+        <section class="dt-section" aria-labelledby="sec-specs">
+          <h2 id="sec-specs">Thông số & Bố cục phòng</h2>
+          <div class="specs-table" id="room-specs"></div>
+        </section>
+
+        <!-- Hệ thống tiện nghi phân theo 5 danh mục -->
+        <section class="dt-section" aria-labelledby="sec-amenities">
+          <div class="section-head-with-badge">
+            <h2 id="sec-amenities">Tiện nghi đẳng cấp 5 sao</h2>
+            <span class="sec-badge">Đầy đủ theo hạng phòng</span>
+          </div>
+          <div class="amenity-categories" id="room-amenity-groups"></div>
+        </section>
+
+        <!-- Đặc quyền đi kèm theo hạng phòng -->
+        <section class="dt-section perks-section" aria-labelledby="sec-perks">
+          <div class="section-head-with-badge">
+            <h2 id="sec-perks">Đặc quyền bao gồm</h2>
+            <span class="sec-badge gold">Exclusive Perks</span>
+          </div>
+          <div class="perks-list" id="room-perks"></div>
+        </section>
+
+        <!-- Chính sách nhận/trả phòng & Hủy phòng -->
+        <section class="dt-section" aria-labelledby="sec-policies">
+          <h2 id="sec-policies">Chính sách nhận / trả phòng & Lưu trú</h2>
+          <div class="policies-grid" id="room-policies"></div>
+        </section>
+
+        <!-- Đánh giá từ khách lưu trú -->
+        <section class="dt-section" aria-labelledby="sec-reviews">
+          <div class="section-head-with-badge">
+            <h2 id="sec-reviews">Đánh giá từ khách lưu trú</h2>
+            <span class="sec-badge" id="review-score-badge">★ 4.9 / 5</span>
+          </div>
+          <div class="reviews-summary" id="room-reviews-summary"></div>
+          <div class="reviews-list" id="room-reviews-list"></div>
+        </section>
+
+        <!-- Khám phá các hạng phòng khác -->
+        <section class="dt-section other-rooms-section" aria-labelledby="sec-others">
+          <h2 id="sec-others">Khám phá các hạng phòng khác tại SKY HOTEL</h2>
+          <div class="other-rooms-grid" id="other-rooms"></div>
+        </section>
+      </div>
+
+      <!-- Cột phải: Hộp đặt phòng cố định (Sticky Box) -->
+      <aside class="detail-sidebar" aria-label="Đặt phòng & Lưu yêu thích">
+        <div class="box sticky-box">
+          <div class="price-header">
+            <div class="price-label">Giá ưu đãi tốt nhất</div>
+            <div class="price" id="room-price"></div>
+            <div class="price-note">Giá mỗi đêm · Chưa gồm thuế &amp; phí dịch vụ</div>
+          </div>
+
+          <div class="perk-checks">
+            <div class="perk-check">✓ Miễn phí hủy phòng trước 7 ngày</div>
+            <div class="perk-check">✓ Đảm bảo giá phòng tốt nhất trên website</div>
+            <div class="perk-check">✓ Sử dụng hồ bơi vô cực &amp; phòng gym miễn phí</div>
+            <div class="perk-check">✓ Xác nhận đặt phòng ngay lập tức</div>
+          </div>
+
+          <button class="btn btn-primary" id="btn-book">ĐẶT PHÒNG NGAY</button>
+          
+          <div class="wishlist-action-wrap">
+            <button class="btn btn-fav" id="save" type="button">
+              <span class="heart-icon" id="save-icon">♡</span>
+              <span id="save-text">Lưu vào danh sách yêu thích</span>
+            </button>
+            <button class="btn btn-view-fav" id="btn-view-wishlist" type="button">
+              ❤️ Xem danh sách phòng yêu thích (<span class="dt-fav-count" id="dt-fav-count">0</span>)
+            </button>
+          </div>
+
+          <div class="help-box">
+            <div class="help-title">Cần hỗ trợ đặt phòng nhanh?</div>
+            <p>Hotline lễ tân 24/7:</p>
+            <a href="tel:02839308888" class="help-phone">☎ 028 3930 8888</a>
+            <small>contact@skyhotel.vn · 123 Thanh Thái, Q.10</small>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer class="sfoot">
+  <div class="sfoot-in">
+    <div>
+      <div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div>
+      <p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p>
+    </div>
+    <div>
+      <h4>Liên hệ</h4>
+      <p>☎ <span data-h="phone">028 3930 8888</span></p>
+      <p>✉ <span data-h="email">contact@skyhotel.vn</span></p>
+      <p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p>
+    </div>
+    <div>
+      <h4>Liên kết nhanh</h4>
+      <p><a data-go="home">Trang chủ</a></p>
+      <p><a data-go="rooms">Phòng nghỉ</a></p>
+      <p><a data-go="hist">Lịch sử đặt phòng</a></p>
+      <p><a id="foot-fav-link">Phòng yêu thích (<span class="foot-fav-count">0</span>)</a></p>
+    </div>
+  </div>
+  <div class="fb">
+    <span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span>
+    <span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span>
+  </div>
+</footer>
+
+<div id="dt-lightbox" class="dt-lightbox" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
+  <button type="button" class="dt-lb-close" id="dt-lb-close" aria-label="Đóng">✕</button>
+  <button type="button" class="dt-lb-nav dt-lb-prev" id="dt-lb-prev" aria-label="Ảnh trước">‹</button>
+  <div class="dt-lb-stage">
+    <img id="dt-lb-img" src="" alt="Ảnh phòng phóng to">
+    <div class="dt-lb-count" id="dt-lb-count"></div>
+  </div>
+  <button type="button" class="dt-lb-nav dt-lb-next" id="dt-lb-next" aria-label="Ảnh sau">›</button>
+</div>
+
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/wishlist.js?v=17"></script>
+<script src="../js/chi-tiet-phong.js?v=28"></script>
+<script src="../js/bridge.js?v=17"></script>
+</body>
+</html>

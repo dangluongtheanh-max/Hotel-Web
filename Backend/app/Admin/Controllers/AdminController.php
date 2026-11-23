@@ -352,6 +352,7 @@ class AdminController
 
     public function themLoaiPhong($request = null, $response = null)
     {
+        \Shared\AdminAuth::requireAdmin();
         $params = $this->getParams($request);
         $result = $this->service->themLoaiPhong($params);
         $status = ($result['status'] === 'success') ? 200 : 400;
@@ -360,6 +361,7 @@ class AdminController
 
     public function suaLoaiPhong($request = null, $response = null)
     {
+        \Shared\AdminAuth::requireAdmin();
         $params = $this->getParams($request);
         $maLoai = $params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '';
         $result = $this->service->suaLoaiPhong($maLoai, $params);
@@ -369,9 +371,79 @@ class AdminController
 
     public function doiTrangThaiLoaiPhong($request = null, $response = null)
     {
+        \Shared\AdminAuth::requireAdmin();
         $params = $this->getParams($request);
         $maLoai = $params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '';
         $result = $this->service->doiTrangThaiLoaiPhong($maLoai);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function xoaLoaiPhong($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $maLoai = (string)($params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '');
+        $result = $this->service->xoaLoaiPhong($maLoai);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function xemDSTienNghi($request = null, $response = null)
+    {
+        $result = $this->service->xemDSTienNghi();
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function themTienNghi($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $result = $this->service->themTienNghi($params);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function uploadAnhLoaiPhong($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $maLoai = (string)($params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '');
+        $result = $this->service->uploadAnhLoaiPhong($maLoai, $_FILES ?? []);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function xoaAnhLoaiPhong($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $id = (int)($params['id'] ?? 0);
+        $maLoai = (string)($params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '');
+        $result = $this->service->xoaAnhLoaiPhong($id, $maLoai);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function datAnhDaiDien($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $id = (int)($params['id'] ?? 0);
+        $maLoai = (string)($params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '');
+        $result = $this->service->datAnhDaiDien($id, $maLoai);
+        $status = ($result['status'] === 'success') ? 200 : 400;
+        return Response::json($response, $result, $status);
+    }
+
+    public function sapXepAnhLoaiPhong($request = null, $response = null)
+    {
+        \Shared\AdminAuth::requireAdmin();
+        $params = $this->getParams($request);
+        $maLoai = (string)($params['maLoaiPhong'] ?? $params['MaLoaiPhong'] ?? '');
+        $order = is_array($params['order'] ?? null) ? $params['order'] : [];
+        $result = $this->service->sapXepAnhLoaiPhong($maLoai, $order);
         $status = ($result['status'] === 'success') ? 200 : 400;
         return Response::json($response, $result, $status);
     }

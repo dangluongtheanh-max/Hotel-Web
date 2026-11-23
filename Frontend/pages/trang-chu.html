@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light only" />
+  <title>SKY HOTEL - Trang chủ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+  <script src="../js/theme.js?v=27"></script>
+  <link rel="stylesheet" href="../css/theme.css?v=27" />
+  <link rel="stylesheet" href="../css/trang-chu.css?v=27" />
+</head>
+
+<body data-page="home">
+  <header class="hero">
+    <img class="hero-image" src="../images/hotels/rooftop-pool.jpg"
+      alt="Hồ bơi vô cực trên tầng thượng SKY HOTEL nhìn ra sông Sài Gòn">
+    <div class="hero-in">
+      <div class="ey wh">
+        <span class="hero-ey-stars" aria-label="5 sao">★</span>
+        <span class="hero-ey-brand">SKY HOTEL</span>
+        <span class="hero-ey-sep">·</span>
+        <span class="hero-ey-loc">123 THÀNH THÁI, QUẬN 10, TP. HCM</span>
+      </div>
+      <h1>Nâng tầm trải nghiệm nghỉ dưỡng <em>Chạm đến sự tinh tế</em></h1>
+      <p>Không gian nghỉ dưỡng thanh lịch, giao thoa hoàn hảo giữa kiến trúc đương đại và dịch vụ tận tâm chuẩn mực quốc
+        tế ngay trung tâm Quận 10.</p>
+      <div class="hero-badges">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+            aria-hidden="true">
+            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Đảm bảo giá tốt nhất
+        </span>
+        <span class="hero-badge-sep" aria-hidden="true">•</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" stroke-linecap="round" />
+          </svg>
+          Lễ tân phục vụ 24/7
+        </span>
+        <span class="hero-badge-sep" aria-hidden="true">•</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          Wi-Fi tốc độ cao
+        </span>
+      </div>
+    </div>
+    <form class="book" id="home-booking-form" role="search" aria-label="Tìm phòng nhanh">
+      <label class="f" for="d1"><i class="f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg></i><span><small>Ngày nhận phòng</small><input type="date" id="d1" required /></span></label>
+      <label class="f" for="d2"><i class="f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg></i><span><small>Ngày trả phòng</small><input type="date" id="d2" required /></span></label>
+      <div class="f home-occupancy" id="home-occupancy">
+        <i class="f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg></i><span><small>Khách &amp; Phòng</small>
+          <button class="home-occupancy-trigger" data-occupancy-trigger type="button" aria-haspopup="dialog"
+            aria-expanded="false" aria-controls="home-occupancy-panel"></button>
+        </span>
+        <section class="cp-occupancy home-occupancy-panel" id="home-occupancy-panel" data-occupancy-panel role="dialog"
+          aria-label="Chọn số người lớn, trẻ em và phòng" hidden>
+          <p class="cp-occupancy-limit">Tối thiểu 1 khách/phòng · Tối đa 6 phòng · 20 khách <span
+              title="Tối thiểu 1 người lớn và 1 khách/phòng; tối đa 6 phòng và 20 khách tổng cộng.">ⓘ</span></p>
+          <div data-occupancy-rooms></div>
+          <div class="cp-room-customizer" data-occupancy-room-control>
+            <div class="cp-room-customizer-info">
+              <span>Số phòng</span>
+              <small data-occupancy-max-rooms>Tối đa 6 phòng</small>
+            </div>
+            <div class="cp-room-stepper">
+              <button class="cp-room-step-btn" type="button" data-occupancy-step="-1" aria-label="Giảm số phòng">−</button>
+              <input class="cp-room-count-input" type="number" min="1" max="6" value="1" data-occupancy-count aria-label="Số lượng phòng muốn đặt">
+              <button class="cp-room-step-btn" type="button" data-occupancy-step="1" aria-label="Tăng số phòng">+</button>
+            </div>
+          </div>
+          <div class="cp-occupancy-error" data-occupancy-error role="alert"></div>
+          <div class="cp-occupancy-actions">
+            <button class="cp-cancel" data-occupancy-cancel type="button">Hủy</button>
+            <button class="cp-apply" data-occupancy-apply type="button">Áp dụng</button>
+          </div>
+        </section>
+      </div>
+      <button class="gold book-submit" type="submit">TÌM PHÒNG</button>
+      <div class="home-search-error" id="home-search-error" role="alert" aria-live="polite"></div>
+    </form>
+  </header>
+
+  <main>
+    <section class="wrap" id="phong">
+      <div class="hd2">
+        <div>
+          <div class="ey">PHÒNG NGHỈ · 7 HẠNG PHÒNG (66 PHÒNG)</div>
+          <h2>Không gian lưu trú &amp; Hạng phòng</h2>
+          <p>Hệ thống 7 hạng phòng đồng bộ từ Economy tiết kiệm đến Presidential Grand Suite đẳng cấp, đáp ứng trọn vẹn
+            nhu cầu từ 1 đến 8 khách mỗi phòng.</p>
+        </div>
+        <a class="lk" data-go="rooms">Xem tất cả phòng &nbsp;→</a>
+      </div>
+      <div class="rm-filters" id="home-room-filters" role="group" aria-label="Lọc nhanh hạng phòng theo sức chứa">
+        <button type="button" class="rm-filter-btn is-on" data-filter="all" aria-pressed="true">Tất cả (7 hạng)</button>
+        <button type="button" class="rm-filter-btn" data-filter="couple" aria-pressed="false">1 – 2 Khách</button>
+        <button type="button" class="rm-filter-btn" data-filter="family" aria-pressed="false">Gia đình (3 – 5
+          khách)</button>
+        <button type="button" class="rm-filter-btn" data-filter="vip" aria-pressed="false">VIP &amp; Giải trí (6 – 8
+          khách)</button>
+      </div>
+      <div class="g3">
+        <article class="rm" data-cap="1" data-go="detail:LP004">
+          <div class="im"><span class="rm-tag">TIẾT KIỆM TỐI ƯU</span><span class="rm-rate">★ 4.8</span><img
+              src="../images/rooms/superior-2.jpg" alt="Economy tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Economy</h3>
+              <div class="rm-price"><b>300.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Phòng tiết kiệm tiện ích cơ bản, phù hợp cho khách công tác hoặc du lịch một mình.</p>
+            <div class="mt"><span>20 m²</span><span>1 khách tối đa</span><span>Giường đơn</span><span>Wi-Fi &amp; Điều
+                hòa</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+        <article class="rm" data-cap="2" data-go="detail:LP001">
+          <div class="im"><span class="rm-tag">PHỔ BIẾN NHẤT</span><span class="rm-rate">★ 4.9</span><img
+              src="../images/rooms/superior-1.jpg" alt="Standard tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Standard</h3>
+              <div class="rm-price"><b>500.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Thiết kế trang nhã với ánh sáng tự nhiên, đầy đủ tiện nghi tiêu chuẩn cho cặp đôi.</p>
+            <div class="mt"><span>28 m²</span><span>2 khách tối đa</span><span>Wi-Fi &amp; TV</span><span>Điều hòa mát
+                lạnh</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+        <article class="rm" data-cap="3" data-go="detail:LP002">
+          <div class="im"><span class="rm-tag">TIỆN NGHI CAO CẤP</span><span class="rm-rate">★ 4.9</span><img
+              src="../images/rooms/deluxe-1.jpg" alt="Deluxe tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Deluxe</h3>
+              <div class="rm-price"><b>800.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Không gian rộng rãi, trang bị tủ lạnh riêng và góc thư giãn lý tưởng cho nhóm 3 người.
+            </p>
+            <div class="mt"><span>35 m²</span><span>3 khách tối đa</span><span>Tủ lạnh riêng</span><span>Wi-Fi &amp;
+                Smart TV</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+        <article class="rm" data-cap="4" data-go="detail:LP003">
+          <div class="im"><span class="rm-tag">BỒN TẮM THƯ GIÃN</span><span class="rm-rate">★ 4.95</span><img
+              src="../images/rooms/premier-1.jpg" alt="Suite tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Suite</h3>
+              <div class="rm-price"><b>1.200.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Hạng phòng sang trọng với bồn tắm nằm thư giãn và không gian tiếp khách tinh tế.</p>
+            <div class="mt"><span>48 m²</span><span>4 khách tối đa</span><span>Bồn tắm nằm</span><span>Tủ lạnh &amp;
+                TV</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+        <article class="rm" data-cap="5" data-go="detail:LP005">
+          <div class="im"><span class="rm-tag">DÀNH CHO GIA ĐÌNH</span><span class="rm-rate">★ 5.0</span><img
+              src="../images/rooms/deluxe-2.jpg" alt="Family tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Family</h3>
+              <div class="rm-price"><b>1.500.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Phòng gia đình ấm cúng với 2 giường đôi lớn và bàn ăn nhỏ tiện lợi cho cả nhóm.</p>
+            <div class="mt"><span>58 m²</span><span>5 khách tối đa</span><span>2 giường đôi</span><span>Bàn ăn
+                nhỏ</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+        <article class="rm" data-cap="6" data-go="detail:LP006">
+          <div class="im"><span class="rm-tag">MÁY CHƠI GAME PS5</span><span class="rm-rate">★ 4.98</span><img
+              src="../images/rooms/executive-1.jpg" alt="Executive Entertainment tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <div class="rm-top">
+              <h3>Executive Entertainment</h3>
+              <div class="rm-price"><b>2.000.000đ</b><small>/đêm</small></div>
+            </div>
+            <p class="rm-desc">Phòng giải trí đỉnh cao trang bị máy PS5, Smart TV lớn và sofa sang trọng cho nhóm bạn.
+            </p>
+            <div class="mt"><span>72 m²</span><span>6 khách tối đa</span><span>Máy PS5 + TV</span><span>2 giường
+                đôi</span></div>
+            <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="rm rm-featured" data-cap="8" data-go="detail:LP007">
+        <div class="im">
+          <span class="rm-tag rm-tag-featured">HẠNG PHÒNG TỔNG THỐNG CAO CẤP NHẤT</span>
+          <img src="../images/rooms/presidential-1.jpg" alt="Presidential Grand Suite tại SKY HOTEL" loading="lazy">
+        </div>
+        <div class="bd">
+          <div class="rm-feat-ey"><span>DINH THỰ TRÊN KHÔNG 120M²</span><span class="rm-feat-stars">★★★★★</span></div>
+          <h3>Presidential Grand Suite</h3>
+          <div class="rm-feat-price"><b>2.800.000đ</b><span>/đêm · Đẳng cấp thượng lưu</span></div>
+          <p class="rm-desc">Phòng Tổng Thống thượng đỉnh ngắm hoàng hôn với bàn bida riêng, máy PS5, phòng khách tách
+            biệt, 3 giường đôi, minibar và ban công riêng.</p>
+          <div class="rm-feat-stats">
+            <div><small>DIỆN TÍCH</small><b>120 m²</b></div>
+            <div><small>SỨC CHỨA</small><b>8 Khách VIP</b></div>
+            <div><small>GIẢI TRÍ</small><b>Bida + PS5</b></div>
+            <div><small>GIƯỜNG NGỦ</small><b>3 Giường đôi</b></div>
+          </div>
+          <div class="pr"><span class="rm-btn">Đặt phòng này</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="wrap" id="dich-vu">
+      <div class="hd2">
+        <div>
+          <div class="ey">DỊCH VỤ</div>
+          <h2>Dịch vụ đẳng cấp</h2>
+        </div>
+        <p class="side">Tận hưởng những dịch vụ cao cấp được thiết kế riêng cho kỳ nghỉ hoàn hảo của bạn.</p>
+      </div>
+      <div class="g4">
+        <article class="sv" data-go="service:nha-hang">
+          <div class="im"><img src="../images/services/nha-hang-hero.jpg" alt="Nhà hàng và quầy bar của SKY HOTEL"
+              loading="lazy"></div>
+          <div class="bd">
+            <h3>Nhà hàng &amp; Bar</h3>
+            <p>Hương vị tinh hoa từ ẩm thực Á - Âu đặc sắc.</p><a data-go="service:nha-hang">Khám phá &nbsp;→</a>
+          </div>
+        </article>
+        <article class="sv" data-go="service:spa">
+          <div class="im"><img src="../images/services/spa-hero.jpg"
+              alt="Không gian spa và chăm sóc sức khỏe tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <h3>Spa &amp; Wellness</h3>
+            <p>Thư giãn và tái tạo năng lượng cùng liệu trình chuyên nghiệp.</p><a data-go="service:spa">Khám phá
+              &nbsp;→</a>
+          </div>
+        </article>
+        <article class="sv" data-go="service:fitness">
+          <div class="im"><img src="../images/services/fitness-hero.jpg" alt="Khu vực tập luyện fitness tại SKY HOTEL"
+              loading="lazy"></div>
+          <div class="bd">
+            <h3>Fitness &amp; Gym</h3>
+            <p>Trang thiết bị hiện đại, không gian thoáng đãng.</p><a data-go="service:fitness">Khám phá &nbsp;→</a>
+          </div>
+        </article>
+        <article class="sv" data-go="service:hoi-nghi">
+          <div class="im"><img src="../images/services/hoi-nghi-hero.jpg"
+              alt="Không gian hội nghị và sự kiện tại SKY HOTEL" loading="lazy"></div>
+          <div class="bd">
+            <h3>Hội nghị &amp; Sự kiện</h3>
+            <p>Không gian linh hoạt cho mọi buổi họp và sự kiện.</p><a data-go="service:hoi-nghi">Khám phá &nbsp;→</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="offer" id="dich-vu-tien-ich">
+      <img class="offer-image" src="../images/hotels/ChiNhanhQ1.jpg"
+        alt="Khám phá dịch vụ tiện ích khách sạn tại SKY HOTEL" loading="lazy">
+      <div class="of-in">
+        <div>
+          <div class="ey wh">TIỆN ÍCH LƯU TRÚ &amp; PHỤC VỤ TẬN PHÒNG</div>
+          <h2>Khám phá dịch vụ tiện ích khách sạn</h2>
+          <p>Nâng tầm kỳ nghỉ của quý khách với hệ thống tiện ích chuẩn 5 sao: Đặt món ăn nóng hổi giao tận phòng, Dịch
+            vụ giặt ủi chuyên nghiệp trong ngày và Thuê xe máy tự do khám phá thành phố.</p>
+          <button class="out" data-go="amenity">KHÁM PHÁ NGAY &nbsp;→</button>
+        </div>
+        <div class="quote"><em>More than a stay</em><small>— A memorable experience</small></div>
+      </div>
+    </section>
+
+    <section class="wrap" id="danh-gia">
+      <div class="hd2">
+        <div>
+          <div class="ey">KHÁCH HÀNG NÓI VỀ CHÚNG TÔI</div>
+          <h2>Những khoảnh khắc đáng nhớ</h2>
+        </div>
+        <a class="lk" data-go="rooms">Xem thêm đánh giá &nbsp;→</a>
+      </div>
+      <div class="tm">
+        <button class="ar" id="pv">‹</button>
+        <div class="tc">
+          <div class="av" id="tav">M</div>
+          <div>
+            <div class="st">★ ★ ★ ★ ★</div>
+            <p id="tq"></p><b id="tn"></b><small id="tl"></small>
+          </div>
+        </div>
+        <button class="ar" id="nx">›</button>
+      </div>
+      <div class="dots" id="dots"></div>
+    </section>
+
+    <section class="wrap loc-sec" id="vi-tri">
+      <div class="loc-card">
+        <div class="loc-info">
+          <div class="ey">VỊ TRÍ &amp; LIÊN HỆ</div>
+          <h2>SKY HOTEL · Quận 10, TP. Hồ Chí Minh</h2>
+          <p class="loc-desc">Tọa lạc tại trung tâm Quận 10, thuận tiện di chuyển đến các khu thương mại, ẩm thực và
+            trung tâm thành phố.</p>
+          <div class="loc-grid">
+            <div><small>Địa chỉ</small><strong data-h="addr">123 Thành Thái, Quận 10, TP. Hồ Chí Minh</strong></div>
+            <div><small>Hotline 24/7</small><strong data-h="phone">028 3930 8888</strong></div>
+            <div><small>Email</small><strong data-h="email">contact@skyhotel.vn</strong></div>
+          </div>
+        </div>
+        <div class="loc-cta">
+          <button class="gold" type="button" data-go="rooms">Đặt phòng trực tiếp →</button>
+          <button class="loc-btn-sec" type="button" data-go="about">Tìm hiểu thêm</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="lien-he">
+    <div class="fg">
+      <div id="gioi-thieu">
+        <div class="flogo"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY
+            <p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p>
+        </div>
+        <div>
+          <h4>Liên hệ</h4>
+          <p>☎ <span data-h="phone">028 3930 8888</span></p>
+          <p>✉ <span data-h="email">contact@skyhotel.vn</span></p>
+          <p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p>
+        </div>
+        <div>
+          <h4>Liên kết nhanh</h4>
+          <p><a data-go="rooms">Phòng nghỉ</a></p>
+          <p><a data-sc="dich-vu">Dịch vụ</a></p>
+          <p><a data-sc="dich-vu-tien-ich">Dịch vụ tiện ích khách sạn</a></p>
+          <p><a data-go="about">Về chúng tôi</a></p>
+          <p><a data-sc="lien-he">Liên hệ</a></p>
+        </div>
+        <div>
+          <h4>Theo dõi chúng tôi</h4>
+          <div class="soc"><i>f</i><i>◎</i><i>▶</i><i>in</i></div>
+          <h4 class="h2b">Đăng ký nhận ưu đãi</h4>
+          <div class="nf"><input id="nlm" type="email" placeholder="Nhập email của bạn" /><button id="nlb">→</button>
+          </div>
+          <div id="nlr"></div>
+        </div>
+      </div>
+      <div class="fb"><span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span><span>Chính sách bảo mật &nbsp;|&nbsp;
+          Điều
+          khoản sử dụng</span></div>
+  </footer>
+  <script src="../js/occupancy-picker.js?v=2"></script>
+  <script src="../js/trang-chu.js?v=26"></script>
+  <script src="../js/bridge.js"></script>
+</body>
+
+</html>

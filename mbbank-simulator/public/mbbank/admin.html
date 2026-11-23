@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Quản Lý Số Dư MBBank - BrewLite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0036d6;
+            --primary-navy: #001f70;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-base: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-sub: #1a243d;
+            --border: #223254;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 32px 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge-nav {
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .badge-nav:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Balance Banner */
+        .balance-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #001f70 100%);
+            border: 1.5px solid #2563eb;
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .balance-val {
+            font-size: 38px;
+            font-weight: 900;
+            color: #fef08a;
+            letter-spacing: -0.5px;
+            margin: 6px 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-card-sub);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, #001f70, #0036d6); color: #fff; box-shadow: 0 4px 14px rgba(0,54,214,0.4); }
+        .btn-accent { background: var(--accent); color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        .chips-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .chip-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .chip-btn:hover {
+            background: #2563eb;
+            border-color: #38bdf8;
+        }
+        .chip-btn.danger {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+        .chip-btn.danger:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10b981;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <div class="header-title">
+                <span>⚙️</span> Quản Lý Số Dư MBBank
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                Chỉnh số dư tài khoản để kiểm thử kịch bản đủ tiền / hết tiền khi demo
+            </p>
+        </div>
+        <div class="header-links">
+            <a href="index.html" class="badge-nav" target="_blank">📱 Mở MBBank App</a>
+            <a href="/checkout" class="badge-nav" target="_blank">☕ Cổng Thanh Toán BrewLite</a>
+        </div>
+    </header>
+
+    <!-- SECTION: QUẢN LÝ SỐ DƯ TÀI KHOẢN MBBANK -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <span>💰</span> Số Dư Tài Khoản MBBank (Đồng bộ mọi thiết bị iPhone / PC)
+            </div>
+            <button class="btn btn-sm btn-accent" onclick="syncServerBalance()">🔄 Làm mới</button>
+        </div>
+
+        <div class="balance-banner">
+            <div>
+                <div style="font-size: 12.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">
+                    Số Dư Hiện Tại:
+                </div>
+                <div class="balance-val" id="dispServerBalance">---</div>
+                <script>
+                    (function() {
+                        try {
+                            var b = localStorage.getItem('mb_user_balance');
+                            if (b) {
+                                document.getElementById('dispServerBalance').innerText = parseInt(b, 10).toLocaleString('vi-VN') + ' VND';
+                            }
+                        } catch(e) {}
+                    })();
+                </script>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
+                <label class="form-label">Chỉnh sửa số dư mới (VND):</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="inputNewBalance" class="form-input" placeholder="Nhập số tiền mong muốn (VD: 0 hoặc 50000000)">
+                    <button class="btn btn-primary" onclick="updateServerBalance()">LƯU SỐ DƯ</button>
+                </div>
+                
+                <div style="margin-top: 12px; font-size: 12px; color: #94a3b8; font-weight: 700;">
+                    Chọn nhanh các trường hợp Demo cho Thầy xem:
+                </div>
+                <div class="chips-row">
+                    <button class="chip-btn danger" onclick="quickSetBalance(0)">🔴 0 Đ (Hết tiền)</button>
+                    <button class="chip-btn danger" onclick="quickSetBalance(30000)">🟡 30K (Thiếu tiền)</button>
+                    <button class="chip-btn" onclick="quickSetBalance(10000000)">🟢 10 Triệu</button>
+                    <button class="chip-btn" onclick="quickSetBalance(50000000)">🟢 50 Triệu</button>
+                    <button class="chip-btn" onclick="quickSetBalance(100000000)">🟢 100 Triệu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-notify" id="toastBox">Đã cập nhật số dư thành công!</div>
+
+<script>
+    function showToast(msg) {
+        const box = document.getElementById('toastBox');
+        box.innerText = msg;
+        box.style.display = 'block';
+        setTimeout(() => { box.style.display = 'none'; }, 2500);
+    }
+
+    async function fetchApiPayment(queryString) {
+        const urls = [
+            '/api_payment.php?' + queryString,
+            '../api_payment.php?' + queryString,
+            'api_payment.php?' + queryString,
+            '../../api_payment.php?' + queryString
+        ];
+        for (const u of urls) {
+            try {
+                const res = await fetch(u + '&_t=' + Date.now());
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) return data;
+                }
+            } catch (e) {}
+        }
+        return null;
+    }
+
+    async function syncServerBalance() {
+        try {
+            const data = await fetchApiPayment('action=get_balance');
+            if (data && data.success) {
+                const bal = data.balance;
+                document.getElementById('dispServerBalance').innerText = bal.toLocaleString('vi-VN') + ' VND';
+                localStorage.setItem('mb_user_balance', bal);
+                return;
+            }
+        } catch (e) {}
+        // Fallback đọc từ localStorage
+        const localBal = parseInt(localStorage.getItem('mb_user_balance') || '50000000', 10);
+        document.getElementById('dispServerBalance').innerText = localBal.toLocaleString('vi-VN') + ' VND';
+    }
+
+    async function updateServerBalance() {
+        const input = document.getElementById('inputNewBalance');
+        const val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 0) {
+            alert('Vui lòng nhập số tiền hợp lệ!');
+            return;
+        }
+        try {
+            await fetchApiPayment(`action=set_balance&balance=${val}`);
+        } catch (e) {}
+        localStorage.setItem('mb_user_balance', val);
+        showToast(`Đã cập nhật số dư thành ${val.toLocaleString('vi-VN')} VND!`);
+        input.value = '';
+        syncServerBalance();
+    }
+
+    function quickSetBalance(val) {
+        document.getElementById('inputNewBalance').value = val;
+        updateServerBalance();
+    }
+
+    syncServerBalance();
+    setInterval(syncServerBalance, 2500);
+</script>
+
+</body>
+</html>

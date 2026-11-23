@@ -72,13 +72,19 @@ class ThucHienDatPhongService
         $tenKH = '';
 
         if ($maTK !== '') {
+            $dbConn = Database::getConnection();
+            $stmtRole = $dbConn->prepare("SELECT VaiTro FROM TaiKhoan WHERE MaTK = ? LIMIT 1");
+            $stmtRole->execute([$maTK]);
+            if ($stmtRole->fetchColumn() === 'Admin') {
+                throw new Exception('Tài khoản Quản trị viên không sử dụng chức năng đặt phòng.');
+            }
+
             $khachHang = $this->khachHangRepo->findByMaTK($maTK);
             if ($khachHang) {
                 $maKH = $khachHang['MaKH'];
                 $tenKH = $khachHang['HoTen'];
             } else {
                 // Kiểm tra xem đây có phải tài khoản của Lễ tân không
-                $dbConn = Database::getConnection();
                 $stmtLT = $dbConn->prepare("SELECT MaLeTan, HoTen FROM LeTan WHERE MaTK = ?");
                 $stmtLT->execute([$maTK]);
                 $rowLT = $stmtLT->fetch(PDO::FETCH_ASSOC);

@@ -56,11 +56,19 @@ class LeTanRepository
     }
 
     /**
-     * Tự động quét và chuyển sang trạng thái DaHuy khi quá 24h tính từ ThoiGianNhanPhong
+     * Tự động quét và chuyển sang trạng thái DaHuy khi đã quá ThoiGianTraPhong dự kiến (No-show)
+     */
+    public function tuDongHuyPhieuQuaHanTraPhong(): int
+    {
+        return $this->phieuRepo->tuDongHuyPhieuQuaHanTraPhong();
+    }
+
+    /**
+     * Alias tương thích ngược - gọi về quy tắc No-show khi quá ThoiGianTraPhong dự kiến
      */
     public function tuDongHuyPhieuQuaHan24h(): int
     {
-        return $this->phieuRepo->tuDongHuyPhieuQuaHan24h();
+        return $this->tuDongHuyPhieuQuaHanTraPhong();
     }
 
     /**
@@ -138,9 +146,9 @@ class LeTanRepository
     /**
      * Lấy thống kê KPI toàn khách sạn, danh sách các loại phòng và danh sách chi tiết các phòng
      */
-    public function getThongKeLoaiPhongVaPhong(?string $maLoaiPhong = null): array
+    public function getThongKeLoaiPhongVaPhong(?string $maLoaiPhong = null, ?string $tuNgay = null, ?string $denNgay = null): array
     {
-        return $this->phongVaKhachRepo->getThongKeLoaiPhongVaPhong($maLoaiPhong);
+        return $this->phongVaKhachRepo->getThongKeLoaiPhongVaPhong($maLoaiPhong, $tuNgay, $denNgay);
     }
 
     /**

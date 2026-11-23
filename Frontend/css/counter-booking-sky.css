@@ -1,0 +1,107 @@
+/* ==========================================================================
+   SkyHotel Theme Override cho trang Đặt phòng tại quầy (datphong.html?mode=quay&sky=1)
+   ========================================================================== */
+body.sky-theme-mode {
+  --bg-dark: var(--color-bg) !important;
+  --bg-card: #FFFFFF !important;
+  --bg-card-light: var(--color-surface-secondary) !important;
+  --gold: var(--color-primary) !important;
+  --gold-light: var(--color-primary-hover) !important;
+  --gold-gradient: linear-gradient(135deg, #D96B43 0%, #C88A4B 100%) !important;
+  --text-main: var(--color-heading) !important;
+  --text-muted: var(--color-text) !important;
+  --border-color: var(--color-border) !important;
+  --border-dark: var(--color-border) !important;
+  background: var(--color-bg) !important;
+  color: var(--color-heading) !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+body.sky-theme-mode .top-nav {
+  display: none !important;
+}
+
+body.sky-theme-mode .hero-title h1 {
+  font-family: 'Lora', Georgia, serif !important;
+  color: var(--color-heading) !important;
+  text-shadow: none !important;
+}
+
+body.sky-theme-mode .search-box,
+body.sky-theme-mode .step-card,
+body.sky-theme-mode .room-card,
+body.sky-theme-mode .allocation-bar {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 4px 18px rgba(35, 20, 29, 0.06) !important;
+  color: var(--color-heading) !important;
+}
+
+body.sky-theme-mode .input-field,
+body.sky-theme-mode select.input-field {
+  background: var(--color-bg) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-heading) !important;
+}
+
+body.sky-theme-mode .btn-submit-search,
+body.sky-theme-mode .step-num {
+  background: var(--color-primary) !important;
+  color: #FFFFFF !important;
+}
+
+body.sky-theme-mode .btn-submit-search:hover:not(:disabled) {
+  background: var(--color-primary-hover) !important;
+  color: #FFFFFF !important;
+}
+
+body.sky-theme-mode .room-title,
+body.sky-theme-mode .step-title,
+body.sky-theme-mode .section-title {
+  color: var(--color-heading) !important;
+  font-family: 'Lora', Georgia, serif !important;
+}
+
+body.sky-theme-mode .room-price {
+  color: var(--color-primary) !important;
+}
+
+body.sky-theme-mode .amenity-tag,
+body.sky-theme-mode .qty-control,
+body.sky-theme-mode .room-guest-block,
+body.sky-theme-mode .guest-card,
+body.sky-theme-mode #counterBookerCard,
+body.sky-theme-mode #counterPaymentChoiceArea,
+body.sky-theme-mode #counterModeBanner {
+  background: var(--color-surface-secondary) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-heading) !important;
+}
+
+body.sky-theme-mode #counterModeBanner strong,
+body.sky-theme-mode #counterModeBanner div,
+body.sky-theme-mode #counterBookerCard strong,
+body.sky-theme-mode #counterBookerCard label,
+body.sky-theme-mode .guest-card-header,
+body.sky-theme-mode .bill-table td,
+body.sky-theme-mode .bill-table th {
+  color: var(--color-heading) !important;
+}
+
+body.sky-theme-mode #bookerStayRoomSelect,
+body.sky-theme-mode #bookerMaKH {
+  background: var(--color-surface) !important;
+  color: var(--color-heading) !important;
+  border-color: var(--color-primary) !important;
+}
+
+body.sky-theme-mode .success-box {
+  background: var(--color-surface) !important;
+  color: var(--color-heading) !important;
+}
+
+body.sky-theme-mode .success-title,
+body.sky-theme-mode .allocated-badge {
+  color: var(--color-heading) !important;
+}
+

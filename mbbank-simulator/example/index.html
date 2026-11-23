@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo tích hợp MBBank Simulator</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="/client/mbbank-client.js"></script>
+<style>body{font-family:system-ui;max-width:420px;margin:30px auto;padding:0 16px;text-align:center}
+#status{margin:14px 0;font-weight:700}.ok{color:#059669}.wait{color:#b45309}a.btn{display:inline-block;margin:6px;padding:10px 14px;background:#0036d6;color:#fff;border-radius:10px;text-decoration:none}</style></head>
+<body>
+<h2>Thanh toán đơn <span id="code"></span></h2>
+<canvas id="qr"></canvas>
+<div id="status" class="wait">⏳ Đang chờ chuyển khoản…</div>
+<div id="amt"></div>
+<a class="btn" id="open" target="_blank">📱 Mở app MB giả lập</a>
+<script>
+  const orderCode = 'BL' + String(Math.floor(100000 + Math.random() * 900000));
+  const amount = 45000;
+  const cfg = { memoPrefix: 'BREWLITE' }; // trùng MEMO_PREFIX của server
+  document.getElementById('code').textContent = orderCode;
+  document.getElementById('amt').textContent = amount.toLocaleString('vi-VN') + ' đ';
+  QRCode.toCanvas(document.getElementById('qr'), MBBank.generateVietQrEmv({ amount, orderCode, ...cfg }), { width: 240 });
+  document.getElementById('open').href = MBBank.buildSimulatorUrl({ amount, orderCode, ...cfg });
+  MBBank.waitForPayment({
+    orderCode, expectedAmount: amount, ...cfg,
+    onPaid: (p) => { const s = document.getElementById('status'); s.className = 'ok'; s.textContent = '✅ Đã nhận ' + p.amount.toLocaleString('vi-VN') + ' đ (GD ' + p.transId + ')'; },
+    onUnderpaid: (p) => { document.getElementById('status').textContent = '⚠️ Số tiền chưa đúng: ' + p.amount; },
+  });
+</script></body></html>

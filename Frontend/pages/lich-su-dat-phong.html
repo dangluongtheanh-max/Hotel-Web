@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>SkyHotel - Quản lý tài khoản & Lịch sử đặt phòng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+<script src="../js/theme.js?v=1"></script>
+  <link rel="stylesheet" href="../css/lich-su-dat-phong.css?v=33">
+  <link rel="stylesheet" href="../css/theme.css?v=15">
+</head>
+<body data-page="hist">
+<main>
+<div class="wrap">
+ <div class="ey-bar">
+   <span class="ey-line"></span>
+   <span class="ey-muted">Tài khoản khách hàng</span>
+   <span class="ey-dot">•</span>
+   <span class="ey-brand">Sky Club</span>
+   <span class="ey-dot">•</span>
+   <span class="ey-curr">Hồ sơ cá nhân</span>
+ </div>
+ <div class="layout">
+  <aside>
+   <div class="side-card">
+    <div class="me">
+      <div class="av-wrap">
+        <div class="av" id="side-av">K</div>
+        <span class="av-online" title="Trạng thái trực tuyến"></span>
+      </div>
+      <div class="me-info">
+        <b id="side-name">Khách hàng</b>
+        <small id="side-email">Đang tải thông tin...</small>
+        <span class="mbr-tag" id="side-tier">Sky Elite Member</span>
+      </div>
+    </div>
+    <nav class="side-nav" aria-label="Menu tài khoản">
+      <a href="#profile" data-tab="profile" class="side-link" id="tab-btn-profile">
+        <span class="side-link-main">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span>Thông tin cá nhân</span>
+        </span>
+        <span class="side-chev" aria-hidden="true">›</span>
+      </a>
+      <a href="#bookings" data-tab="bookings" class="side-link on" id="tab-btn-bookings">
+        <span class="side-link-main">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          <span>Lịch sử đặt phòng</span>
+        </span>
+        <span class="side-chev" aria-hidden="true">›</span>
+      </a>
+      <a href="#reviews" data-tab="reviews" class="side-link" id="tab-btn-reviews">
+        <span class="side-link-main">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </span>
+          <span>Đánh giá của tôi</span>
+        </span>
+        <span class="side-chev" aria-hidden="true">›</span>
+      </a>
+      <a href="#support" data-tab="support" class="side-link" id="tab-btn-support">
+        <span class="side-link-main">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+          </span>
+          <span>Hỗ trợ khách hàng 24/7</span>
+        </span>
+        <span class="side-chev" aria-hidden="true">›</span>
+      </a>
+      <a href="trang-chu.html" data-go="home" class="side-link side-link-home">
+        <span class="side-link-main">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          <span>Trở về trang chủ</span>
+        </span>
+      </a>
+    </nav>
+   </div>
+
+   <div class="concierge-card">
+     <div class="concierge-ico" aria-hidden="true">
+       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M12 2v2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+     </div>
+     <div>
+       <h3>Quản gia Sky Concierge</h3>
+       <p>Cần hỗ trợ đặt phòng riêng hoặc nhận xe sân bay Tân Sơn Nhất?</p>
+       <a href="tel:19008899" class="concierge-tel">📞 Gọi 1900 8899 (Phím 1)</a>
+     </div>
+   </div>
+  </aside>
+
+  <section class="content-area">
+   <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
+   <div class="tab-pane" id="pane-profile" style="display:none">
+     <div class="pane-head">
+       <h1>Hồ sơ tài khoản</h1>
+       <p class="sub-text">Xem và cập nhật thông tin tài khoản, thông tin định danh và bảo mật thành viên Sky Club.</p>
+     </div>
+
+     <!-- VIP Membership Card Banner (Stitch Obsidian Luxury Style) -->
+     <div class="vip-card">
+       <div class="vip-glow"></div>
+       <div class="vip-watermark" aria-hidden="true">
+         <svg viewBox="0 0 100 100" fill="currentColor">
+           <path d="M 18 72 A 38 38 0 0 1 82 72"></path>
+           <path d="M 14 77 Q 50 64 88 77"></path>
+           <path d="M 36 67 L 36 44 L 46 38 L 46 67 Z"></path>
+           <path d="M 49 67 L 49 32 L 60 25 L 60 67 Z"></path>
+         </svg>
+       </div>
+       <div class="vip-top-row">
+         <div class="vip-card-left">
+           <div class="vip-badges-row">
+             <div class="vip-badge-pill">⭐ SKY ELITE MEMBER</div>
+             <span class="vip-code-pill">MÃ KH: <strong id="vip-code">—</strong></span>
+           </div>
+           <h3 id="vip-user-name">Khách hàng</h3>
+           <div class="vip-card-sub">
+             Tài khoản: <strong id="vip-username">—</strong> · Email: <span id="vip-email">—</span>
+           </div>
+         </div>
+         <div class="profile-stats-grid">
+           <div class="profile-stat-box">
+             <div class="stat-box-val stat-val-gold" id="statTongDon">0</div>
+             <div class="stat-box-lbl">Tổng đơn đặt</div>
+           </div>
+           <div class="profile-stat-box stat-box-mid">
+             <div class="stat-box-val" id="statDonHoanTat">0</div>
+             <div class="stat-box-lbl">Lưu trú xong</div>
+           </div>
+           <div class="profile-stat-box">
+             <div class="stat-box-val" id="statDanhGia">0</div>
+             <div class="stat-box-lbl">Đánh giá gửi</div>
+           </div>
+         </div>
+       </div>
+       <div class="vip-perks-grid">
+         <div class="vip-perk-item">
+           <span class="vip-perk-ico vip-perk-gold" aria-hidden="true">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+           </span>
+           <p><strong>Ưu tiên check-in sớm &amp; check-out muộn:</strong> Linh hoạt hỗ trợ theo tình trạng buồng phòng thực tế.</p>
+         </div>
+         <div class="vip-perk-item">
+           <span class="vip-perk-ico vip-perk-sky" aria-hidden="true">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><line x1="14" y1="9" x2="18" y2="9"/><line x1="14" y1="13" x2="18" y2="13"/><path d="M7 15c.6-1.2 1.8-2 3-2s2.4.8 3 2"/></svg>
+           </span>
+           <p><strong>Điền tự động thông tin lưu trú:</strong> Tối ưu thông tin CCCD &amp; định danh giúp check-in trong 60 giây.</p>
+         </div>
+       </div>
+     </div>
+
+     <!-- Status alert -->
+     <div class="prof-alert" id="prof-alert" role="alert" style="display:none"></div>
+
+     <!-- Edit Profile Form Card -->
+     <div class="card-box card-box-stitch">
+       <div class="box-title box-title-stitch">
+         <div>
+           <h3>Thông tin cá nhân &amp; Định danh</h3>
+           <p class="box-sub-inline">Dữ liệu được dùng để làm thủ tục đăng ký tạm trú khách sạn theo Nghị định quản lý lưu trú.</p>
+         </div>
+         <span class="sec-badge">🛡️ Hồ sơ đã bảo mật</span>
+       </div>
+
+       <form id="form-profile" autocomplete="off">
+         <div class="grid-2">
+           <div class="form-group">
+             <label for="prof-name">Họ và tên <span class="req">*</span></label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+               </span>
+               <input type="text" id="prof-name" class="ctrl-input has-ico" placeholder="Nhập họ và tên đầy đủ" required>
+             </div>
+           </div>
+           <div class="form-group">
+             <label for="prof-phone">Số điện thoại <span class="req">*</span></label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+               </span>
+               <input type="tel" id="prof-phone" class="ctrl-input has-ico" placeholder="10 chữ số (VD: 0901234567)" maxlength="11" required>
+             </div>
+             <div class="field-hint" id="prof-phone-hint"></div>
+           </div>
+         </div>
+
+         <div class="grid-2">
+           <div class="form-group">
+             <label for="prof-email">Địa chỉ Email <span class="req">*</span></label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+               </span>
+               <input type="email" id="prof-email" class="ctrl-input has-ico" placeholder="example@gmail.com" required>
+             </div>
+           </div>
+           <div class="form-group">
+             <label for="prof-dob">Ngày sinh</label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+               </span>
+               <input type="date" id="prof-dob" class="ctrl-input has-ico">
+             </div>
+           </div>
+         </div>
+
+         <div class="grid-2">
+           <div class="form-group">
+             <label for="prof-nationality">Quốc tịch</label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+               </span>
+               <select id="prof-nationality" class="ctrl-input has-ico">
+                 <option value="Việt Nam">🇻🇳 Việt Nam</option>
+                 <option value="Nước ngoài">🌐 Nước ngoài</option>
+               </select>
+             </div>
+           </div>
+           <div class="form-group">
+             <label for="prof-idtype">Loại giấy tờ tùy thân</label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+               </span>
+               <select id="prof-idtype" class="ctrl-input has-ico">
+                 <option value="CCCD">CCCD (12 chữ số)</option>
+                 <option value="CMND">CMND (9 chữ số)</option>
+                 <option value="HoChieu">Hộ chiếu (Passport)</option>
+                 <option value="Khac">Giấy tờ khác</option>
+               </select>
+             </div>
+           </div>
+         </div>
+
+         <div class="grid-2">
+           <div class="form-group">
+             <label for="prof-cccd">Số giấy tờ tùy thân</label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+               </span>
+               <input type="text" id="prof-cccd" class="ctrl-input has-ico mono-input" placeholder="Nhập số CCCD / Hộ chiếu">
+             </div>
+             <div class="field-hint" id="prof-doc-hint"></div>
+           </div>
+           <div class="form-group">
+             <label for="prof-username">Tên đăng nhập <span class="badge-lock">🔒 Cố định</span></label>
+             <div class="input-ico-wrap">
+               <span class="input-ico" aria-hidden="true">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+               </span>
+               <input type="text" id="prof-username" class="ctrl-input has-ico readonly" readonly>
+             </div>
+           </div>
+         </div>
+
+         <div class="ssl-note">
+           <span class="ssl-ico" aria-hidden="true">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+           </span>
+           <p>Thông tin định danh của Quý khách được mã hóa chuẩn an toàn <strong>SSL 256-bit</strong> theo tiêu chuẩn bảo mật khách sạn quốc tế và tuân thủ quy định đăng ký khách lưu trú với cơ quan công an địa phương.</p>
+         </div>
+
+         <div class="form-actions form-actions-split">
+           <button type="button" class="link-pw-btn" onclick="document.getElementById('card-password').scrollIntoView({behavior:'smooth'}); setTimeout(function(){var el=document.getElementById('old-pw');if(el)el.focus();}, 350);">
+             🔑 Đổi mật khẩu tài khoản
+           </button>
+           <div class="form-actions-right">
+             <button type="button" class="btn-outline" id="btn-reset-profile" disabled>
+               <span>↺ Khôi phục ban đầu</span>
+             </button>
+             <button type="submit" class="btn-gold" id="btn-save-profile" disabled>
+               <span>💾 Lưu thay đổi thông tin</span>
+             </button>
+           </div>
+         </div>
+       </form>
+     </div>
+
+     <!-- Change Password Card -->
+     <div class="card-box card-box-stitch" id="card-password">
+       <div class="box-title box-title-stitch">
+         <div>
+           <h3>Bảo mật &amp; Đổi mật khẩu</h3>
+           <p class="box-sub-inline">Bảo vệ tài khoản của bạn bằng mật khẩu mạnh gồm tối thiểu 6 ký tự.</p>
+         </div>
+       </div>
+       <div class="prof-alert" id="pw-alert" role="alert" style="display:none"></div>
+       <form id="form-password" autocomplete="off">
+         <div class="grid-3">
+           <div class="form-group">
+             <label for="old-pw">Mật khẩu hiện tại <span class="req">*</span></label>
+             <input type="password" id="old-pw" class="ctrl-input" placeholder="Mật khẩu đang dùng" required>
+           </div>
+           <div class="form-group">
+             <label for="new-pw">Mật khẩu mới <span class="req">*</span></label>
+             <input type="password" id="new-pw" class="ctrl-input" placeholder="Tối thiểu 6 ký tự" required>
+           </div>
+           <div class="form-group">
+             <label for="new-pw2">Xác nhận mật khẩu <span class="req">*</span></label>
+             <input type="password" id="new-pw2" class="ctrl-input" placeholder="Nhập lại mật khẩu mới" required>
+           </div>
+         </div>
+         <div class="form-actions">
+           <button type="submit" class="btn-secondary" id="btn-change-pw">
+             <span>🔑 Cập nhật mật khẩu mới</span>
+           </button>
+         </div>
+       </form>
+     </div>
+   </div>
+
+   <!-- TAB 2: LỊCH SỬ ĐẶT PHÒNG -->
+   <div class="tab-pane" id="pane-bookings">
+     <div class="pane-head pane-head-flex">
+       <div>
+         <h1>📜 Lịch sử phiếu đặt phòng</h1>
+         <p class="sub-text">Xem lại danh sách phiếu đặt phòng, thời gian nhận & trả phòng, danh sách phòng, người lưu trú và hóa đơn điện tử.</p>
+       </div>
+       <div class="pane-actions">
+         <button type="button" class="btn-outline btn-sm" id="btn-refresh-bookings" title="Tải lại danh sách">
+           🔄 Làm mới
+         </button>
+         <button type="button" class="btn-gold btn-sm" id="btn-new-booking">
+           ➕ Đặt thêm phòng
+         </button>
+       </div>
+     </div>
+     <div class="tabs" id="tabs"></div>
+     <div class="prof-alert" id="booking-alert" role="alert" style="display:none"></div>
+     <div id="list"></div>
+   </div>
+
+   <!-- TAB 3: ĐÁNH GIÁ CỦA TÔI -->
+   <div class="tab-pane" id="pane-reviews" style="display:none">
+     <div class="pane-head pane-head-flex">
+       <div>
+         <h1>⭐ Đánh giá của tôi</h1>
+         <p class="sub-text">Theo dõi tình trạng đánh giá các phiếu nhận phòng đã hoàn tất lưu trú và chia sẻ trải nghiệm cho từng phòng.</p>
+       </div>
+       <div class="pane-actions">
+         <button type="button" class="btn-outline btn-sm" id="btn-refresh-reviews">
+           🔄 Làm mới
+         </button>
+       </div>
+     </div>
+     <div class="tabs" id="review-filter-tabs"></div>
+     <div class="reviews-list" id="reviews-list"></div>
+   </div>
+
+   <!-- TAB 4: HỖ TRỢ KHÁCH HÀNG -->
+   <div class="tab-pane" id="pane-support" style="display:none">
+     <div class="pane-head">
+       <h1>Trung tâm hỗ trợ khách hàng</h1>
+       <p class="sub-text">Bộ phận Chăm sóc khách hàng và Quản lý phòng luôn túc trực 24/7 để phục vụ quý khách.</p>
+     </div>
+     <div class="support-grid">
+       <div class="support-card">
+         <div class="sup-icon">☎️</div>
+         <h4>Hotline 24/7</h4>
+         <p>Hỗ trợ đặt phòng & khẩn cấp</p>
+         <a href="tel:02839308888" class="sup-action">028 3930 8888</a>
+       </div>
+       <div class="support-card">
+         <div class="sup-icon">✉️</div>
+         <h4>Hộp thư hỗ trợ</h4>
+         <p>Phản hồi trong vòng 30 phút</p>
+         <a href="mailto:contact@skyhotel.vn" class="sup-action">contact@skyhotel.vn</a>
+       </div>
+       <div class="support-card">
+         <div class="sup-icon">🏨</div>
+         <h4>Quầy Concierge</h4>
+         <p>Sảnh chính tầng 1 - Sky Hotel Quận 10</p>
+         <span class="sup-action">Trực tiếp tại khách sạn</span>
+       </div>
+     </div>
+
+     <div class="card-box">
+       <div class="box-title">
+         <h3>Câu hỏi thường gặp (FAQ)</h3>
+       </div>
+       <div class="faq-list">
+         <details class="faq-item" open>
+           <summary>Giờ nhận phòng (Check-in) và trả phòng (Check-out) là mấy giờ?</summary>
+           <p>Giờ nhận phòng tiêu chuẩn là từ 14:00 và giờ trả phòng là trước 12:00 trưa. Hội viên SKY ELITE được ưu tiên nhận phòng sớm hoặc trả phòng muộn đến 14:00 tuỳ theo tình trạng phòng trống.</p>
+         </details>
+         <details class="faq-item">
+           <summary>Chính sách thanh toán và giữ phòng 20 phút hoạt động như thế nào?</summary>
+           <p>Khi đặt phòng trực tuyến qua VietQR MBBank, hệ thống giữ phòng cho quý khách trong vòng 20 phút. Quý khách có thể bấm nút "Thanh toán" ngay trong Lịch sử đặt phòng để hoàn tất chuyển khoản.</p>
+         </details>
+         <details class="faq-item">
+           <summary>Tôi có thể chỉnh sửa thông tin người lưu trú sau khi đặt phòng không?</summary>
+           <p>Khi có nhu cầu cập nhật hoặc bổ sung thông tin khách lưu trú trước khi nhận phòng, quý khách vui lòng liên hệ quầy Lễ tân hoặc Hotline 028 3930 8888 để nhân viên hỗ trợ cập nhật chính xác trên hệ thống.</p>
+         </details>
+       </div>
+     </div>
+
+     <div class="card-box" id="support-cancel-policy">
+       <div class="box-title box-title-stitch">
+         <div>
+           <h3>Chính sách hủy phòng &amp; hoàn tiền</h3>
+           <p class="box-sub-inline">Áp dụng thống nhất theo thời điểm hủy so với ngày nhận phòng dự kiến.</p>
+         </div>
+         <span class="sec-badge">📋 Quy chuẩn Sky Hotel</span>
+       </div>
+
+       <div class="support-policy-table-wrap" id="supportCancelPolicyBox"></div>
+
+       <ul class="support-policy-notes">
+         <li>Quý khách có thể chủ động <b>Hủy toàn bộ phiếu</b> hoặc <b>Hủy từng phòng</b> ngay trong tab <b>Lịch sử đặt phòng</b> khi đơn đang ở trạng thái <i>Chờ thanh toán</i> hoặc <i>Đã đặt phòng</i>.</li>
+         <li>Đối với đơn đã thanh toán được hoàn tiền (<b>100%</b> hoặc <b>50%</b>), quý khách vui lòng điền thông tin tài khoản ngân hàng khi xác nhận hủy để bộ phận kế toán xử lý hoàn trả.</li>
+         <li>Đơn đã thanh toán 100% được giữ phòng trọn thời gian đặt; chỉ áp dụng <b>No-show (hoàn 0%)</b> nếu quá giờ trả phòng dự kiến mà quý khách không đến nhận và không báo hủy.</li>
+       </ul>
+     </div>
+   </div>
+  </section>
+ </div>
+</div>
+</main>
+
+<!-- MODAL 1: CHI TIẾT PHIẾU NHẬN PHÒNG (ĐỒNG BỘ LEGACY/CHITIETPHIEU.HTML) -->
+<div id="pnpDetailModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card sky-modal-lg">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title" id="pnpModalTitle">📄 Chi Tiết Phiếu Nhận Phòng</div>
+        <div class="sky-modal-sub" id="pnpModalSub">Thông tin lưu trú & danh sách người lưu trú đã khai báo</div>
+      </div>
+      <button type="button" class="sky-modal-close" id="btnClosePnpModal" data-close-modal="pnpDetailModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body" id="pnpModalBody">
+      <!-- Nạp động từ /datphong/xemctphieu -->
+    </div>
+    <div class="sky-modal-footer" style="justify-content:flex-end">
+      <button type="button" class="btn-outline btn-sm" id="btnPrintPnpSlip" style="border-color:#2f8f5b;color:#1b7a46;background:rgba(47,143,91,0.08)">🖨️ In Biên Bản Phiếu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: CHỈNH SỬA THÔNG TIN NGƯỜI LƯU TRÚ (/datphong/capnhatnguoiluutru) -->
+<div id="editGuestModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card" style="max-width:560px">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title">✏️ Chỉnh Sửa Thông Tin Người Lưu Trú</div>
+        <div class="sky-modal-sub">
+          Mã khách: <code id="mNltCode">NLT---</code> · Phòng: <strong id="mNltRoom">---</strong>
+        </div>
+      </div>
+      <button type="button" class="sky-modal-close" id="btnCloseEditGuestModal" data-close-modal="editGuestModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body">
+      <div class="prof-alert" id="editGuestAlert" style="display:none"></div>
+      <form id="editGuestForm">
+        <input type="hidden" id="editGuestMaNLT">
+        <input type="hidden" id="editGuestMaPhieu">
+        <div class="form-group">
+          <label for="editGuestHoTen">Họ và tên khách lưu trú <span class="req">*</span></label>
+          <input type="text" id="editGuestHoTen" class="ctrl-input" required placeholder="Ví dụ: Nguyễn Văn An">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="editGuestNgaySinh">Ngày sinh <span class="req">*</span></label>
+            <input type="date" id="editGuestNgaySinh" class="ctrl-input" required>
+          </div>
+          <div class="form-group">
+            <label for="editGuestQuocTich">Quốc tịch <span class="req">*</span></label>
+            <select id="editGuestQuocTich" class="ctrl-input" required>
+              <option value="Việt Nam">Việt Nam</option>
+              <option value="Nước ngoài">Nước ngoài</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="editGuestLoaiGiayTo">Loại giấy tờ <span class="req">*</span></label>
+            <select id="editGuestLoaiGiayTo" class="ctrl-input" required>
+              <option value="CCCD">CCCD / Căn cước (12 số)</option>
+              <option value="CMND">CMND (9 số)</option>
+              <option value="HoChieu">Hộ chiếu (Passport)</option>
+              <option value="GiayKhaiSinh">Giấy khai sinh (Trẻ em)</option>
+              <option value="Khac">Giấy tờ khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editGuestSoGiayTo">Số giấy tờ tùy thân <span class="req">*</span></label>
+            <input type="text" id="editGuestSoGiayTo" class="ctrl-input" required placeholder="Nhập số CCCD / Hộ chiếu">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label for="editGuestGhiChu">Ghi chú (Tùy chọn)</label>
+          <textarea id="editGuestGhiChu" class="ctrl-input" rows="2" placeholder="Ví dụ: Khách cần chuẩn bị thêm gối..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="sky-modal-footer">
+      <button type="button" class="btn-outline btn-sm" id="btnCancelEditGuest" data-close-modal="editGuestModal">Hủy bỏ</button>
+      <button type="button" class="btn-gold btn-sm" id="btnSubmitEditGuest">💾 Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: HÓA ĐƠN ĐIỆN TỬ GTGT (/hoadon/xemhoadon) -->
+<div id="invoiceModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card sky-modal-lg" id="invoiceModalCard">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title">🧾 Hóa Đơn Điện Tử GTGT</div>
+        <div class="sky-modal-sub">Chi tiết thanh toán phòng &amp; dịch vụ tại SKY HOTEL</div>
+      </div>
+      <button type="button" class="sky-modal-close" id="btnCloseInvoiceModal" data-close-modal="invoiceModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body" id="invoiceModalBody"></div>
+    <div class="sky-modal-footer" style="justify-content:space-between">
+      <button type="button" class="btn-outline btn-sm" id="btnPrintInvoice" style="border-color:#2f8f5b;color:#1b7a46;background:rgba(47,143,91,0.08)">🖨️ In Hóa Đơn</button>
+      <button type="button" class="btn-outline btn-sm" id="btnCloseInvoiceFooter" data-close-modal="invoiceModal">Đóng Cửa Sổ</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 4: ĐÁNH GIÁ CHẤT LƯỢNG PHÒNG (/danhgia/themdanhgia) -->
+<div id="reviewModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card" style="max-width:520px">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title" id="reviewModalTitle">⭐ Đánh Giá Phòng</div>
+        <div class="sky-modal-sub">Phiếu đặt phòng: <code id="rmPhieuCode">PP---</code></div>
+      </div>
+      <button type="button" class="sky-modal-close" id="btnCloseReviewModal" data-close-modal="reviewModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body">
+      <div class="prof-alert" id="reviewAlertBox" style="display:none"></div>
+      <div id="modalRoomSelectContainer" class="form-group" style="display:none">
+        <label for="reviewRoomSelect">Chọn phòng muốn đánh giá / xem lại</label>
+        <select id="reviewRoomSelect" class="ctrl-input"></select>
+      </div>
+      <form id="reviewForm">
+        <input type="hidden" id="reviewMaPhong">
+        <div class="form-group" style="text-align:center;margin-bottom:18px">
+          <label style="display:block;margin-bottom:8px;font-weight:700">Chất lượng phòng & Dịch vụ</label>
+          <div class="star-rating-box" id="starRatingBox">
+            <span class="star-item active" data-val="1">★</span>
+            <span class="star-item active" data-val="2">★</span>
+            <span class="star-item active" data-val="3">★</span>
+            <span class="star-item active" data-val="4">★</span>
+            <span class="star-item active" data-val="5">★</span>
+          </div>
+          <div id="starRatingDesc" class="star-rating-desc">5 sao — Rất tuyệt vời</div>
+          <div id="reviewDateInfo" class="review-date-info" style="display:none"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label for="reviewNoiDung">Nhận xét chi tiết <span class="req" id="reviewRequiredMark">*</span></label>
+          <div id="reviewViewContent" class="review-view-box" style="display:none"></div>
+          <textarea id="reviewNoiDung" class="ctrl-input" rows="4" maxlength="1000" placeholder="Chia sẻ trải nghiệm của bạn về không gian phòng, vệ sinh, tiện nghi..."></textarea>
+          <div id="reviewCharCount" class="review-char-count">0 / 1000 ký tự</div>
+        </div>
+      </form>
+    </div>
+    <div class="sky-modal-footer">
+      <button type="button" class="btn-outline btn-sm" id="btnCancelReview" data-close-modal="reviewModal">Đóng</button>
+      <button type="button" class="btn-gold btn-sm" id="btnSubmitReview">⭐ Gửi đánh giá</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 5: THANH TOÁN VIETQR CHO PHIẾU CHỜ THANH TOÁN (/thanhtoan/mophong) -->
+<div id="vietQrPayModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card" style="max-width:480px">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title">💳 Thanh Toán Chuyển Khoản VietQR</div>
+        <div class="sky-modal-sub" id="qrPaySub">Phiếu đặt phòng: #--- · Hóa đơn: #---</div>
+      </div>
+      <button type="button" class="sky-modal-close" id="btnCloseQrPayModal" data-close-modal="vietQrPayModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body" style="text-align:center">
+      <div class="prof-alert" id="qrPayAlert" role="alert" style="display:none;text-align:left;margin-bottom:12px"></div>
+      <div class="qr-box-wrap">
+        <img id="qrPayImg" src="" alt="VietQR MBBank" style="width:230px;height:230px;object-fit:contain;border-radius:10px;border:1px solid var(--line);background:#fff;padding:8px">
+      </div>
+      <div id="qrPayAutoStatus" style="margin-top:8px;font-size:12px;font-weight:600;color:#1d4ed8">🔄 Đang tự động kiểm tra giao dịch mỗi 2 giây...</div>
+      <div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px">
+        <a id="btnOpenHistoryMbSim" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:#0036d6;color:#fff;font-size:12px;font-weight:700;text-decoration:none">📱 Mở App MBBank giả lập</a>
+        <button type="button" id="btnConfigHistoryMbSim" title="Cấu hình địa chỉ Node MBBank Simulator (LAN / ngrok)" style="padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12px">⚙️</button>
+      </div>
+      <div class="qr-bank-info">
+        <div><span>Ngân hàng:</span> <strong>MBBank (Quân Đội)</strong></div>
+        <div><span>Chủ tài khoản:</span> <strong>NGUYEN HOANG ANH</strong></div>
+        <div><span>Số tài khoản:</span> <strong>0589822346</strong></div>
+        <div><span>Số tiền:</span> <strong id="qrPayAmount" style="color:var(--gold-text,#8a6829);font-size:16px">0 đ</strong></div>
+        <div><span>Nội dung CK:</span> <code id="qrPayMemo" style="background:var(--gold-soft);padding:2px 8px;border-radius:6px;font-weight:700">THANHTOAN HD---</code></div>
+      </div>
+    </div>
+    <div class="sky-modal-footer" style="justify-content:space-between">
+      <button type="button" class="btn-outline btn-sm" id="btnCancelQrPay" data-close-modal="vietQrPayModal">Đóng</button>
+      <button type="button" class="btn-gold btn-sm" id="btnConfirmQrPaid">✅ Tôi đã chuyển khoản thành công</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 6: KHÁCH HÀNG TỰ HỦY PHÒNG & YÊU CẦU HOÀN TIỀN (/datphong/tinhtienhoan + /datphong/huy) -->
+<div id="cancelBookingModal" class="sky-modal-backdrop" style="display:none">
+  <div class="sky-modal-card" style="max-width:640px">
+    <div class="sky-modal-header">
+      <div>
+        <div class="sky-modal-title">🚫 Hủy Đặt Phòng &amp; Chính Sách Hoàn Tiền</div>
+        <div class="sky-modal-sub" id="cancelBookingSub">Phiếu đặt phòng: #---</div>
+      </div>
+      <button type="button" class="sky-modal-close" data-close-modal="cancelBookingModal" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="sky-modal-body">
+      <div class="form-group" id="cancelScopeWrap" style="display:none">
+        <label for="cancelRoomSelect">Phạm vi hủy phòng</label>
+        <select id="cancelRoomSelect" class="ctrl-input">
+          <option value="">Toàn bộ phiếu đặt phòng</option>
+        </select>
+      </div>
+
+      <div id="cancelCalcResult" class="cancel-summary-box">
+        <div class="empty">⏳ Đang tính toán số tiền hoàn theo chính sách...</div>
+      </div>
+
+      <div id="cancelBankFields" class="cancel-bank-box" style="display:none">
+        <div class="cancel-bank-head">🏦 Thông tin tài khoản ngân hàng nhận tiền hoàn <span class="req">*</span></div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="cancelBankSelect">Ngân hàng nhận <span class="req">*</span></label>
+            <select id="cancelBankSelect" class="ctrl-input">
+              <option value="">-- Chọn ngân hàng --</option>
+              <option value="MB">MBBank (Ngân hàng Quân Đội)</option>
+              <option value="VCB">Vietcombank (Ngoại thương)</option>
+              <option value="TCB">Techcombank (Kỹ thương)</option>
+              <option value="ACB">ACB (Á Châu)</option>
+              <option value="ICB">VietinBank (Công thương)</option>
+              <option value="BIDV">BIDV (Đầu tư và Phát triển)</option>
+              <option value="TPB">TPBank (Tiên Phong)</option>
+              <option value="VPB">VPBank (Việt Nam Thịnh Vượng)</option>
+              <option value="STB">Sacombank</option>
+              <option value="VIB">VIB (Quốc Tế)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cancelBankStk">Số tài khoản nhận <span class="req">*</span></label>
+            <input type="text" id="cancelBankStk" class="ctrl-input mono-input" placeholder="Nhập số tài khoản ngân hàng">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label for="cancelBankOwner">Tên chủ tài khoản (in hoa, không dấu) <span class="req">*</span></label>
+          <input type="text" id="cancelBankOwner" class="ctrl-input" style="text-transform:uppercase" placeholder="VD: NGUYEN VAN A">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:14px">
+        <label for="cancelReasonText">Lý do hủy phòng</label>
+        <div class="cancel-preset-row">
+          <button type="button" class="cancel-preset-btn" data-cancel-reason-preset="Thay đổi lịch trình cá nhân">📅 Đổi lịch trình</button>
+          <button type="button" class="cancel-preset-btn" data-cancel-reason-preset="Đặt nhầm ngày nhận / trả phòng">✏️ Đặt nhầm ngày</button>
+          <button type="button" class="cancel-preset-btn" data-cancel-reason-preset="Muốn đổi sang hạng phòng khác">🔄 Đổi hạng phòng</button>
+        </div>
+        <textarea id="cancelReasonText" class="ctrl-input" rows="2" maxlength="500" placeholder="Nhập lý do hủy (tùy chọn)...">Khách hàng chủ động hủy đặt phòng trực tuyến</textarea>
+      </div>
+
+      <div class="cancel-policy-ref">
+        <div class="cancel-policy-ref-title">📋 Bảng chính sách hoàn tiền &amp; phí hủy chuẩn của SKY HOTEL</div>
+        <div id="cancelPolicyTableBox"></div>
+      </div>
+    </div>
+    <div class="prof-alert" id="cancelModalAlert" role="alert" style="display:none;margin:0 22px 10px"></div>
+    <div class="sky-modal-footer" style="justify-content:space-between">
+      <button type="button" class="btn-outline btn-sm" data-close-modal="cancelBookingModal">Đóng lại</button>
+      <button type="button" class="btn-danger-solid btn-sm" id="btnConfirmCustomerCancel">🚫 Xác nhận hủy đặt phòng</button>
+    </div>
+  </div>
+</div>
+
+<footer class="sfoot"><div class="sfoot-in">
+<div><div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div><p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p></div>
+<div><h4>Liên hệ</h4><p>☎ <span data-h="phone">028 3930 8888</span></p><p>✉ <span data-h="email">contact@skyhotel.vn</span></p><p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p></div>
+<div><h4>Liên kết nhanh</h4><p><a data-go="home">Trang chủ</a></p><p><a data-go="rooms">Phòng nghỉ</a></p><p><a data-go="hist">Lịch sử đặt phòng</a></p></div>
+</div><div class="fb"><span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span><span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span></div></footer>
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/mbbank-qr-helper.js?v=1"></script>
+<script src="../js/lich-su-dat-phong.js?v=36"></script>
+<script src="../js/bridge.js?v=16"></script>
+</body>
+</html>

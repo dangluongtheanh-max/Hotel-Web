@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>SkyHotel - Chọn phòng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+<script src="../js/theme.js?v=27"></script>
+  <link rel="stylesheet" href="../css/theme.css?v=27">
+  <link rel="stylesheet" href="../css/chon-phong.css?v=25">
+</head>
+<body data-page="rooms">
+
+<header class="cp-hero">
+  <div class="cp-hero-in">
+    <nav class="cp-crumb" aria-label="Đường dẫn"><span>Trang chủ</span><i>/</i><span>Phòng nghỉ</span><i>/</i><b>Chọn phòng</b></nav>
+    <div class="cp-eyebrow">SKY HOTEL · QUẬN 10, TP. HỒ CHÍ MINH</div>
+    <h1>Lựa chọn không gian nghỉ dưỡng</h1>
+    <p>Bảy hạng phòng được chăm chút từng chi tiết (tổng 66 phòng P001 – P704), từ Economy tiết kiệm đến đẳng cấp Presidential Grand Suite.</p>
+  </div>
+</header>
+
+<main class="cp-wrap">
+  <!-- Thanh tìm kiếm -->
+  <section class="cp-search" aria-label="Tìm phòng trống">
+    <div class="cp-field">
+      <label for="ci">Ngày nhận phòng</label>
+      <input type="date" id="ci">
+    </div>
+    <div class="cp-field">
+      <label for="co">Ngày trả phòng</label>
+      <input type="date" id="co">
+    </div>
+    <div class="cp-field cp-occupancy-field">
+      <label for="occupancy-trigger">Người lớn, trẻ em và phòng</label>
+      <button class="cp-occupancy-trigger" id="occupancy-trigger" data-occupancy-trigger type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="occupancy-panel"></button>
+      <section class="cp-occupancy" id="occupancy-panel" data-occupancy-panel role="dialog" aria-label="Chọn số khách và phòng" hidden>
+        <p class="cp-occupancy-limit">Tối thiểu 1 khách/phòng · Tối đa 6 phòng · 20 khách <span title="Tối thiểu 1 người lớn và 1 khách/phòng; tối đa 6 phòng và 20 khách tổng cộng.">ⓘ</span></p>
+        <div id="occupancy-rooms" data-occupancy-rooms></div>
+        <div class="cp-room-customizer" id="add-room" data-occupancy-room-control>
+          <div class="cp-room-customizer-info">
+            <span>Số phòng</span>
+            <small data-occupancy-max-rooms>Tối đa 6 phòng</small>
+          </div>
+          <div class="cp-room-stepper">
+            <button class="cp-room-step-btn" type="button" data-occupancy-step="-1" aria-label="Giảm số phòng">−</button>
+            <input class="cp-room-count-input" type="number" min="1" max="6" value="1" data-occupancy-count aria-label="Số lượng phòng muốn đặt">
+            <button class="cp-room-step-btn" type="button" data-occupancy-step="1" aria-label="Tăng số phòng">+</button>
+          </div>
+        </div>
+        <div class="cp-occupancy-error" id="occupancy-error" data-occupancy-error role="alert"></div>
+        <div class="cp-occupancy-actions">
+          <button class="cp-cancel" id="cancel-occupancy" data-occupancy-cancel type="button">Hủy</button>
+          <button class="cp-apply" id="apply-occupancy" data-occupancy-apply type="button">Áp dụng</button>
+        </div>
+      </section>
+    </div>
+    <button class="cp-find" id="find" type="button">Kiểm tra phòng trống</button>
+    <div class="cp-search-msg" id="smsg" role="alert" aria-live="polite"></div>
+  </section>
+
+  <div class="cp-layout">
+    <!-- Cột bên trái: Bộ lọc tiện nghi và loại phòng -->
+    <aside class="cp-sidebar" aria-label="Bộ lọc phòng">
+      <div class="cp-filter-card">
+        <div class="cp-filter-header">
+          <h3>Bộ lọc phòng</h3>
+          <button type="button" class="cp-filter-clear" id="filter-clear" hidden>Xóa bộ lọc</button>
+        </div>
+
+        <!-- Lọc phòng yêu thích -->
+        <div class="cp-filter-group cp-filter-fav-group">
+          <label class="cp-check cp-check-fav">
+            <input type="checkbox" name="f-fav" id="filter-fav" value="1">
+            <span class="cp-check-box"></span>
+            <span class="cp-check-label">❤️ Chỉ hiện phòng yêu thích (<b id="side-fav-count">0</b>)</span>
+          </label>
+        </div>
+
+        <!-- Lọc theo khoảng giá mỗi đêm -->
+        <div class="cp-filter-group cp-filter-price-group">
+          <h4>Khoảng giá / đêm</h4>
+          <div class="cp-price-presets" id="filter-price-presets" role="group" aria-label="Chọn nhanh khoảng giá">
+            <button type="button" class="cp-price-preset" data-min="0" data-max="600000" aria-pressed="false">Dưới 600k</button>
+            <button type="button" class="cp-price-preset" data-min="600000" data-max="1500000" aria-pressed="false">600k – 1.5tr</button>
+            <button type="button" class="cp-price-preset" data-min="1500000" data-max="" aria-pressed="false">Trên 1.5tr</button>
+          </div>
+          <div class="cp-price-inputs">
+            <label class="cp-price-field" for="filter-price-min">
+              <span>Từ</span>
+              <input type="number" id="filter-price-min" min="0" step="100000" placeholder="0 đ" inputmode="numeric">
+            </label>
+            <label class="cp-price-field" for="filter-price-max">
+              <span>Đến</span>
+              <input type="number" id="filter-price-max" min="0" step="100000" placeholder="Không giới hạn" inputmode="numeric">
+            </label>
+          </div>
+        </div>
+
+        <!-- Lọc theo loại phòng -->
+        <div class="cp-filter-group">
+          <h4>Loại phòng</h4>
+          <div class="cp-filter-options" id="filter-types">
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP004">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Economy</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP001">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Standard</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP002">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Deluxe</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP003">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Suite</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP005">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Family</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP006">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Executive Entertainment</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-type" value="LP007">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Presidential Grand Suite</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Lọc theo tiện nghi -->
+        <div class="cp-filter-group">
+          <h4>Tiện nghi</h4>
+          <div class="cp-filter-options" id="filter-amenities">
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="bua-sang">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Bữa sáng</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="ho-boi">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Hồ bơi</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="gym">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Phòng Gym</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="bon-tam">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Bồn tắm</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="wifi">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Wifi tốc độ cao</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="minibar">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Minibar</span>
+            </label>
+            <label class="cp-check">
+              <input type="checkbox" name="f-amenity" value="xe-dua-don">
+              <span class="cp-check-box"></span>
+              <span class="cp-check-label">Xe đưa đón</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="cp-support-card">
+        <div class="cp-support-ey">HỖ TRỢ ĐẶT PHÒNG 24/7</div>
+        <h4>Cần tư vấn đặt đoàn?</h4>
+        <p>Đội ngũ lễ tân SKY HOTEL luôn sẵn sàng hỗ trợ chọn phòng phù hợp hoặc giữ phòng theo đoàn.</p>
+        <a class="cp-support-tel" href="tel:02839308888">028 3930 8888</a>
+      </div>
+    </aside>
+
+    <!-- Cột giữa: Danh sách phòng -->
+    <section class="cp-listcol" aria-labelledby="lt">
+      <div class="cp-listhead">
+        <h2 id="lt">Hạng phòng</h2>
+        <span class="cp-nights" id="nights"></span>
+      </div>
+      <div class="cp-quickchips" id="quick-amenity-chips" role="group" aria-label="Lọc nhanh tiện nghi phổ biến">
+        <button type="button" class="cp-quickchip" data-amenity="bua-sang" aria-pressed="false">Bữa sáng</button>
+        <button type="button" class="cp-quickchip" data-amenity="ho-boi" aria-pressed="false">Hồ bơi</button>
+        <button type="button" class="cp-quickchip" data-amenity="bon-tam" aria-pressed="false">Bồn tắm</button>
+        <button type="button" class="cp-quickchip" data-amenity="gym" aria-pressed="false">Phòng Gym</button>
+        <button type="button" class="cp-quickchip" data-amenity="minibar" aria-pressed="false">Minibar</button>
+        <button type="button" class="cp-quickchip" data-amenity="xe-dua-don" aria-pressed="false">Xe đưa đón</button>
+      </div>
+      <div id="demand" class="cp-demand" aria-live="polite"></div>
+      <div id="notice" class="cp-notice" hidden role="status"></div>
+      <div id="list" aria-live="polite"></div>
+    </section>
+
+    <!-- Cột bên phải: Tóm tắt đơn -->
+    <div class="cp-sumcol">
+      <div class="cp-sum" id="sum"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Thanh tóm tắt cố định trên điện thoại -->
+<div class="cp-bar" id="bar" hidden>
+  <div><small id="barN"></small><b id="barT"></b></div>
+  <button type="button" id="barGo" class="cp-go">Thanh toán & Đặt phòng</button>
+</div>
+
+<footer class="sfoot"><div class="sfoot-in">
+<div><div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div><p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p></div>
+<div><h4>Liên hệ</h4><p>☎ <span data-h="phone">028 3930 8888</span></p><p>✉ <span data-h="email">contact@skyhotel.vn</span></p><p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p></div>
+<div><h4>Liên kết nhanh</h4><p><a data-go="home">Trang chủ</a></p><p><a data-go="rooms">Phòng nghỉ</a></p><p><a data-go="hist">Lịch sử đặt phòng</a></p></div>
+</div><div class="fb"><span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span><span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span></div></footer>
+
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/wishlist.js?v=17"></script>
+<script src="../js/occupancy-picker.js?v=2"></script>
+<script src="../js/chon-phong.js?v=28"></script>
+<script src="../js/bridge.js?v=17"></script>
+</body>
+</html>

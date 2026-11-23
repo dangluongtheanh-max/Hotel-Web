@@ -23,64 +23,381 @@ class AdminThongKeRepository
      * THỐNG KÊ DOANH THU (BE4)
      * ========================================================================= */
 
+    /** Trạng thái giao dịch đã phát sinh dòng tiền thật trên bảng ThanhToan. */
+    private const PAID_STATUSES = ['HoanTat', 'HoanTienMotPhan', 'DaHoanTien'];
+
+    /**
+     * Chuẩn hóa khoảng ngày lọc thống kê về định dạng DATETIME [Y-m-d 00:00:00, Y-m-d 23:59:59].
+     */
+    private function normalizeDateRange(array $filters, string $defaultFrom, string $defaultTo): array
+    {
+        $fromDate = !empty($filters['from_date'])
+            ? trim((string)$filters['from_date'])
+            : (!empty($filters['tu_ngay']) ? trim((string)$filters['tu_ngay']) : $defaultFrom);
+        $toDate = !empty($filters['to_date'])
+            ? trim((string)$filters['to_date'])
+            : (!empty($filters['den_ngay']) ? trim((string)$filters['den_ngay']) : $defaultTo);
+
+        if (strlen($fromDate) === 10) {
+            $fromDate .= ' 00:00:00';
+        }
+        if (strlen($toDate) === 10) {
+            $toDate .= ' 23:59:59';
+        }
+
+        return [$fromDate, $toDate];
+    }
+
+    /**
+     * Phân bổ một khoản tiền theo tỷ trọng có bù làm tròn (Largest Remainder Method)
+     * để tổng các phần tử luôn khớp tuyệt đối với $totalTarget đến từng đồng.
+     */
+    private function allocateAmountsProportionally(float $totalTarget, array $weights): array
+    {
+        $result = [];
+        $keys = array_keys($weights);
+        if (empty($keys)) {
+            return $result;
+        }
+
+        $targetInt = (int)round($totalTarget);
+        if ($targetInt === 0) {
+            foreach ($keys as $k) {
+                $result[$k] = 0.0;
+            }
+            return $result;
+        }
+
+        $sumWeight = 0.0;
+        foreach ($weights as $w) {
+            $sumWeight += max(0.0, (float)$w);
+        }
+
+        if ($sumWeight <= 0.0) {
+            $equalWeights = [];
+            foreach ($keys as $k) {
+                $equalWeights[$k] = 1.0;
+            }
+            return $this->allocateAmountsProportionally((float)$targetInt, $equalWeights);
+        }
+
+        $sign = $targetInt < 0 ? -1 : 1;
+        $absTarget = abs($targetInt);
+        $floors = [];
+        $remainders = [];
+        $assigned = 0;
+
+        foreach ($keys as $k) {
+            $exact = ($absTarget * max(0.0, (float)$weights[$k])) / $sumWeight;
+            $fl = (int)floor($exact);
+            $floors[$k] = $fl;
+            $remainders[$k] = $exact - $fl;
+            $assigned += $fl;
+        }
+
+        $diff = $absTarget - $assigned;
+        if ($diff > 0) {
+            arsort($remainders, SORT_NUMERIC);
+            foreach (array_keys($remainders) as $k) {
+                if ($diff <= 0) {
+                    break;
+                }
+                $floors[$k]++;
+                $diff--;
+            }
+        }
+
+        foreach ($keys as $k) {
+            $result[$k] = (float)($sign * $floors[$k]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Nguồn chuẩn duy nhất cho Doanh thu thực thu ròng trong kỳ:
+     * - Chỉ tính giao dịch có dòng tiền thật (HoanTat, HoanTienMotPhan, DaHoanTien).
+     * - Doanh thu ròng = Tiền đã thu trong kỳ - Tiền đã hoàn trong kỳ (giữ lại đúng phần phí hủy).
+     * - Phân bổ phần thực thu ròng của từng hóa đơn (sau KM, VAT và hoàn hủy) xuống Loại phòng & Dịch vụ
+     *   để TongDoanhThu === DoanhThuPhong + DoanhThuDichVu.
+     */
+    private function summarizeNetRevenue(string $fromDate, string $toDate): array
+    {
+        $statusPlaceholders = implode(',', array_fill(0, count(self::PAID_STATUSES), '?'));
+        $sqlTT = "SELECT MaThanhToan, MaHD, SoTien, COALESCE(SoTienHoan, 0) AS SoTienHoan,
+                         HinhThuc, ThoiGianThanhToan,
+                         COALESCE(ThoiGianHoan, ThoiGianThanhToan) AS NgayHoan
+                  FROM ThanhToan
+                  WHERE TrangThaiThanhToan IN ($statusPlaceholders)
+                    AND (
+                        (ThoiGianThanhToan >= ? AND ThoiGianThanhToan <= ?)
+                        OR (COALESCE(SoTienHoan, 0) > 0 AND COALESCE(ThoiGianHoan, ThoiGianThanhToan) >= ? AND COALESCE(ThoiGianHoan, ThoiGianThanhToan) <= ?)
+                    )";
+        $paramsTT = array_merge(self::PAID_STATUSES, [$fromDate, $toDate, $fromDate, $toDate]);
+        $stmtTT = $this->db->prepare($sqlTT);
+        $stmtTT->execute($paramsTT);
+        $txRows = $stmtTT->fetchAll(PDO::FETCH_ASSOC);
+
+        $tongTienThu = 0.0;
+        $tongTienHoan = 0.0;
+        $tongGiaoDich = 0;
+        $chuyenKhoan = 0.0;
+        $tienMat = 0.0;
+        $dailyMap = [];
+        $invoiceNetInPeriod = [];
+
+        foreach ($txRows as $tx) {
+            $maHD = (string)$tx['MaHD'];
+            $soTien = (float)($tx['SoTien'] ?? 0);
+            $soTienHoan = (float)($tx['SoTienHoan'] ?? 0);
+            $tgThu = (string)($tx['ThoiGianThanhToan'] ?? '');
+            $tgHoan = (string)($tx['NgayHoan'] ?? $tgThu);
+            $hinhThuc = (string)($tx['HinhThuc'] ?? '');
+
+            $thuInPeriod = ($tgThu >= $fromDate && $tgThu <= $toDate) ? $soTien : 0.0;
+            $hoanInPeriod = ($soTienHoan > 0 && $tgHoan >= $fromDate && $tgHoan <= $toDate) ? $soTienHoan : 0.0;
+
+            if ($thuInPeriod > 0) {
+                $tongTienThu += $thuInPeriod;
+                $tongGiaoDich++;
+                $dayThu = substr($tgThu, 0, 10);
+                if (!isset($dailyMap[$dayThu])) {
+                    $dailyMap[$dayThu] = ['Ngay' => $dayThu, 'SoGiaoDich' => 0, 'DoanhThu' => 0.0];
+                }
+                $dailyMap[$dayThu]['SoGiaoDich']++;
+                $dailyMap[$dayThu]['DoanhThu'] += $thuInPeriod;
+            }
+
+            if ($hoanInPeriod > 0) {
+                $tongTienHoan += $hoanInPeriod;
+                $dayHoan = substr($tgHoan, 0, 10);
+                if (!isset($dailyMap[$dayHoan])) {
+                    $dailyMap[$dayHoan] = ['Ngay' => $dayHoan, 'SoGiaoDich' => 0, 'DoanhThu' => 0.0];
+                }
+                $dailyMap[$dayHoan]['DoanhThu'] -= $hoanInPeriod;
+            }
+
+            $netTx = $thuInPeriod - $hoanInPeriod;
+            if ($hinhThuc === 'ChuyenKhoan') {
+                $chuyenKhoan += $netTx;
+            } elseif ($hinhThuc === 'TienMat') {
+                $tienMat += $netTx;
+            }
+
+            if ($thuInPeriod != 0.0 || $hoanInPeriod != 0.0) {
+                $invoiceNetInPeriod[$maHD] = ($invoiceNetInPeriod[$maHD] ?? 0.0) + $netTx;
+            }
+        }
+
+        ksort($dailyMap);
+        $timeline = [];
+        foreach ($dailyMap as $dayRow) {
+            $timeline[] = [
+                'Ngay' => $dayRow['Ngay'],
+                'SoGiaoDich' => $dayRow['SoGiaoDich'],
+                'DoanhThu' => number_format(round($dayRow['DoanhThu']), 2, '.', ''),
+            ];
+        }
+
+        $tongDoanhThu = round($tongTienThu - $tongTienHoan);
+        $doanhThuPhong = 0.0;
+        $doanhThuDichVu = 0.0;
+        $byRoomType = [];
+        $byServiceGroup = [];
+        $byServiceItem = [];
+
+        if (!empty($invoiceNetInPeriod)) {
+            $hdIds = array_keys($invoiceNetInPeriod);
+            $hdPh = implode(',', array_fill(0, count($hdIds), '?'));
+
+            // Tổng đã thu mọi thời điểm trên từng hóa đơn để tách chính xác tỷ trọng Phòng / Dịch vụ
+            $stmtAllPaid = $this->db->prepare("
+                SELECT MaHD, COALESCE(SUM(SoTien), 0) AS TongThuHoaDon
+                FROM ThanhToan
+                WHERE MaHD IN ($hdPh)
+                  AND TrangThaiThanhToan IN ($statusPlaceholders)
+                GROUP BY MaHD
+            ");
+            $stmtAllPaid->execute(array_merge($hdIds, self::PAID_STATUSES));
+            $allPaidMap = $stmtAllPaid->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+
+            $stmtItems = $this->db->prepare("
+                SELECT cthd.MaHD, cthd.MaPhong, cthd.MaCTDV, cthd.SoDem, cthd.SoLuong, cthd.DonGia,
+                       p.MaLoaiPhong, ctp.TrangThai AS TrangThaiPhongPhieu, COALESCE(ctp.SoTienHoan, 0) AS PhongSoTienHoan,
+                       ctdv.TenCTDV, dv.MaDV, dv.TenDV,
+                       km.LoaiKM, km.GiaTriGiam
+                FROM CTHD cthd
+                JOIN HoaDon hd ON cthd.MaHD = hd.MaHD
+                JOIN PhieuNhanPhong pnp ON hd.MaPhieu = pnp.MaPhieu
+                LEFT JOIN KhuyenMai km ON pnp.MaKM = km.MaKM
+                LEFT JOIN Phong p ON cthd.MaPhong = p.MaPhong
+                LEFT JOIN ChiTietPhieuNhanPhong ctp ON hd.MaPhieu = ctp.MaPhieu AND cthd.MaPhong = ctp.MaPhong
+                LEFT JOIN ChiTietDichVu ctdv ON cthd.MaCTDV = ctdv.MaCTDV
+                LEFT JOIN DichVu dv ON ctdv.MaDV = dv.MaDV
+                WHERE cthd.MaHD IN ($hdPh)
+                ORDER BY cthd.MaCTHD ASC
+            ");
+            $stmtItems->execute($hdIds);
+            $allItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+            $itemsByHd = [];
+            foreach ($allItems as $it) {
+                $itemsByHd[$it['MaHD']][] = $it;
+            }
+
+            foreach ($invoiceNetInPeriod as $maHD => $netHD) {
+                $lines = $itemsByHd[$maHD] ?? [];
+                if (empty($lines) || round($netHD) == 0.0) {
+                    continue;
+                }
+
+                $roomLines = [];
+                $svcLines = [];
+                $roomGross = 0.0;
+                $svcGross = 0.0;
+                $loaiKM = $lines[0]['LoaiKM'] ?? '';
+                $giaTriGiam = (float)($lines[0]['GiaTriGiam'] ?? 0);
+
+                foreach ($lines as $idx => $ln) {
+                    if (!empty($ln['MaPhong']) && empty($ln['MaCTDV'])) {
+                        $gross = (float)$ln['SoDem'] * (float)$ln['DonGia'];
+                        $roomGross += $gross;
+                        $roomLines[$idx] = $ln + ['gross' => $gross];
+                    } elseif (!empty($ln['MaCTDV'])) {
+                        $gross = (float)$ln['SoLuong'] * (float)$ln['DonGia'];
+                        $svcGross += $gross;
+                        $svcLines[$idx] = $ln + ['gross' => $gross];
+                    }
+                }
+
+                $tienGiamKM = 0.0;
+                if ($roomGross > 0 && $giaTriGiam > 0) {
+                    $tienGiamKM = ($loaiKM === 'PhanTram')
+                        ? ($roomGross * ($giaTriGiam / 100.0))
+                        : min($roomGross, $giaTriGiam);
+                }
+                $roomAfterVat = round(max(0.0, $roomGross - $tienGiamKM) * 1.08);
+                $totalPaidAllTime = (float)($allPaidMap[$maHD] ?? $netHD);
+
+                if (empty($svcLines)) {
+                    $roomNet = (float)round($netHD);
+                    $svcNet = 0.0;
+                } elseif (empty($roomLines)) {
+                    $roomNet = 0.0;
+                    $svcNet = (float)round($netHD);
+                } else {
+                    $svcTarget = ($totalPaidAllTime > $roomAfterVat)
+                        ? ($totalPaidAllTime - $roomAfterVat)
+                        : round($svcGross * 1.08);
+                    $split = $this->allocateAmountsProportionally($netHD, [
+                        'room' => $roomAfterVat,
+                        'service' => max($svcGross, $svcTarget),
+                    ]);
+                    $roomNet = $split['room'];
+                    $svcNet = $split['service'];
+                }
+
+                $doanhThuPhong += $roomNet;
+                $doanhThuDichVu += $svcNet;
+
+                if (!empty($roomLines)) {
+                    $roomWeights = [];
+                    foreach ($roomLines as $idx => $rl) {
+                        $nominalShare = ($roomGross > 0) ? (($rl['gross'] / $roomGross) * $roomAfterVat) : 0.0;
+                        $cancelledDeduct = (($rl['TrangThaiPhongPhieu'] ?? '') === 'DaHuy')
+                            ? (float)$rl['PhongSoTienHoan']
+                            : 0.0;
+                        $roomWeights[$idx] = max(0.0, $nominalShare - $cancelledDeduct);
+                    }
+                    if (array_sum($roomWeights) <= 0.0) {
+                        foreach ($roomLines as $idx => $rl) {
+                            $roomWeights[$idx] = $rl['gross'];
+                        }
+                    }
+
+                    $allocatedRooms = $this->allocateAmountsProportionally($roomNet, $roomWeights);
+                    foreach ($roomLines as $idx => $rl) {
+                        $maLP = (string)$rl['MaLoaiPhong'];
+                        if (!isset($byRoomType[$maLP])) {
+                            $byRoomType[$maLP] = ['so_dem' => 0, 'doanh_thu' => 0.0];
+                        }
+                        $byRoomType[$maLP]['doanh_thu'] += $allocatedRooms[$idx] ?? 0.0;
+                        if (($allocatedRooms[$idx] ?? 0.0) > 0 && ($rl['TrangThaiPhongPhieu'] ?? '') !== 'DaHuy') {
+                            $byRoomType[$maLP]['so_dem'] += (int)$rl['SoDem'];
+                        }
+                    }
+                }
+
+                if (!empty($svcLines)) {
+                    $svcWeights = [];
+                    foreach ($svcLines as $idx => $sl) {
+                        $svcWeights[$idx] = $sl['gross'];
+                    }
+                    $allocatedSvcs = $this->allocateAmountsProportionally($svcNet, $svcWeights);
+                    foreach ($svcLines as $idx => $sl) {
+                        $maDV = (string)$sl['MaDV'];
+                        $maCTDV = (string)$sl['MaCTDV'];
+                        $amt = $allocatedSvcs[$idx] ?? 0.0;
+                        $qty = (int)$sl['SoLuong'];
+
+                        if (!isset($byServiceGroup[$maDV])) {
+                            $byServiceGroup[$maDV] = ['so_luot' => 0, 'tong_so_luong' => 0, 'doanh_thu' => 0.0];
+                        }
+                        $byServiceGroup[$maDV]['doanh_thu'] += $amt;
+                        if ($amt > 0) {
+                            $byServiceGroup[$maDV]['so_luot']++;
+                            $byServiceGroup[$maDV]['tong_so_luong'] += $qty;
+                        }
+
+                        if (!isset($byServiceItem[$maCTDV])) {
+                            $byServiceItem[$maCTDV] = [
+                                'ma_ctdv' => $maCTDV,
+                                'ten_ctdv' => (string)$sl['TenCTDV'],
+                                'ma_dv' => $maDV,
+                                'ten_dv' => (string)$sl['TenDV'],
+                                'so_luot' => 0,
+                                'tong_so_luong' => 0,
+                                'doanh_thu' => 0.0,
+                            ];
+                        }
+                        $byServiceItem[$maCTDV]['doanh_thu'] += $amt;
+                        if ($amt > 0) {
+                            $byServiceItem[$maCTDV]['so_luot']++;
+                            $byServiceItem[$maCTDV]['tong_so_luong'] += $qty;
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
+            'tong_doanh_thu' => $tongDoanhThu,
+            'tong_tien_thu' => round($tongTienThu),
+            'tong_tien_hoan' => round($tongTienHoan),
+            'tong_giao_dich' => $tongGiaoDich,
+            'doanh_thu_chuyen_khoan' => round($chuyenKhoan),
+            'doanh_thu_tien_mat' => round($tienMat),
+            'doanh_thu_phong' => round($doanhThuPhong),
+            'doanh_thu_dich_vu' => round($doanhThuDichVu),
+            'timeline' => $timeline,
+            'by_room_type' => $byRoomType,
+            'by_service_group' => $byServiceGroup,
+            'by_service_item' => $byServiceItem,
+        ];
+    }
+
     /**
      * Thống kê doanh thu chi tiết theo khoảng thời gian và phân loại nguồn thu.
      */
     public function thongKeDoanhThu(array $filters = []): array
     {
-        $fromDate = $filters['from_date'] ?? date('Y-01-01');
-        $toDate = $filters['to_date'] ?? date('Y-12-31 23:59:59');
+        [$fromDate, $toDate] = $this->normalizeDateRange($filters, date('Y-01-01 00:00:00'), date('Y-12-31 23:59:59'));
+        $net = $this->summarizeNetRevenue($fromDate, $toDate);
 
-        // 1. Tổng tiền thu từ các giao dịch thanh toán thành công
-        $sqlTongThu = "SELECT 
-                        COUNT(*) AS TongGiaoDich,
-                        COALESCE(SUM(SoTien), 0) AS TongDoanhThuThucTe,
-                        COALESCE(SUM(CASE WHEN HinhThuc = 'ChuyenKhoan' THEN SoTien ELSE 0 END), 0) AS DoanhThuChuyenKhoan,
-                        COALESCE(SUM(CASE WHEN HinhThuc = 'TienMat' THEN SoTien ELSE 0 END), 0) AS DoanhThuTienMat
-                       FROM ThanhToan
-                       WHERE TrangThaiThanhToan = 'HoanTat'
-                         AND ThoiGianThanhToan >= :fromDate
-                         AND ThoiGianThanhToan <= :toDate";
-        $stmt = $this->db->prepare($sqlTongThu);
-        $stmt->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $tongQuanDoanhThu = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-
-        // 2. Cơ cấu doanh thu: Tiền Phòng vs Tiền Dịch Vụ từ bảng CTHD (Dùng EXISTS để tránh nhân đôi CTHD khi Hóa Đơn có nhiều lần thanh toán)
-        $sqlCoCau = "SELECT 
-                        COALESCE(SUM(CASE WHEN cthd.MaPhong IS NOT NULL AND cthd.MaCTDV IS NULL THEN (cthd.SoDem * cthd.DonGia) ELSE 0 END), 0) AS DoanhThuPhong,
-                        COALESCE(SUM(CASE WHEN cthd.MaCTDV IS NOT NULL THEN (cthd.SoLuong * cthd.DonGia) ELSE 0 END), 0) AS DoanhThuDichVu
-                     FROM CTHD cthd
-                     JOIN HoaDon hd ON cthd.MaHD = hd.MaHD
-                     WHERE EXISTS (
-                         SELECT 1 FROM ThanhToan tt 
-                         WHERE tt.MaHD = hd.MaHD 
-                           AND tt.TrangThaiThanhToan = 'HoanTat'
-                           AND tt.ThoiGianThanhToan >= :fromDate
-                           AND tt.ThoiGianThanhToan <= :toDate
-                     )";
-        $stmtCoCau = $this->db->prepare($sqlCoCau);
-        $stmtCoCau->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $coCau = $stmtCoCau->fetch(PDO::FETCH_ASSOC) ?: ['DoanhThuPhong' => 0, 'DoanhThuDichVu' => 0];
-
-        // 3. Chuỗi dữ liệu doanh thu theo ngày / tháng để vẽ biểu đồ
-        $sqlTimeline = "SELECT 
-                            DATE(ThoiGianThanhToan) AS Ngay,
-                            COUNT(*) AS SoGiaoDich,
-                            COALESCE(SUM(SoTien), 0) AS DoanhThu
-                        FROM ThanhToan
-                        WHERE TrangThaiThanhToan = 'HoanTat'
-                          AND ThoiGianThanhToan >= :fromDate
-                          AND ThoiGianThanhToan <= :toDate
-                        GROUP BY DATE(ThoiGianThanhToan)
-                        ORDER BY Ngay ASC";
-        $stmtTimeline = $this->db->prepare($sqlTimeline);
-        $stmtTimeline->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $timeline = $stmtTimeline->fetchAll(PDO::FETCH_ASSOC);
-
-        // 4. Danh sách hóa đơn và thanh toán gần nhất
+        // Danh sách giao dịch gần nhất
         $sqlGiaoDich = "SELECT 
-                            tt.MaThanhToan, tt.MaHD, tt.SoTien, tt.HinhThuc, 
-                            tt.ThoiGianThanhToan, tt.TrangThaiThanhToan,
+                            tt.MaThanhToan, tt.MaHD, tt.SoTien, COALESCE(tt.SoTienHoan, 0) AS SoTienHoan,
+                            tt.HinhThuc, tt.ThoiGianThanhToan, tt.TrangThaiThanhToan,
                             kh.HoTen AS TenKhachHang, kh.SDT
                         FROM ThanhToan tt
                         JOIN HoaDon hd ON tt.MaHD = hd.MaHD
@@ -97,87 +414,59 @@ class AdminThongKeRepository
                 'to_date' => $toDate,
             ],
             'tong_quan' => [
-                'tong_doanh_thu' => (float)($tongQuanDoanhThu['TongDoanhThuThucTe'] ?? 0),
-                'tong_giao_dich' => (int)($tongQuanDoanhThu['TongGiaoDich'] ?? 0),
-                'tong_tien_hoan' => 0.0,
-                'doanh_thu_chuyen_khoan' => (float)($tongQuanDoanhThu['DoanhThuChuyenKhoan'] ?? 0),
-                'doanh_thu_tien_mat' => (float)($tongQuanDoanhThu['DoanhThuTienMat'] ?? 0),
-                'doanh_thu_phong' => (float)($coCau['DoanhThuPhong'] ?? 0),
-                'doanh_thu_dich_vu' => (float)($coCau['DoanhThuDichVu'] ?? 0),
+                'tong_doanh_thu' => $net['tong_doanh_thu'],
+                'tong_tien_thu' => $net['tong_tien_thu'],
+                'tong_giao_dich' => $net['tong_giao_dich'],
+                'tong_tien_hoan' => $net['tong_tien_hoan'],
+                'doanh_thu_chuyen_khoan' => $net['doanh_thu_chuyen_khoan'],
+                'doanh_thu_tien_mat' => $net['doanh_thu_tien_mat'],
+                'doanh_thu_phong' => $net['doanh_thu_phong'],
+                'doanh_thu_dich_vu' => $net['doanh_thu_dich_vu'],
             ],
-            'bieu_do_doanh_thu' => $timeline,
+            'bieu_do_doanh_thu' => $net['timeline'],
             'giao_dich_gan_nhat' => $dsGiaoDich,
         ];
     }
 
     /**
      * Thống kê doanh thu theo từng Loại Phòng (Tab 1: Thống Kê Doanh Thu Loại Phòng).
-     * Trả về tổng doanh thu phòng, tổng số đêm sử dụng và bảng chi tiết theo từng loại phòng.
-     * Quy tắc:
-     * - Chỉ ghi nhận doanh thu từ các hóa đơn đã thanh toán thành công (ThanhToan.TrangThaiThanhToan = 'HoanTat').
-     * - Dùng điều kiện EXISTS để loại trừ triệt để nguy cơ tính trùng khi một hóa đơn có nhiều giao dịch thanh toán.
-     * - Doanh thu = SUM(CTHD.SoDem * CTHD.DonGia) theo giá thực tế ghi trên hóa đơn.
+     * Doanh thu phản ánh số tiền thực thu ròng (sau KM, VAT và trừ hoàn tiền hủy phòng).
      */
     public function thongKeDoanhThuLoaiPhong(array $filters = []): array
     {
-        $fromDate = !empty($filters['from_date']) ? $filters['from_date'] : (!empty($filters['tu_ngay']) ? $filters['tu_ngay'] : date('Y-01-01'));
-        $toDate = !empty($filters['to_date']) ? $filters['to_date'] : (!empty($filters['den_ngay']) ? $filters['den_ngay'] : date('Y-12-31'));
+        [$fromDate, $toDate] = $this->normalizeDateRange($filters, date('Y-01-01'), date('Y-12-31'));
+        $net = $this->summarizeNetRevenue($fromDate, $toDate);
+        $byRoomType = $net['by_room_type'];
 
-        if (strlen($fromDate) === 10) $fromDate .= ' 00:00:00';
-        if (strlen($toDate) === 10) $toDate .= ' 23:59:59';
+        $stmtLP = $this->db->query("SELECT MaLoaiPhong, TenLoaiPhong, Gia AS GiaNiemYet FROM LoaiPhong");
+        $roomTypes = $stmtLP->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql = "
-            SELECT 
-                lp.MaLoaiPhong,
-                lp.TenLoaiPhong,
-                lp.Gia AS GiaNiemYet,
-                COALESCE(SUM(cthd.SoDem), 0) AS SoDemSuDung,
-                COALESCE(SUM(cthd.SoDem * cthd.DonGia), 0) AS DoanhThu
-            FROM LoaiPhong lp
-            LEFT JOIN Phong p ON lp.MaLoaiPhong = p.MaLoaiPhong
-            LEFT JOIN (
-                SELECT cthd.MaPhong, cthd.SoDem, cthd.DonGia
-                FROM CTHD cthd
-                JOIN HoaDon hd ON cthd.MaHD = hd.MaHD
-                WHERE cthd.MaPhong IS NOT NULL 
-                  AND cthd.MaCTDV IS NULL
-                  AND EXISTS (
-                      SELECT 1 FROM ThanhToan tt 
-                      WHERE tt.MaHD = hd.MaHD 
-                        AND tt.TrangThaiThanhToan = 'HoanTat'
-                        AND tt.ThoiGianThanhToan >= :fromDate
-                        AND tt.ThoiGianThanhToan <= :toDate
-                  )
-            ) cthd ON p.MaPhong = cthd.MaPhong
-            GROUP BY lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia
-            ORDER BY DoanhThu DESC, SoDemSuDung DESC
-        ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $tongDoanhThuPhong = 0.0;
+        $tongDoanhThuPhong = $net['doanh_thu_phong'];
         $tongSoDem = 0;
-
-        foreach ($rows as $r) {
-            $tongDoanhThuPhong += (float)$r['DoanhThu'];
-            $tongSoDem += (int)$r['SoDemSuDung'];
-        }
-
         $danhSach = [];
-        foreach ($rows as $r) {
-            $doanhThu = (float)$r['DoanhThu'];
+
+        foreach ($roomTypes as $lp) {
+            $maLP = (string)$lp['MaLoaiPhong'];
+            $stat = $byRoomType[$maLP] ?? ['so_dem' => 0, 'doanh_thu' => 0.0];
+            $doanhThu = (float)$stat['doanh_thu'];
+            $soDem = (int)$stat['so_dem'];
+            $tongSoDem += $soDem;
             $tyTrong = ($tongDoanhThuPhong > 0) ? round(($doanhThu / $tongDoanhThuPhong) * 100, 2) : 0.0;
+
             $danhSach[] = [
-                'ma_loai_phong' => $r['MaLoaiPhong'],
-                'ten_loai_phong' => $r['TenLoaiPhong'],
-                'gia_niem_yet' => (float)$r['GiaNiemYet'],
-                'so_dem_su_dung' => (int)$r['SoDemSuDung'],
+                'ma_loai_phong' => $maLP,
+                'ten_loai_phong' => $lp['TenLoaiPhong'],
+                'gia_niem_yet' => (float)$lp['GiaNiemYet'],
+                'so_dem_su_dung' => $soDem,
                 'doanh_thu' => $doanhThu,
-                'ty_trong' => $tyTrong
+                'ty_trong' => $tyTrong,
             ];
         }
+
+        usort($danhSach, static function (array $a, array $b): int {
+            $cmp = $b['doanh_thu'] <=> $a['doanh_thu'];
+            return $cmp !== 0 ? $cmp : ($b['so_dem_su_dung'] <=> $a['so_dem_su_dung']);
+        });
 
         return [
             'ky_thong_ke' => [
@@ -186,124 +475,73 @@ class AdminThongKeRepository
             ],
             'tong_doanh_thu_phong' => $tongDoanhThuPhong,
             'tong_so_dem' => $tongSoDem,
-            'danh_sach' => $danhSach
+            'danh_sach' => $danhSach,
         ];
     }
 
     /**
      * Thống kê doanh thu theo từng Dịch Vụ (Tab 2: Thống Kê Doanh Thu Dịch Vụ).
-     * Trả về tổng doanh thu dịch vụ, tổng lượt sử dụng, tổng số lượng và bảng chi tiết theo loại dịch vụ.
-     * Quy tắc:
-     * - Chỉ ghi nhận doanh thu từ các khoản dịch vụ của hóa đơn đã thanh toán thành công (ThanhToan.TrangThaiThanhToan = 'HoanTat').
-     * - Dùng EXISTS chống tính trùng lặp thanh toán nhiều lần.
-     * - Phân định rõ: Số lượt sử dụng (số lần gọi dịch vụ) vs Số lượng cung cấp (tổng đơn vị món ăn/xe/quần áo).
-     * - Doanh thu = SUM(CTHD.SoLuong * CTHD.DonGia).
+     * Doanh thu phản ánh số tiền dịch vụ thực thu ròng từ các giao dịch thành công (đã trừ hoàn nếu có).
      */
     public function thongKeDoanhThuDichVu(array $filters = []): array
     {
-        $fromDate = !empty($filters['from_date']) ? $filters['from_date'] : (!empty($filters['tu_ngay']) ? $filters['tu_ngay'] : date('Y-01-01'));
-        $toDate = !empty($filters['to_date']) ? $filters['to_date'] : (!empty($filters['den_ngay']) ? $filters['den_ngay'] : date('Y-12-31'));
+        [$fromDate, $toDate] = $this->normalizeDateRange($filters, date('Y-01-01'), date('Y-12-31'));
+        $net = $this->summarizeNetRevenue($fromDate, $toDate);
+        $byGroup = $net['by_service_group'];
+        $byItem = $net['by_service_item'];
 
-        if (strlen($fromDate) === 10) $fromDate .= ' 00:00:00';
-        if (strlen($toDate) === 10) $toDate .= ' 23:59:59';
+        $stmtDV = $this->db->query("SELECT MaDV, TenDV FROM DichVu");
+        $services = $stmtDV->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql = "
-            SELECT 
-                dv.MaDV,
-                dv.TenDV,
-                COALESCE(COUNT(cthd.MaCTHD), 0) AS SoLuotSuDung,
-                COALESCE(SUM(cthd.SoLuong), 0) AS TongSoLuong,
-                COALESCE(SUM(cthd.SoLuong * cthd.DonGia), 0) AS DoanhThu
-            FROM DichVu dv
-            LEFT JOIN ChiTietDichVu ctdv ON dv.MaDV = ctdv.MaDV
-            LEFT JOIN (
-                SELECT cthd.MaCTHD, cthd.MaCTDV, cthd.SoLuong, cthd.DonGia
-                FROM CTHD cthd
-                JOIN HoaDon hd ON cthd.MaHD = hd.MaHD
-                WHERE cthd.MaCTDV IS NOT NULL
-                  AND EXISTS (
-                      SELECT 1 FROM ThanhToan tt 
-                      WHERE tt.MaHD = hd.MaHD 
-                        AND tt.TrangThaiThanhToan = 'HoanTat'
-                        AND tt.ThoiGianThanhToan >= :fromDate
-                        AND tt.ThoiGianThanhToan <= :toDate
-                  )
-            ) cthd ON ctdv.MaCTDV = cthd.MaCTDV
-            GROUP BY dv.MaDV, dv.TenDV
-            ORDER BY DoanhThu DESC, SoLuotSuDung DESC
-        ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $tongDoanhThuDichVu = 0.0;
+        $tongDoanhThuDichVu = $net['doanh_thu_dich_vu'];
         $tongSoLuot = 0;
         $tongSoLuong = 0;
-
-        foreach ($rows as $r) {
-            $tongDoanhThuDichVu += (float)$r['DoanhThu'];
-            $tongSoLuot += (int)$r['SoLuotSuDung'];
-            $tongSoLuong += (int)$r['TongSoLuong'];
-        }
-
         $danhSach = [];
-        foreach ($rows as $r) {
-            $doanhThu = (float)$r['DoanhThu'];
+
+        foreach ($services as $dv) {
+            $maDV = (string)$dv['MaDV'];
+            $stat = $byGroup[$maDV] ?? ['so_luot' => 0, 'tong_so_luong' => 0, 'doanh_thu' => 0.0];
+            $doanhThu = (float)$stat['doanh_thu'];
+            $soLuot = (int)$stat['so_luot'];
+            $soLuong = (int)$stat['tong_so_luong'];
+            $tongSoLuot += $soLuot;
+            $tongSoLuong += $soLuong;
             $tyTrong = ($tongDoanhThuDichVu > 0) ? round(($doanhThu / $tongDoanhThuDichVu) * 100, 2) : 0.0;
+
             $danhSach[] = [
-                'ma_dv' => $r['MaDV'],
-                'ten_dv' => $r['TenDV'],
-                'so_luot_su_dung' => (int)$r['SoLuotSuDung'],
-                'tong_so_luong' => (int)$r['TongSoLuong'],
+                'ma_dv' => $maDV,
+                'ten_dv' => $dv['TenDV'],
+                'so_luot_su_dung' => $soLuot,
+                'tong_so_luong' => $soLuong,
                 'doanh_thu' => $doanhThu,
-                'ty_trong' => $tyTrong
+                'ty_trong' => $tyTrong,
             ];
         }
 
-        // Lấy thêm chi tiết từng món / gói con (item-level breakdown)
-        $sqlItems = "
-            SELECT 
-                ctdv.MaCTDV,
-                ctdv.TenCTDV,
-                dv.MaDV,
-                dv.TenDV,
-                COUNT(cthd.MaCTHD) AS SoLuotSuDung,
-                COALESCE(SUM(cthd.SoLuong), 0) AS TongSoLuong,
-                COALESCE(SUM(cthd.SoLuong * cthd.DonGia), 0) AS DoanhThu
-            FROM ChiTietDichVu ctdv
-            JOIN DichVu dv ON ctdv.MaDV = dv.MaDV
-            JOIN CTHD cthd ON ctdv.MaCTDV = cthd.MaCTDV
-            JOIN HoaDon hd ON cthd.MaHD = hd.MaHD
-            WHERE EXISTS (
-                SELECT 1 FROM ThanhToan tt 
-                WHERE tt.MaHD = hd.MaHD 
-                  AND tt.TrangThaiThanhToan = 'HoanTat'
-                  AND tt.ThoiGianThanhToan >= :fromDate
-                  AND tt.ThoiGianThanhToan <= :toDate
-            )
-            GROUP BY ctdv.MaCTDV, ctdv.TenCTDV, dv.MaDV, dv.TenDV
-            ORDER BY DoanhThu DESC
-        ";
-        $stmtItems = $this->db->prepare($sqlItems);
-        $stmtItems->execute([':fromDate' => $fromDate, ':toDate' => $toDate]);
-        $rawItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+        usort($danhSach, static function (array $a, array $b): int {
+            $cmp = $b['doanh_thu'] <=> $a['doanh_thu'];
+            return $cmp !== 0 ? $cmp : ($b['so_luot_su_dung'] <=> $a['so_luot_su_dung']);
+        });
 
         $chiTietCacMon = [];
-        foreach ($rawItems as $it) {
-            $doanhThuIt = (float)$it['DoanhThu'];
+        foreach ($byItem as $it) {
+            $doanhThuIt = (float)$it['doanh_thu'];
             $tyTrongIt = ($tongDoanhThuDichVu > 0) ? round(($doanhThuIt / $tongDoanhThuDichVu) * 100, 2) : 0.0;
             $chiTietCacMon[] = [
-                'ma_ctdv' => $it['MaCTDV'],
-                'ten_ctdv' => $it['TenCTDV'],
-                'ma_dv' => $it['MaDV'],
-                'ten_dv' => $it['TenDV'],
-                'so_luot_su_dung' => (int)$it['SoLuotSuDung'],
-                'tong_so_luong' => (int)$it['TongSoLuong'],
+                'ma_ctdv' => $it['ma_ctdv'],
+                'ten_ctdv' => $it['ten_ctdv'],
+                'ma_dv' => $it['ma_dv'],
+                'ten_dv' => $it['ten_dv'],
+                'so_luot_su_dung' => (int)$it['so_luot'],
+                'tong_so_luong' => (int)$it['tong_so_luong'],
                 'doanh_thu' => $doanhThuIt,
-                'ty_trong' => $tyTrongIt
+                'ty_trong' => $tyTrongIt,
             ];
         }
+
+        usort($chiTietCacMon, static function (array $a, array $b): int {
+            return $b['doanh_thu'] <=> $a['doanh_thu'];
+        });
 
         return [
             'ky_thong_ke' => [
@@ -314,7 +552,7 @@ class AdminThongKeRepository
             'tong_so_luot' => $tongSoLuot,
             'tong_so_luong' => $tongSoLuong,
             'danh_sach' => $danhSach,
-            'chi_tiet_mon' => $chiTietCacMon
+            'chi_tiet_mon' => $chiTietCacMon,
         ];
     }
 
@@ -342,10 +580,11 @@ class AdminThongKeRepository
         $daysInPeriod = (int)((strtotime($toDateClean) - strtotime($fromDateClean)) / 86400) + 1;
         $dEndPlus1 = date('Y-m-d', strtotime($toDateClean . ' +1 day'));
 
-        // 1. Lấy danh sách loại phòng và tổng số phòng của từng loại
+        // 1. Lấy danh sách loại phòng và số phòng có thể bán (loại phòng BaoTri và loại phòng NgungKinhDoanh theo đặc tả UC21.2)
         $sqlLP = "
             SELECT lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia, lp.TinhTrang,
-                   COUNT(p.MaPhong) as TongSoPhong
+                   COUNT(CASE WHEN lp.TinhTrang <> 'NgungKinhDoanh' AND p.TrangThaiPhong <> 'BaoTri' THEN p.MaPhong END) as TongSoPhong,
+                   COUNT(p.MaPhong) as TongSoPhongVatLy
             FROM LoaiPhong lp
             LEFT JOIN Phong p ON lp.MaLoaiPhong = p.MaLoaiPhong
             GROUP BY lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia, lp.TinhTrang
@@ -898,7 +1137,7 @@ class AdminThongKeRepository
      */
     public function thongKeDichVu(): array
     {
-        // 1. Top dịch vụ sử dụng nhiều nhất từ bảng CTHD
+        // 1. Top dịch vụ sử dụng nhiều nhất từ các hóa đơn đã thanh toán thành công
         $sqlTopDichVu = "SELECT 
                             ctdv.MaCTDV,
                             ctdv.TenCTDV,
@@ -909,6 +1148,11 @@ class AdminThongKeRepository
                          FROM CTHD cthd
                          JOIN ChiTietDichVu ctdv ON cthd.MaCTDV = ctdv.MaCTDV
                          JOIN DichVu dv ON ctdv.MaDV = dv.MaDV
+                         WHERE EXISTS (
+                             SELECT 1 FROM ThanhToan tt
+                             WHERE tt.MaHD = cthd.MaHD
+                               AND tt.TrangThaiThanhToan IN ('HoanTat', 'HoanTienMotPhan', 'DaHoanTien')
+                         )
                          GROUP BY ctdv.MaCTDV, ctdv.TenCTDV, dv.TenDV
                          ORDER BY TongDoanhThuDichVu DESC";
         $stmtTop = $this->db->query($sqlTopDichVu);

@@ -1,0 +1,1745 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light only" />
+  <title>SkyHotel - Quản Trị Hệ Thống</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+  <script src="../js/theme.js?v=24"></script>
+  <link rel="stylesheet" href="../css/admin-common.css?v=24">
+  <link rel="stylesheet" href="../css/theme.css?v=24">
+  <link rel="stylesheet" href="../css/dashboard-quan-ly.css?v=27">
+</head>
+<body data-page="mgr">
+<div class="app">
+  <!-- Thanh bên trái: đúng 6 phím chức năng từ trang Admin cũ -->
+  <aside class="side">
+    <div class="logo"><span class="logo-mark-box"><img src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"></span><span>SKY HOTEL</span></div>
+    <a href="#people" class="on" data-adm-tab="people" onclick="switchMainTab('people'); return false;">👥 Quản lý người dùng</a>
+    <a href="#bookings" data-adm-tab="bookings" onclick="switchMainTab('bookings'); return false;">📑 Đặt phòng &amp; Hóa đơn</a>
+    <a href="#services" data-adm-tab="services" onclick="switchMainTab('services'); return false;">🛎️ Quản lý dịch vụ</a>
+    <a href="#promotions" data-adm-tab="promotions" onclick="switchMainTab('promotions'); return false;">🎁 Quản lý khuyến mãi</a>
+    <a href="#rooms" data-adm-tab="rooms" onclick="switchMainTab('rooms'); return false;">🏨 Quản lý phòng</a>
+    <a href="#stats" data-adm-tab="stats" onclick="switchMainTab('stats'); return false;">📊 Thống kê</a>
+  </aside>
+
+  <main class="main">
+    <!-- Top Bar giống y trang Admin cũ (legacy/admin.html), chỉnh tông màu SkyHotel -->
+    <header class="top-nav" style="display: none;" aria-hidden="true">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: var(--adm-navy, #16283a); letter-spacing: 0.3px;">Trang Quản Trị Hệ Thống</h1>
+      </div>
+
+      <div class="user-panel">
+        <div class="user-info">
+          <span class="user-name" id="adminHeaderName">Đặng Lương Thế Anh (AD001)</span>
+          <span class="user-role" id="adminHeaderRole">Quản Trị Viên Duy Nhất • TK: theanh</span>
+        </div>
+        <a href="#" onclick="goReceptionDesk(); return false;" class="btn-link" style="color: var(--adm-gold-text); border-color: var(--adm-gold);">
+          🛎️ Quầy Lễ Tân
+        </a>
+      </div>
+    </header>
+
+    <!-- Thanh 6 tab ngang ẩn đi vì đã chuyển dọc sang lề bên trái (giữ lại ID cho switchMainTab) -->
+    <nav class="tabs-header" hidden style="display: none;">
+      <button class="tab-btn active" id="tabBtnPeople" onclick="switchMainTab('people')">👥 Quản Lý Người Dùng</button>
+      <button class="tab-btn" id="tabBtnBookings" onclick="switchMainTab('bookings')">📑 Đặt Phòng &amp; Hóa Đơn</button>
+      <button class="tab-btn" id="tabBtnServices" onclick="switchMainTab('services')">🛎️ Quản Lý Dịch Vụ</button>
+      <button class="tab-btn" id="tabBtnPromotions" onclick="switchMainTab('promotions')">🎁 Quản Lý Khuyến Mãi</button>
+      <button class="tab-btn" id="tabBtnRooms" onclick="switchMainTab('rooms')">🏨 Quản Lý Phòng</button>
+      <button class="tab-btn" id="tabBtnStats" onclick="switchMainTab('stats')">📊 Thống Kê</button>
+    </nav>
+
+    <!-- =====================================================================
+         TAB 1: QUẢN LÝ NGƯỜI DÙNG (Khách hàng & Lễ tân)
+         ===================================================================== -->
+    <section id="tab-people" class="tab-content active">
+        <!-- Sub-tabs switcher -->
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" id="subTabBtnCustomers" onclick="switchSubPeople('customers')">
+                👤 Quản Lý Khách Hàng (<span id="countCustomers">...</span>)
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnReceptionists" onclick="switchSubPeople('receptionists')">
+                🛎️ Quản Lý Lễ Tân (<span id="countReceptionists">...</span>)
+            </button>
+        </div>
+
+        <!-- 1.1 Quản Lý Khách Hàng -->
+        <div id="sub-people-customers" class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Khách Hàng Hệ Thống</h3>
+                    <p class="card-subtitle">Thông tin khách hàng lưu trú, đặt phòng trực tuyến hoặc tại quầy</p>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" id="searchCustomerInput" class="search-input" placeholder="Tìm theo Mã KH, Họ tên, SĐT, Email..." oninput="handleCustomerSearch()">
+                    <button class="btn-refresh" onclick="loadCustomersData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã KH</th>
+                            <th>Họ và Tên</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Tên Đăng Nhập</th>
+                            <th>Địa Chỉ Email</th>
+                            <th>Trạng Thái Tài Khoản</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        <tr><td colspan="6" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 1.2 Quản Lý Lễ Tân -->
+        <div id="sub-people-receptionists" class="card" style="display: none;">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Lễ Tân Khách Sạn</h3>
+                    <p class="card-subtitle">Quản lý nhân viên lễ tân vận hành quầy tiếp tân và xử lý phòng</p>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" id="searchReceptionistInput" class="search-input" placeholder="Tìm theo Mã LT, Họ tên, SĐT, Tên đăng nhập..." oninput="handleReceptionistSearch()">
+                    <button class="btn-primary" onclick="openAddReceptionistModal()">➕ Thêm Lễ Tân Mới</button>
+                    <button class="btn-refresh" onclick="loadReceptionistsData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã Lễ Tân</th>
+                            <th>Họ và Tên</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Tên Đăng Nhập</th>
+                            <th>Email Liên Hệ</th>
+                            <th>Trạng Thái</th>
+                            <th style="text-align: center; width: 60px;">Sửa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receptionistsTableBody">
+                        <tr><td colspan="7" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: ĐẶT PHÒNG & HÓA ĐƠN (Phiếu nhận phòng & Hóa đơn liên kết)
+         ===================================================================== -->
+    <section id="tab-bookings" class="tab-content">
+        <!-- Sub-tabs switcher -->
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" id="subTabBtnSlips" onclick="switchSubBookings('slips')">
+                📋 Quản Lý Phiếu Nhận Phòng (<span id="countSlips">...</span>)
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnInvoices" onclick="switchSubBookings('invoices')">
+                🧾 Quản Lý Hóa Đơn (<span id="countInvoices">...</span>)
+            </button>
+        </div>
+
+        <!-- 2.1 Quản Lý Phiếu Nhận Phòng -->
+        <div id="sub-bookings-slips" class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Phiếu Nhận Phòng & Đặt Phòng</h3>
+                    <p class="card-subtitle">Quản lý toàn bộ phiếu lưu trú, phòng được gán và truy xuất nhanh đến hóa đơn tương ứng</p>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" id="searchSlipInput" class="search-input" placeholder="Tìm theo Mã Phiếu, Tên Khách, SĐT, Mã Phòng, Mã HĐ..." oninput="handleSlipSearch()">
+                    <button class="btn-refresh" onclick="clearSlipSearch()" title="Xóa bộ lọc tìm kiếm">✕ Bỏ lọc</button>
+                    <button class="btn-refresh" onclick="loadSlipsData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="rec-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 145px;">Mã Phiếu</th>
+                            <th style="min-width: 150px;">Khách Hàng</th>
+                            <th style="width: 165px;">Thời Gian Lưu Trú</th>
+                            <th style="min-width: 180px;">Phòng & Trạng Thái Lẻ</th>
+                            <th style="width: 155px;">Trạng Thái Phiếu</th>
+                            <th style="width: 140px;">Tổng Tiền</th>
+                            <th style="text-align: right; min-width: 175px;">Hành Động Nghiệp Vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slipsTableBody">
+                        <tr><td colspan="7" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2.2 Quản Lý Hóa Đơn -->
+        <div id="sub-bookings-invoices" class="card" style="display: none;">
+            <div class="card-header inv-card-header">
+                <div>
+                    <h3 class="card-title">Danh Sách Hóa Đơn Khách Sạn</h3>
+                    <p class="card-subtitle">Lịch sử xuất hóa đơn tiền phòng và dịch vụ, truy xuất ngược về phiếu nhận phòng liên quan</p>
+                </div>
+                <div class="filter-bar inv-filter-bar">
+                    <input type="text" id="searchInvoiceInput" class="search-input inv-search-input" placeholder="Tìm theo Mã HĐ, Mã Phiếu, Tên Khách, SĐT..." oninput="handleInvoiceSearch()">
+                    <select id="filterInvoiceStatus" class="inv-filter-select" onchange="handleInvoiceSearch()" aria-label="Lọc theo trạng thái thanh toán">
+                        <option value="ALL">Tất cả trạng thái</option>
+                        <option value="HoanTat">Đã thanh toán</option>
+                        <option value="ChoThanhToan">Chờ thanh toán</option>
+                    </select>
+                    <select id="filterInvoiceMethod" class="inv-filter-select" onchange="handleInvoiceSearch()" aria-label="Lọc theo hình thức thanh toán">
+                        <option value="ALL">Tất cả hình thức</option>
+                        <option value="ChuyenKhoan">Chuyển khoản</option>
+                        <option value="TienMat">Tiền mặt</option>
+                    </select>
+                    <button class="btn-refresh" onclick="clearInvoiceSearch()" title="Xóa bộ lọc tìm kiếm">✕ Bỏ lọc</button>
+                    <button class="btn-refresh" onclick="loadInvoicesData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="inv-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 150px;">Mã Hóa Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th style="width: 140px;">Kênh Đặt</th>
+                            <th style="width: 155px; text-align: right;">Tổng Tiền</th>
+                            <th style="width: 185px;">Thanh Toán</th>
+                            <th style="width: 165px;">Trạng Thái</th>
+                            <th style="width: 115px; text-align: center;">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesTableBody">
+                        <tr><td colspan="7" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 3: QUẢN LÝ DỊCH VỤ (3 Sub-tabs: Đặt Đồ Ăn, Giặt Ủi, Thuê Xe)
+         ===================================================================== -->
+    <section id="tab-services" class="tab-content">
+        <!-- Sub-tabs switcher -->
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" id="subTabBtnFood" onclick="switchSubServices('DVDoAn')">
+                🍕 Đặt Đồ Ăn (<span id="countFood">...</span>)
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnLaundry" onclick="switchSubServices('DVGiatUi')">
+                🧺 Giặt Ủi (<span id="countLaundry">...</span>)
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnVehicle" onclick="switchSubServices('DVThueXe')">
+                🛵 Thuê Xe Máy (<span id="countVehicle">...</span>)
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title" id="serviceSectionTitle">🍕 Danh Mục Món Ăn & Thức Uống</h3>
+                    <p class="card-subtitle" id="serviceSectionSubtitle">Quản lý thực đơn ẩm thực phục vụ tận phòng cho khách lưu trú</p>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" id="searchServiceInput" class="search-input" placeholder="Tìm tên món ăn, mã chi tiết..." oninput="handleServiceSearch()">
+                    <button class="btn-primary" onclick="openAddServiceModal()">
+                        ➕ Thêm Chi Tiết Mới
+                    </button>
+                    <button class="btn-refresh" onclick="loadServicesData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã CTDV</th>
+                            <th>Tên Chi Tiết / Mặt Hàng</th>
+                            <th>Đơn Giá</th>
+                            <th>Số Lượng Tồn</th>
+                            <th>Mô Tả Tiện Ích</th>
+                            <th>Trạng Thái</th>
+                            <th style="text-align: center; width: 60px;">Sửa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesTableBody">
+                        <tr><td colspan="7" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 4: QUẢN LÝ KHUYẾN MÃI
+         ===================================================================== -->
+    <section id="tab-promotions" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Chương Trình Khuyến Mãi & Voucher</h3>
+                    <p class="card-subtitle">Các mã ưu đãi giảm giá đặt phòng dành cho khách hàng</p>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" id="searchPromoInput" class="search-input" placeholder="Tìm mã KM hoặc tên chương trình..." oninput="handlePromoSearch()">
+                    <button class="btn-primary" onclick="openAddPromoModal()">➕ Thêm Khuyến Mãi Mới</button>
+                    <button class="btn-refresh" onclick="loadPromotionsData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã KM</th>
+                            <th>Tên Chương Trình</th>
+                            <th>Hình Thức Giảm</th>
+                            <th>Giá Trị Ưu Đãi</th>
+                            <th>Đêm Tối Thiểu</th>
+                            <th>Thời Gian Áp Dụng</th>
+                            <th>Trạng Thái</th>
+                            <th style="text-align: center; width: 60px;">Sửa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="promosTableBody">
+                        <tr><td colspan="8" style="text-align:center; padding: 30px;"><div class="loading-spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 5: QUẢN LÝ PHÒNG (CHIA THEO TỪNG LOẠI PHÒNG)
+         ===================================================================== -->
+    <section id="tab-rooms" class="tab-content">
+        <div class="rooms-admin-container">
+            <!-- Thanh tìm kiếm, lọc nhanh & cụm nút hành động -->
+            <div class="rooms-toolbar">
+                <div class="rooms-filter-group">
+                    <input type="text" id="filterRoomSearch" class="form-control rooms-filter-input" placeholder="🔍 Tìm số phòng (VD: P401, P103...)" oninput="applyRoomsFilter()">
+                    <select id="filterRoomType" class="form-control rooms-filter-select" onchange="applyRoomsFilter()">
+                        <option value="all">Tất cả loại phòng</option>
+                    </select>
+                    <select id="filterRoomTechStatus" class="form-control rooms-filter-select" onchange="applyRoomsFilter()">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="active">Hoạt động</option>
+                        <option value="maintenance">Bảo trì</option>
+                    </select>
+                </div>
+                <div class="rooms-action-group">
+                    <button class="btn-primary rooms-btn-main" onclick="openAddRoomTypeModal()">+ Thêm Loại Phòng Mới</button>
+                    <button class="btn-refresh rooms-btn-gold" onclick="openAddRoomModal()">+ Thêm Phòng Cụ Thể</button>
+                    <button class="btn-refresh" onclick="loadRoomsData()">🔄 Làm Mới</button>
+                </div>
+            </div>
+
+            <!-- Khung chứa các nhóm loại phòng -->
+            <div id="roomTypesContainer">
+                <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 6: THỐNG KÊ DOANH THU (Tiền Phòng & Tiền Dịch Vụ)
+         ===================================================================== -->
+    <section id="tab-stats" class="tab-content">
+      <div class="stats-analytics-wrap">
+        <!-- Sub-tabs Thống Kê: Doanh thu vs Công suất phòng vs Đánh giá -->
+        <div class="sub-tabs" style="margin-bottom: 20px;">
+            <button class="sub-tab-btn active" id="subTabBtnRevStats" onclick="switchSubStats('revenue')">
+                💰 Thống Kê Doanh Thu
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnOccStats" onclick="switchSubStats('occupancy')">
+                📈 Thống Kê Công Suất Phòng
+            </button>
+            <button class="sub-tab-btn" id="subTabBtnReviewStats" onclick="switchSubStats('reviews')">
+                ⭐ Thống Kê Đánh Giá
+            </button>
+        </div>
+
+        <!-- =================================================================
+             KHU VỰC 1: THỐNG KÊ DOANH THU
+             ================================================================= -->
+        <div id="sub-stats-revenue" style="display: block;">
+            <!-- A. THANH BỘ LỌC THỐNG NHẤT -->
+            <div class="stat-filter-container stats-toolbar-card">
+                <div class="stats-toolbar-row">
+                    <div class="stats-toolbar-left">
+                        <div class="quick-filters stats-qf-group">
+                            <button type="button" class="quick-filter-btn" id="qf-today" onclick="quickFilterStats('today')">Hôm Nay</button>
+                            <button type="button" class="quick-filter-btn" id="qf-7days" onclick="quickFilterStats('7days')">7 Ngày</button>
+                            <button type="button" class="quick-filter-btn active" id="qf-thisMonth" onclick="quickFilterStats('thisMonth')">Tháng Này</button>
+                            <button type="button" class="quick-filter-btn" id="qf-thisYear" onclick="quickFilterStats('thisYear')">Năm Nay</button>
+                            <button type="button" class="quick-filter-btn" id="qf-all" onclick="quickFilterStats('all')">Tất Cả</button>
+                            <button type="button" class="quick-filter-btn" id="qf-custom" onclick="quickFilterStats('custom')">Tùy Chỉnh</button>
+                        </div>
+                        <div class="stats-date-inputs">
+                            <div class="date-box">
+                                <span class="date-box-label">Từ ngày:</span>
+                                <input type="date" id="statsFromDate" onchange="markCustomStatsRange()">
+                            </div>
+                            <div class="date-box">
+                                <span class="date-box-label">Đến ngày:</span>
+                                <input type="date" id="statsToDate" onchange="markCustomStatsRange()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-toolbar-right">
+                        <div class="rev-type-select-wrapper stats-rev-select-wrap">
+                            <select id="selectRevenueTypeFilter" class="rev-type-select" onchange="handleRevenueTypeSelectChange(this.value)" aria-label="Loại doanh thu">
+                                <option value="all" selected>Tất Cả Doanh Thu</option>
+                                <option value="room">Doanh Thu Phòng</option>
+                                <option value="service">Doanh Thu Dịch Vụ</option>
+                            </select>
+                            <span class="select-chevron">▼</span>
+                        </div>
+                        <button type="button" class="btn-primary stats-apply-btn" onclick="applyStatsDateFilter()">
+                            Áp Dụng
+                        </button>
+                        <button type="button" class="btn-refresh" style="padding: 9px 12px;" onclick="refreshCurrentStats()" title="Làm mới số liệu">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error banner nếu ngày bắt đầu > ngày kết thúc -->
+                <div id="statsDateErrorBanner" class="error-banner" style="margin-top: 12px;">
+                    <span>⚠️</span>
+                    <span id="statsDateErrorMsg">Ngày bắt đầu không được lớn hơn ngày kết thúc!</span>
+                </div>
+            </div>
+
+            <!-- B. KPI DASHBOARD (4 CHỈ SỐ QUAN TRỌNG) -->
+            <div id="sub-rev-combined" class="stats-kpi-section">
+                <div class="stats-kpi-grid">
+                    <div class="stats-kpi-card is-primary">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Tổng Doanh Thu</span>
+                            <span class="stats-kpi-icon">💎</span>
+                        </div>
+                        <div class="stats-kpi-value" id="kpiCombinedTotalRev">0 ₫</div>
+                        <div class="stats-kpi-sub" id="kpiCombinedTotalSub">Thực thu ròng sau KM, VAT &amp; hoàn hủy</div>
+                    </div>
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Doanh Thu Phòng</span>
+                            <span class="stats-kpi-icon">🏨</span>
+                        </div>
+                        <div class="stats-kpi-value" id="kpiCombinedRoomRev">0 ₫</div>
+                        <div class="stats-kpi-sub" id="kpiCombinedRoomShare">Chiếm 0.00% tổng doanh thu</div>
+                    </div>
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Doanh Thu Dịch Vụ</span>
+                            <span class="stats-kpi-icon">🛎️</span>
+                        </div>
+                        <div class="stats-kpi-value" id="kpiCombinedServiceRev">0 ₫</div>
+                        <div class="stats-kpi-sub" id="kpiCombinedServiceShare">Chiếm 0.00% tổng doanh thu</div>
+                    </div>
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Số Phòng Đã Sử Dụng</span>
+                            <span class="stats-kpi-icon">🛏️</span>
+                        </div>
+                        <div class="stats-kpi-value" id="kpiDashRoomsUsed">0 đêm</div>
+                        <div class="stats-kpi-sub" id="kpiCombinedRatioDesc">Tổng số đêm phòng thực tế</div>
+                    </div>
+                </div>
+                <span id="kpiCombinedRatio" style="display:none;"></span>
+            </div>
+
+            <!-- C. BIỂU ĐỒ DOANH THU -->
+            <div id="stats-charts-row" class="stats-charts-grid">
+                <div class="card stats-chart-card">
+                    <div class="card-header stats-card-head">
+                        <div>
+                            <h3 class="card-title">Xu Hướng Doanh Thu Theo Thời Gian</h3>
+                            <p class="card-subtitle">Biến động doanh thu thực thu theo ngày trong kỳ lọc</p>
+                        </div>
+                        <span class="badge badge-info" id="badgeTrendPeriod">Kỳ báo cáo</span>
+                    </div>
+                    <div id="revTrendChartContainer" class="stats-chart-body">
+                        <div class="stats-empty-compact">Đang tải biểu đồ xu hướng...</div>
+                    </div>
+                </div>
+                <div class="card stats-chart-card">
+                    <div class="card-header stats-card-head">
+                        <div>
+                            <h3 class="card-title">So Sánh Phòng &amp; Dịch Vụ</h3>
+                            <p class="card-subtitle">Tỷ trọng đóng góp theo nguồn thu</p>
+                        </div>
+                    </div>
+                    <div id="revCompareChartContainer" class="stats-chart-body">
+                        <div class="stats-empty-compact">Đang tải biểu đồ so sánh...</div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- =================================================================
+             D. THỐNG KÊ PHÒNG
+             ================================================================= -->
+        <div id="sub-rev-room" style="display: block;">
+            <!-- Dải chỉ số phụ phòng -->
+            <div class="stats-submetrics-strip">
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Doanh thu phòng</span>
+                    <strong class="stats-submetric-val" id="kpiRoomRevenue">0 ₫</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Tổng số đêm sử dụng</span>
+                    <strong class="stats-submetric-val" id="kpiRoomNights">0 đêm</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Giá bình quân / đêm</span>
+                    <strong class="stats-submetric-val" id="kpiRoomAvgPrice">0 ₫</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Loại phòng thu cao nhất</span>
+                    <strong class="stats-submetric-val" id="kpiRoomTopType">—</strong>
+                    <span class="stats-submetric-note" id="kpiRoomTopDetail">Đang cập nhật</span>
+                </div>
+            </div>
+
+            <!-- Bảng Thống Kê Chi Tiết Loại Phòng -->
+            <div class="card stats-table-card">
+                <div class="card-header stats-card-head">
+                    <div>
+                        <h3 class="card-title">Doanh Thu Theo Từng Loại Phòng</h3>
+                        <p class="card-subtitle">Số đêm sử dụng, doanh thu thực tế và tỷ trọng doanh thu theo từng hạng phòng</p>
+                    </div>
+                    <div>
+                        <span class="badge badge-info" id="badgeRoomPeriod">Kỳ báo cáo</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="stats-clean-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">STT</th>
+                                <th style="width: 110px;">Mã Loại</th>
+                                <th>Tên Loại Phòng</th>
+                                <th style="text-align: right;">Giá Niêm Yết</th>
+                                <th style="text-align: right;">Số Đêm</th>
+                                <th style="text-align: right;">Doanh Thu (VNĐ)</th>
+                                <th style="width: 220px;">Tỷ Trọng Doanh Thu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revRoomTableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;"><div class="loading-spinner"></div></td></tr>
+                        </tbody>
+                        <tfoot id="revRoomTableFoot" class="stats-table-total-row">
+                            <tr>
+                                <td colspan="4" style="text-align: right; text-transform: uppercase;">Tổng Cộng Toàn Bộ:</td>
+                                <td id="footRoomNights" style="text-align: right;">0 đêm</td>
+                                <td id="footRoomRevenue" style="text-align: right;">0 ₫</td>
+                                <td id="footRoomPercent">100.00%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             E. THỐNG KÊ DỊCH VỤ
+             ================================================================= -->
+        <div id="sub-rev-service" style="display: block;">
+            <!-- Dải chỉ số phụ dịch vụ -->
+            <div class="stats-submetrics-strip">
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Doanh thu dịch vụ</span>
+                    <strong class="stats-submetric-val" id="kpiServiceRevenue">0 ₫</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Tổng lượt sử dụng</span>
+                    <strong class="stats-submetric-val" id="kpiServiceOrders">0 lượt</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Tổng đơn vị cung cấp</span>
+                    <strong class="stats-submetric-val" id="kpiServiceUnits">0 đơn vị</strong>
+                </div>
+                <div class="stats-submetric">
+                    <span class="stats-submetric-lbl">Dịch vụ thu cao nhất</span>
+                    <strong class="stats-submetric-val" id="kpiServiceTopName">—</strong>
+                    <span class="stats-submetric-note" id="kpiServiceTopDetail">Đang cập nhật</span>
+                </div>
+            </div>
+
+            <!-- Bảng Thống Kê Chi Tiết Nhóm Dịch Vụ -->
+            <div class="card stats-table-card" style="margin-bottom: 20px;">
+                <div class="card-header stats-card-head">
+                    <div>
+                        <h3 class="card-title">Doanh Thu Theo Từng Nhóm Dịch Vụ</h3>
+                        <p class="card-subtitle">Số lượt sử dụng, tổng số lượng và doanh thu thực tế từng nhóm dịch vụ</p>
+                    </div>
+                    <div>
+                        <span class="badge badge-info" id="badgeServicePeriod">Kỳ báo cáo</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="stats-clean-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">STT</th>
+                                <th style="width: 130px;">Mã Dịch Vụ</th>
+                                <th>Tên Loại Dịch Vụ</th>
+                                <th style="text-align: right;">Lượt Sử Dụng</th>
+                                <th style="text-align: right;">Số Lượng</th>
+                                <th style="text-align: right;">Doanh Thu (VNĐ)</th>
+                                <th style="width: 220px;">Tỷ Trọng Doanh Thu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revServiceTableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></td></tr>
+                        </tbody>
+                        <tfoot id="revServiceTableFoot" style="font-weight: 700; background: rgba(56, 189, 248, 0.08); border-top: 2px solid var(--adm-primary, #2F5D7C);">
+                            <tr>
+                                <td colspan="3" style="text-align: right; text-transform: uppercase; color: var(--adm-primary, #2F5D7C);">Tổng Cộng Toàn Bộ:</td>
+                                <td id="footServiceOrders" style="text-align: right; color: var(--text-main);">0 lượt</td>
+                                <td id="footServiceUnits" style="text-align: right; color: var(--text-main);">0</td>
+                                <td id="footServiceRevenue" style="text-align: right; color: var(--adm-primary, #2F5D7C); font-size: 15px;">0 VNĐ</td>
+                                <td id="footServicePercent" style="color: var(--adm-ok, #2F8F5B);">100.00%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bảng Chi Tiết Từng Mặt Hàng / Món Ăn / Loại Xe / Đồ Giặt -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <div>
+                        <h3 class="card-title">🔍 Chi Tiết Tiêu Thụ Từng Mặt Hàng & Tiện Ích</h3>
+                        <p class="card-subtitle">Thống kê chi tiết tới từng món ăn, dòng xe máy và loại quần áo cụ thể</p>
+                    </div>
+                    <!-- Bộ lọc phân loại 3 dịch vụ: Tất cả, Dịch vụ thuê xe, Dịch vụ giặt ủi, Dịch vụ đặt đồ ăn -->
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <label for="selectServiceItemFilter" style="font-size: 13px; font-weight: 600; color: var(--gold-light); white-space: nowrap;">
+                            🛎️ Lọc Theo Dịch Vụ:
+                        </label>
+                        <div style="position: relative; display: inline-block;">
+                            <select id="selectServiceItemFilter" class="stat-date-field" style="min-width: 220px; padding: 7px 32px 7px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;" onchange="handleServiceItemFilterChange(this.value)">
+                                <option value="all" selected>Tất Cả Dịch Vụ</option>
+                                <option value="DVThueXe">🛵 Dịch Vụ Thuê Xe (DVThueXe)</option>
+                                <option value="DVGiatUi">🧺 Dịch Vụ Giặt Ủi (DVGiatUi)</option>
+                                <option value="DVDoAn">🍕 Dịch Vụ Đặt Đồ Ăn (DVDoAn)</option>
+                                <option value="DVPhuThu">⚠️ Phụ Thu & Bồi Thường (DVPhuThu)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">STT</th>
+                                <th>Mã Chi Tiết</th>
+                                <th>Tên Chi Tiết / Mặt Hàng</th>
+                                <th>Nhóm Dịch Vụ</th>
+                                <th style="text-align: right;">Lượt Gọi</th>
+                                <th style="text-align: right;">Số Lượng</th>
+                                <th style="text-align: right;">Doanh Thu (VNĐ)</th>
+                                <th style="width: 180px;">Tỷ Trọng / Dịch Vụ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revServiceItemsTableBody">
+                            <tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--text-muted);">Đang tải dữ liệu chi tiết...</td></tr>
+                        </tbody>
+                        <tfoot id="revServiceItemsTableFoot" style="font-weight: 700; background: rgba(56, 189, 248, 0.06); border-top: 1px solid rgba(56, 189, 248, 0.3);">
+                            <tr>
+                                <td colspan="4" style="text-align: right; color: var(--gold-light);">Tổng Cộng Theo Bộ Lọc:</td>
+                                <td id="footItemsOrders" style="text-align: right; color: var(--text-main);">0 lượt</td>
+                                <td id="footItemsUnits" style="text-align: right; color: var(--adm-gold-text, #806223);">0</td>
+                                <td id="footItemsRevenue" style="text-align: right; color: var(--adm-primary, #2F5D7C); font-size: 14px;">0 VNĐ</td>
+                                <td id="footItemsPct" style="text-align: right; color: var(--adm-ok, #2F8F5B);">100.00%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /#sub-rev-service -->
+        </div> <!-- /#sub-stats-revenue -->
+
+        <!-- =================================================================
+             KHU VỰC 2: THỐNG KÊ CÔNG SUẤT PHÒNG (UC21.2)
+             ================================================================= -->
+        <div id="sub-stats-occupancy" style="display: none;">
+            <!-- THANH BỘ LỌC CÔNG SUẤT PHÒNG GỌN GÀNG -->
+            <div class="stats-toolbar occ-toolbar">
+                <div class="occ-toolbar-left">
+                    <div class="rev-type-select-wrapper occ-room-select-wrap">
+                        <select id="selectOccupancyRoomType" class="rev-type-select" onchange="handleOccupancyRoomTypeChange(this.value)">
+                            <option value="all" selected>Tất Cả Loại Phòng</option>
+                        </select>
+                        <span class="select-chevron">▼</span>
+                    </div>
+                    <div class="stats-date-inputs">
+                        <div class="date-box">
+                            <span class="date-box-label">Từ ngày:</span>
+                            <input type="date" id="occupancyFromDate">
+                        </div>
+                        <div class="date-box">
+                            <span class="date-box-label">Đến ngày:</span>
+                            <input type="date" id="occupancyToDate">
+                        </div>
+                        <button type="button" class="btn-primary stats-apply-btn" onclick="applyOccupancyDateFilter()">
+                            🔍 Xem Thống Kê
+                        </button>
+                        <button type="button" class="btn-refresh" onclick="refreshOccupancyStats()" title="Làm mới số liệu">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+
+                <div class="occ-toolbar-right">
+                    <div class="occ-segmented-control" role="group" aria-label="Chọn nhanh khoảng thời gian">
+                        <button type="button" class="occ-seg-btn" id="qfo-today" onclick="quickFilterOccupancy('today')">Hôm nay</button>
+                        <button type="button" class="occ-seg-btn" id="qfo-7days" onclick="quickFilterOccupancy('7days')">7 ngày</button>
+                        <button type="button" class="occ-seg-btn" id="qfo-30days" onclick="quickFilterOccupancy('30days')">30 ngày</button>
+                        <button type="button" class="occ-seg-btn active" id="qfo-thisMonth" onclick="quickFilterOccupancy('thisMonth')">Tháng này</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error banner nếu ngày bắt đầu > ngày kết thúc (Dòng sự kiện phụ 4.1) -->
+            <div id="occupancyDateErrorBanner" class="error-banner" style="margin-bottom: 16px;">
+                <span>⚠️</span>
+                <span id="occupancyDateErrorMsg">Ngày bắt đầu không được lớn hơn ngày kết thúc!</span>
+            </div>
+
+            <!-- 1. 4 THẺ KPI TỔNG QUAN CÔNG SUẤT PHÒNG -->
+            <div class="stats-kpi-section">
+                <div class="stats-kpi-grid occ-kpi-grid">
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Công suất phòng bình quân</span>
+                            <span class="stats-kpi-icon">📈</span>
+                        </div>
+                        <div class="stats-kpi-value occ-kpi-value" id="kpiOccupancyRate">0.00%</div>
+                        <div class="stats-kpi-sub" id="kpiOccupancyRateDesc">Số đêm thực tế / Số đêm có thể bán</div>
+                    </div>
+
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Đêm thực tế sử dụng</span>
+                            <span class="stats-kpi-icon">🌙</span>
+                        </div>
+                        <div class="stats-kpi-value occ-kpi-value" id="kpiOccupancyUsedNights">0 đêm</div>
+                        <div class="stats-kpi-sub">Khách đã nhận phòng và thực tế lưu trú</div>
+                    </div>
+
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Đêm phòng có thể bán</span>
+                            <span class="stats-kpi-icon">🏨</span>
+                        </div>
+                        <div class="stats-kpi-value occ-kpi-value" id="kpiOccupancyAvailableNights">0 đêm</div>
+                        <div class="stats-kpi-sub" id="kpiOccupancyCapacityDesc">Tổng số phòng × Số ngày trong kỳ</div>
+                    </div>
+
+                    <div class="stats-kpi-card">
+                        <div class="stats-kpi-head">
+                            <span class="stats-kpi-label">Loại phòng đạt CS cao nhất</span>
+                            <span class="stats-kpi-icon">🏆</span>
+                        </div>
+                        <div class="stats-kpi-value occ-kpi-value occ-kpi-top" id="kpiOccupancyTopType">—</div>
+                        <div class="stats-kpi-sub" id="kpiOccupancyTopDetail">Đang cập nhật số liệu</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. BẢNG SỐ LIỆU CHI TIẾT CÔNG SUẤT PHÒNG (GỘP BIỂU ĐỒ + BẢNG) -->
+            <div class="card occ-table-card">
+                <div class="card-header occ-table-header">
+                    <div>
+                        <h3 class="card-title">📋 Bảng Số Liệu Chi Tiết Công Suất Phòng</h3>
+                        <p class="card-subtitle">Số phòng, đêm sử dụng / có thể bán và tỷ lệ khai thác từng loại phòng</p>
+                    </div>
+                    <div class="occ-header-right">
+                        <div class="occ-legend-inline" aria-label="Chú thích mức độ công suất">
+                            <span class="occ-legend-pill"><span class="occ-dot level-high"></span>Rất Cao &ge; 80%</span>
+                            <span class="occ-legend-pill"><span class="occ-dot level-medium"></span>Ổn Định 50–80%</span>
+                            <span class="occ-legend-pill"><span class="occ-dot level-low"></span>Trung Bình &gt;0–50%</span>
+                            <span class="occ-legend-pill"><span class="occ-dot level-zero"></span>Thấp 0%</span>
+                        </div>
+                        <span class="badge badge-info" id="badgeOccupancyTablePeriod">Kỳ báo cáo</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="occ-detail-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%; text-align: center;">STT</th>
+                                <th style="width: 25%;">Loại Phòng</th>
+                                <th style="width: 15%; text-align: right;">Giá Niêm Yết</th>
+                                <th style="width: 12%; text-align: center;">Số Phòng</th>
+                                <th style="width: 18%; text-align: right;">Đêm Sử Dụng / Có Thể Bán</th>
+                                <th style="width: 25%;">Công Suất Khai Thác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="occupancyTableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></td></tr>
+                        </tbody>
+                        <tfoot id="occupancyTableFoot">
+                            <tr class="occ-foot-row">
+                                <td colspan="3" style="text-align: right; text-transform: uppercase;">Tổng Thể Khách Sạn:</td>
+                                <td id="footOccTotalRooms" style="text-align: center;">0 phòng</td>
+                                <td style="text-align: right;">
+                                    <strong id="footOccUsedNights">0</strong> <span class="occ-night-sep">/</span> <span id="footOccAvailableNights">0</span> <span class="occ-night-unit">đêm</span>
+                                </td>
+                                <td>
+                                    <div class="occ-foot-rate-wrap">
+                                        <span id="footOccRate" class="occ-foot-rate">0.00%</span>
+                                        <span id="footOccEvaluation"><span class="badge badge-info">Đang tính</span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /#sub-stats-occupancy -->
+
+        <!-- =================================================================
+             KHU VỰC 3: THỐNG KÊ ĐÁNH GIÁ (UC21.3)
+             ================================================================= -->
+        <div id="sub-stats-reviews" style="display: none;">
+            <!-- BỘ LỌC THỐNG KÊ ĐÁNH GIÁ HỢP NHẤT: CHẾ ĐỘ XEM (LOẠI PHÒNG / PHÒNG) & THỜI GIAN -->
+            <div class="stat-filter-container">
+                <div class="stat-unified-bar">
+                    <!-- 1. Bộ Lọc Chế Độ Xem (Theo Loại Phòng vs Theo Phòng) -->
+                    <div class="filter-col-rev-type">
+                        <div class="filter-section-title">
+                            <span>⭐</span> CHẾ ĐỘ THỐNG KÊ
+                        </div>
+                        <div class="review-mode-selector">
+                            <button type="button" class="review-mode-btn active" id="subReviewTabType" onclick="switchReviewSubMode('room_type')">
+                                🏨 Theo Loại Phòng
+                            </button>
+                            <button type="button" class="review-mode-btn" id="subReviewTabRoom" onclick="switchReviewSubMode('room')">
+                                🚪 Theo Phòng
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vách phân cách đứng giữa 2 bộ lọc -->
+                    <div class="filter-col-divider"></div>
+
+                    <!-- 2. Bộ Lọc Thống Kê Theo Ngày Tháng Năm (Kế bên) -->
+                    <div class="filter-col-date-range">
+                        <div class="date-filter-top-row">
+                            <div class="filter-section-title">
+                                <span>📅</span> KHOẢNG THỜI GIAN ĐÁNH GIÁ (BẮT BUỘC)
+                            </div>
+                            <div class="quick-filters">
+                                <button type="button" class="quick-filter-btn" id="qfr-today" onclick="quickFilterReview('today')">Hôm Nay</button>
+                                <button type="button" class="quick-filter-btn" id="qfr-7days" onclick="quickFilterReview('7days')">7 Ngày</button>
+                                <button type="button" class="quick-filter-btn active" id="qfr-thisMonth" onclick="quickFilterReview('thisMonth')">Tháng Này</button>
+                                <button type="button" class="quick-filter-btn" id="qfr-thisYear" onclick="quickFilterReview('thisYear')">Năm Nay</button>
+                                <button type="button" class="quick-filter-btn" id="qfr-all" onclick="quickFilterReview('all')">Tất Cả</button>
+                            </div>
+                        </div>
+
+                        <div class="date-inputs-controls-row">
+                            <div class="date-box">
+                                <span class="date-box-label">Từ ngày:</span>
+                                <input type="date" id="reviewFromDate" onchange="hideReviewDateError()">
+                            </div>
+                            <div class="date-box">
+                                <span class="date-box-label">Đến ngày:</span>
+                                <input type="date" id="reviewToDate" onchange="hideReviewDateError()">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-primary" style="padding: 9px 18px;" onclick="applyReviewDateFilter()">
+                                    🔍 Lọc Dữ Liệu
+                                </button>
+                                <button type="button" class="btn-refresh" style="padding: 9px 14px;" onclick="refreshReviewStats()" title="Làm mới số liệu">
+                                    🔄
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error banner nếu ngày bắt đầu > ngày kết thúc (Dòng sự kiện phụ 3.1) -->
+                <div id="reviewDateErrorBanner" class="error-banner" style="margin-top: 14px;">
+                    <span>⚠️</span>
+                    <span id="reviewDateErrorMsg">Ngày bắt đầu không được lớn hơn ngày kết thúc!</span>
+                </div>
+            </div>
+
+            <!-- =============================================================
+                 CHẾ ĐỘ 1: THỐNG KÊ ĐÁNH GIÁ THEO LOẠI PHÒNG (Mặc định)
+                 ============================================================= -->
+            <div id="viewReviewRoomType" style="display: block;">
+                <!-- 4 BENTO KPI CARDS THEO LOẠI PHÒNG (Mục 6.2) -->
+                <div class="bento-grid">
+                    <div class="bento-card" style="cursor: pointer;" onclick="openReviewDetailModal('all', 'all', 'Toàn Bộ Khách Sạn')" title="Nhấn để xem chi tiết toàn bộ đánh giá trong kỳ">
+                        <div class="bento-header">
+                            <span class="bento-title">Tổng Lượt Đánh Giá</span>
+                            <span class="bento-icon">⭐</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewTypeTotalReviews" style="color: var(--gold-light);">0 lượt</div>
+                        <div class="bento-desc" id="kpiReviewTypeTotalDesc">Tất cả đánh giá trong kỳ • <em>Nhấn xem chi tiết</em></div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Điểm Đánh Giá Trung Bình</span>
+                            <span class="bento-icon">🌟</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewTypeAvgScore" style="color: var(--adm-gold-text, #806223);">—</div>
+                        <div class="bento-desc" id="kpiReviewTypeAvgDesc">Tổng sao chia tổng lượt đánh giá</div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Số Loại Phòng Có Đánh Giá</span>
+                            <span class="bento-icon">🏨</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewTypeRoomsWithReviews" style="color: var(--adm-primary, #2F5D7C);">0</div>
+                        <div class="bento-desc" id="kpiReviewTypeRoomsDesc">Loại phòng có ít nhất 1 đánh giá</div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Đánh Giá 5 Sao Tuyệt Đối</span>
+                            <span class="bento-icon">🏆</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewType5StarReviews" style="color: var(--adm-ok, #2F8F5B);">0 lượt</div>
+                        <div class="bento-desc" id="kpiReviewType5StarPct">Chiếm 0.00% tổng lượt đánh giá</div>
+                    </div>
+                </div>
+
+                <!-- BIỂU ĐỒ TRỰC QUAN SO SÁNH ĐIỂM TRUNG BÌNH THEO LOẠI PHÒNG -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">📊 Biểu Đồ So Sánh Mức Độ Hài Lòng Theo Loại Phòng</h3>
+                            <p class="card-subtitle">Trực quan hóa điểm trung bình và số lượt đánh giá giữa các loại phòng</p>
+                        </div>
+                        <span class="badge badge-info" id="badgeReviewChartPeriod">Kỳ báo cáo</span>
+                    </div>
+                    <div id="reviewChartContainer" style="padding: 20px;">
+                        <div style="text-align: center; padding: 30px;"><div class="loading-spinner"></div></div>
+                    </div>
+                </div>
+
+                <!-- BẢNG THỐNG KÊ CHI TIẾT THEO LOẠI PHÒNG (Mục 6.2) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">📋 Bảng Thống Kê Đánh Giá Theo Loại Phòng</h3>
+                            <p class="card-subtitle">Tổng hợp số lượt đánh giá, điểm trung bình và phân bố chi tiết từ 1 đến 5 sao</p>
+                        </div>
+                        <span class="badge badge-info" id="badgeReviewTablePeriod">Kỳ báo cáo</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th>Mã Loại Phòng</th>
+                                    <th>Tên Loại Phòng</th>
+                                    <th style="text-align: right;">Số Lượt ĐG</th>
+                                    <th style="text-align: center;">Điểm Trung Bình</th>
+                                    <th style="text-align: center;">1★</th>
+                                    <th style="text-align: center;">2★</th>
+                                    <th style="text-align: center;">3★</th>
+                                    <th style="text-align: center;">4★</th>
+                                    <th style="text-align: center;">5★</th>
+                                    <th style="text-align: center; min-width: 140px;">Tỷ Lệ 4–5★</th>
+                                    <th style="text-align: center; width: 110px;">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviewRoomTypeTableBody">
+                                <tr><td colspan="12" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></td></tr>
+                            </tbody>
+                            <tfoot id="reviewRoomTypeTableFoot" style="font-weight: 700; background: rgba(197, 155, 39, 0.08); border-top: 2px solid var(--gold);">
+                                <tr>
+                                    <td colspan="3" style="text-align: right; text-transform: uppercase; color: var(--gold-light);">Toàn Khách Sạn:</td>
+                                    <td id="footReviewTypeTotalReviews" style="text-align: right; color: var(--text-main);">0 lượt</td>
+                                    <td id="footReviewTypeAvgScore" style="text-align: center; color: var(--adm-gold-text, #806223); font-size: 15px;">—</td>
+                                    <td id="footReviewType1Star" style="text-align: center; color: var(--adm-err, #C0392B);">0</td>
+                                    <td id="footReviewType2Star" style="text-align: center; color: var(--adm-warn, #D97706);">0</td>
+                                    <td id="footReviewType3Star" style="text-align: center; color: var(--adm-gold-text, #806223);">0</td>
+                                    <td id="footReviewType4Star" style="text-align: center; color: var(--adm-primary, #2F5D7C);">0</td>
+                                    <td id="footReviewType5Star" style="text-align: center; color: var(--adm-ok, #2F8F5B);">0</td>
+                                    <td id="footReviewTypeGoodPct" style="text-align: center; color: var(--gold-light);">0.00%</td>
+                                    <td style="text-align: center;">
+                                        <button type="button" class="btn-refresh" style="padding: 5px 8px; font-size: 11.5px; border-color: var(--gold); color: var(--gold-light);" onclick="openReviewDetailModal('all', 'all', 'Toàn Bộ Khách Sạn')" title="Xem chi tiết toàn bộ đánh giá trong kỳ">
+                                            🔍 Xem Hết
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================
+                 CHẾ ĐỘ 2: THỐNG KÊ ĐÁNH GIÁ THEO PHÒNG (Mục 7)
+                 ============================================================= -->
+            <div id="viewReviewRoom" style="display: none;">
+                <!-- BỘ LỌC PHỤ CHO THỐNG KÊ THEO PHÒNG: LỌC THEO LOẠI PHÒNG & TÌM KIẾM MÃ/SỐ PHÒNG -->
+                <div class="card" style="margin-bottom: 20px; padding: 14px 20px; background: var(--adm-section, #F7FAFC);">
+                    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: space-between;">
+                        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="selectReviewRoomFilterType" style="font-size: 13px; font-weight: 600; color: var(--gold-light);">🏨 Lọc Loại Phòng:</label>
+                                <select id="selectReviewRoomFilterType" class="search-input" style="min-width: 200px; padding: 7px 12px; font-size: 13px; cursor: pointer;" onchange="handleReviewFilterRoomTypeChange(this.value)">
+                                    <option value="all">Tất Cả Loại Phòng</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="searchReviewRoomInput" style="font-size: 13px; font-weight: 600; color: var(--gold-light);">🔍 Tìm Phòng:</label>
+                                <input type="text" id="searchReviewRoomInput" class="search-input" style="width: 200px; padding: 7px 12px; font-size: 13px;" placeholder="Nhập mã phòng, tên phòng..." oninput="handleSearchReviewRoom(this.value)">
+                            </div>
+                        </div>
+                        <div style="font-size: 12.5px; color: var(--text-muted);">
+                            💡 <em>Hỗ trợ phát hiện phòng điểm thấp để kịp thời bảo trì, khắc phục</em>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 BENTO KPI CARDS THEO PHÒNG (Mục 7.2) -->
+                <div class="bento-grid">
+                    <div class="bento-card" style="cursor: pointer;" onclick="openReviewDetailModal('all', 'all', 'Toàn Bộ Khách Sạn')" title="Nhấn để xem chi tiết toàn bộ đánh giá trong kỳ">
+                        <div class="bento-header">
+                            <span class="bento-title">Tổng Lượt Đánh Giá Của Các Phòng</span>
+                            <span class="bento-icon">🚪</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewRoomTotalReviews" style="color: var(--gold-light);">0 lượt</div>
+                        <div class="bento-desc" id="kpiReviewRoomTotalDesc">Từ tất cả các phòng trong kỳ • <em>Nhấn xem chi tiết</em></div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Điểm Trung Bình Tập Phòng</span>
+                            <span class="bento-icon">🌟</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewRoomAvgScore" style="color: var(--adm-gold-text, #806223);">—</div>
+                        <div class="bento-desc" id="kpiReviewRoomAvgDesc">Điểm trung bình các đánh giá đã lọc</div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Số Phòng Có Đánh Giá</span>
+                            <span class="bento-icon">🔑</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewRoomCountWithReviews" style="color: var(--adm-primary, #2F5D7C);">0</div>
+                        <div class="bento-desc" id="kpiReviewRoomCountDesc">Phòng có ít nhất 1 đánh giá</div>
+                    </div>
+
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span class="bento-title">Phản Hồi Tiêu Cực (1–2 Sao)</span>
+                            <span class="bento-icon">⚠️</span>
+                        </div>
+                        <div class="bento-value" id="kpiReviewRoomNegativeReviews" style="color: var(--adm-err, #C0392B);">0 lượt</div>
+                        <div class="bento-desc" id="kpiReviewRoomNegativeDesc">Cần chú ý nâng cấp / bảo dưỡng phòng</div>
+                    </div>
+                </div>
+
+                <!-- BẢNG THỐNG KÊ CHI TIẾT THEO PHÒNG (Mục 7.2) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">📋 Bảng Thống Kê Đánh Giá Theo Từng Phòng</h3>
+                            <p class="card-subtitle">Theo dõi chất lượng thực tế từng phòng và tra cứu phản hồi của khách hàng</p>
+                        </div>
+                        <span class="badge badge-info" id="badgeReviewRoomPeriod">Kỳ báo cáo</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th>Mã Phòng</th>
+                                    <th>Loại Phòng</th>
+                                    <th style="text-align: right;">Số Lượt ĐG</th>
+                                    <th style="text-align: center;">Điểm Trung Bình</th>
+                                    <th style="text-align: center;">1★</th>
+                                    <th style="text-align: center;">2★</th>
+                                    <th style="text-align: center;">3★</th>
+                                    <th style="text-align: center;">4★</th>
+                                    <th style="text-align: center;">5★</th>
+                                    <th style="text-align: center;">Mức Độ Hài Lòng</th>
+                                    <th style="text-align: center; width: 130px;">Nhận Xét Chi Tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviewRoomTableBody">
+                                <tr><td colspan="12" style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></td></tr>
+                            </tbody>
+                            <tfoot id="reviewRoomTableFoot" style="font-weight: 700; background: rgba(197, 155, 39, 0.08); border-top: 2px solid var(--gold);">
+                                <tr>
+                                    <td colspan="3" style="text-align: right; text-transform: uppercase; color: var(--gold-light);">Tổng Thể Các Phòng Lọc:</td>
+                                    <td id="footReviewRoomTotalReviews" style="text-align: right; color: var(--text-main);">0 lượt</td>
+                                    <td id="footReviewRoomAvgScore" style="text-align: center; color: var(--adm-gold-text, #806223); font-size: 15px;">—</td>
+                                    <td id="footReviewRoom1Star" style="text-align: center; color: var(--adm-err, #C0392B);">0</td>
+                                    <td id="footReviewRoom2Star" style="text-align: center; color: var(--adm-warn, #D97706);">0</td>
+                                    <td id="footReviewRoom3Star" style="text-align: center; color: var(--adm-gold-text, #806223);">0</td>
+                                    <td id="footReviewRoom4Star" style="text-align: center; color: var(--adm-primary, #2F5D7C);">0</td>
+                                    <td id="footReviewRoom5Star" style="text-align: center; color: var(--adm-ok, #2F8F5B);">0</td>
+                                    <td id="footReviewRoomEvaluation" style="text-align: center;"><span class="badge badge-info">Đang tính</span></td>
+                                    <td style="text-align: center;">
+                                        <button type="button" class="btn-refresh" style="padding: 5px 8px; font-size: 11.5px; border-color: var(--gold); color: var(--gold-light);" onclick="openReviewDetailModal('all', 'all', 'Toàn Bộ Khách Sạn')" title="Xem chi tiết toàn bộ đánh giá trong kỳ">
+                                            🔍 Xem Hết
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /#sub-stats-reviews -->
+      </div> <!-- /.stats-analytics-wrap -->
+    </section> <!-- /#tab-stats -->
+
+    <!-- =====================================================================
+         MODAL THÊM / SỬA CHI TIẾT DỊCH VỤ
+         ===================================================================== -->
+    <div id="serviceModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="serviceModalTitle">➕ Thêm Mới Chi Tiết Dịch Vụ</h3>
+                <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            </div>
+            <form id="serviceForm" onsubmit="handleSaveService(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="serviceFormMode" value="add"> <!-- 'add' hoặc 'edit' -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Phân Loại Dịch Vụ <span class="req">*</span></label>
+                            <select id="formMaDV" class="form-control" onchange="handleFormMaDVChange()" required>
+                                <option value="DVDoAn">🍕 Đặt Đồ Ăn (DVDoAn)</option>
+                                <option value="DVGiatUi">🧺 Giặt Ủi (DVGiatUi)</option>
+                                <option value="DVThueXe">🛵 Thuê Xe Máy (DVThueXe)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mã Chi Tiết (MaCTDV) <span class="req">*</span></label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="formMaCTDV" class="form-control" placeholder="VD: CTDVDoAn07" required>
+                                <button type="button" class="btn-refresh" style="padding: 0 12px;" onclick="regenerateServiceCode()" title="Tạo lại mã tự động">⚡</button>
+                            </div>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Tên Chi Tiết Dịch Vụ / Món Ăn / Loại Xe <span class="req">*</span></label>
+                            <input type="text" id="formTenCTDV" class="form-control" placeholder="VD: Cơm chiên hải sản / Honda AirBlade..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Đơn Giá (VNĐ) <span class="req">*</span></label>
+                            <input type="number" id="formDonGia" class="form-control" min="0" step="1000" placeholder="VD: 50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" id="formStockLabel">Số Lượng Tồn</label>
+                            <input type="number" id="formSoLuongTon" class="form-control" min="0" value="50" placeholder="VD: 50 (0 nếu tính theo lần)">
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Trạng Thái Hoạt Động</label>
+                            <select id="formTrangThai" class="form-control">
+                                <option value="DangCungCap">● Đang Cung Cấp (Hoạt Động)</option>
+                                <option value="NgungCungCap">● Ngừng Cung Cấp (Tạm Khóa)</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Mô Tả Ngắn</label>
+                            <input type="text" id="formMoTa" class="form-control" placeholder="Tóm tắt ngắn gọn hiển thị trên thẻ tiện ích">
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Mô Tả Chi Tiết / Tiện Ích Kèm Theo</label>
+                            <textarea id="formMoTaChiTiet" class="form-control" placeholder="Mô tả nguyên liệu, điều kiện áp dụng, mũ bảo hiểm, xăng..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <button type="button" id="btnModalToggleStatus" class="btn-action-stop" style="padding: 9px 16px; font-size: 13px; display: none;" onclick="handleModalToggleStatus()">
+                            ⏸️ Ngừng Hoạt Động
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-cancel" onclick="closeServiceModal()">✕ Hủy Bỏ</button>
+                        <button type="submit" class="btn-primary" id="btnSubmitService">💾 Lưu Thông Tin</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 1: THÊM / SỬA / KHÓA LỄ TÂN
+         ===================================================================== -->
+    <div id="receptionistModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="receptionistModalTitle">👩‍💼 Quản Lý Nhân Viên Lễ Tân</h3>
+                <button type="button" class="modal-close" onclick="closeReceptionistModal()">✕</button>
+            </div>
+            <form id="receptionistForm" onsubmit="handleSaveReceptionist(event)">
+                <input type="hidden" id="receptionistFormMode" value="add">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Mã Lễ Tân (MaLeTan) <span class="req">*</span></label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="formMaLeTan" class="form-control" placeholder="VD: LT001" required>
+                                <button type="button" class="btn-refresh" style="padding: 0 12px;" onclick="regenerateReceptionistCode()" title="Tạo lại mã tự động">⚡</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số Điện Thoại <span class="req">*</span></label>
+                            <input type="text" id="formSDTLeTan" class="form-control" placeholder="VD: 0901234567" required>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Họ và Tên Nhân Viên <span class="req">*</span></label>
+                            <input type="text" id="formHoTenLeTan" class="form-control" placeholder="VD: Nguyễn Văn A" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tên Đăng Nhập <span class="req">*</span></label>
+                            <input type="text" id="formTenDangNhapLeTan" class="form-control" placeholder="VD: letan_a" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mật Khẩu</label>
+                            <input type="password" id="formMatKhauLeTan" class="form-control" placeholder="Mặc định: 123456">
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Địa Chỉ Email</label>
+                            <input type="email" id="formEmailLeTan" class="form-control" placeholder="VD: letan.a@hotel.com">
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Trạng Thái Tài Khoản</label>
+                            <select id="formTrangThaiLeTan" class="form-control">
+                                <option value="HoatDong">● Đang Hoạt Động (Cho phép đăng nhập)</option>
+                                <option value="BiKhoa">● Đã Khóa (Ngừng hoạt động / Tạm dừng)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <button type="button" id="btnModalToggleReceptionistStatus" class="btn-action-stop" style="padding: 9px 16px; font-size: 13px; display: none;" onclick="handleModalToggleReceptionistStatus()">
+                            ⏸️ Khóa Tài Khoản
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-cancel" onclick="closeReceptionistModal()">✕ Hủy Bỏ</button>
+                        <button type="submit" class="btn-primary" id="btnSubmitReceptionist">💾 Lưu Lễ Tân</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 2: THÊM / SỬA / NGỪNG LOẠI PHÒNG
+         ===================================================================== -->
+    <div id="roomTypeModal" class="modal-backdrop">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-header">
+                <h3 class="modal-title" id="roomTypeModalTitle">🏨 Quản Lý Loại Phòng</h3>
+                <button type="button" class="modal-close" onclick="closeRoomTypeModal()">✕</button>
+            </div>
+            <form id="roomTypeForm" onsubmit="handleSaveRoomType(event)">
+                <input type="hidden" id="roomTypeFormMode" value="add">
+                <div class="rt-modal-tabs" role="tablist" aria-label="Các mục thông tin loại phòng">
+                    <button type="button" class="rt-tab-btn active" data-rt-tab="basic" onclick="switchRoomTypeTab('basic')">📋 Cơ bản & Giới thiệu</button>
+                    <button type="button" class="rt-tab-btn" data-rt-tab="images" onclick="switchRoomTypeTab('images')">🖼️ Hình ảnh <span id="rtImgCountBadge" class="rt-badge">0/8</span></button>
+                    <button type="button" class="rt-tab-btn" data-rt-tab="specs" onclick="switchRoomTypeTab('specs')">📐 Điểm nhấn & Thông số</button>
+                    <button type="button" class="rt-tab-btn" data-rt-tab="amenities" onclick="switchRoomTypeTab('amenities')">✨ Tiện nghi <span id="rtAmenityCountBadge" class="rt-badge">0</span></button>
+                    <button type="button" class="rt-tab-btn" data-rt-tab="policies" onclick="switchRoomTypeTab('policies')">📜 Đặc quyền & Chính sách</button>
+                </div>
+                <div class="modal-body rt-modal-body">
+                    <!-- TAB 1: CƠ BẢN & GIỚI THIỆU -->
+                    <div class="rt-tab-pane active" data-rt-pane="basic">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Mã Loại Phòng <span class="req">*</span></label>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" id="formMaLoaiPhong" class="form-control" placeholder="VD: LP001" required>
+                                    <button type="button" class="btn-refresh" style="padding: 0 12px;" onclick="regenerateRoomTypeCode()" title="Tạo lại mã tự động">⚡</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tên Loại Phòng <span class="req">*</span></label>
+                                <input type="text" id="formTenLoaiPhong" class="form-control" placeholder="VD: Phòng Tổng Thống Deluxe" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giá Phòng (VNĐ/đêm) <span class="req">*</span></label>
+                                <input type="number" id="formGiaLoaiPhong" class="form-control" min="0" step="10000" placeholder="VD: 1500000" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số Người Tối Đa <span class="req">*</span></label>
+                                <input type="number" id="formSoNguoiToiDa" class="form-control" min="1" max="20" value="2" required>
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Tình Trạng Kinh Doanh</label>
+                                <select id="formTinhTrangLoaiPhong" class="form-control">
+                                    <option value="ConPhong">● Còn Phòng (Đang Kinh Doanh)</option>
+                                    <option value="HetPhong">● Hết Phòng</option>
+                                    <option value="NgungKinhDoanh">● Ngừng Kinh Doanh (Tạm Khóa)</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Câu Tóm Tắt Ngắn (Tagline)</label>
+                                <input type="text" id="formTomTatLoaiPhong" class="form-control" maxlength="255" placeholder="VD: Không gian tinh tế với ban công riêng hướng phố trung tâm">
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Mô Tả Chi Tiết Không Gian</label>
+                                <textarea id="formMoTaLoaiPhong" class="form-control" rows="4" placeholder="Mô tả phong cách kiến trúc, nội thất sang trọng, trải nghiệm lưu trú..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: HÌNH ẢNH -->
+                    <div class="rt-tab-pane" data-rt-pane="images">
+                        <div class="rt-dropzone" id="rtImageDropzone" onclick="document.getElementById('rtImageFileInput').click()">
+                            <input type="file" id="rtImageFileInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple style="display:none" onchange="handleRoomTypeFilesSelected(this.files)">
+                            <div class="rt-dropzone-icon">📸</div>
+                            <div class="rt-dropzone-title">Kéo thả ảnh vào đây hoặc bấm để chọn nhiều ảnh</div>
+                            <div class="rt-dropzone-sub">Hỗ trợ JPG, PNG, WEBP · Tối đa 3MB/ảnh · Tối đa 8 ảnh/loại phòng</div>
+                        </div>
+                        <div id="rtUploadProgressWrap" class="rt-progress-wrap" style="display:none;">
+                            <div class="rt-progress-bar"><div id="rtUploadProgressBar" class="rt-progress-fill" style="width:0%"></div></div>
+                            <div id="rtUploadProgressText" class="rt-progress-text">Đang tải ảnh lên...</div>
+                        </div>
+                        <div id="rtImageErrorBox" class="rt-inline-error" style="display:none;"></div>
+                        <div class="rt-image-hint">💡 Kéo thả thẻ ảnh (hoặc bấm ◀ / ▶) để sắp xếp thứ tự hiển thị. Bấm <b>⭐ Đặt đại diện</b> để chọn ảnh bìa.</div>
+                        <div id="rtImagePreviewGrid" class="rt-image-grid"></div>
+                    </div>
+
+                    <!-- TAB 3: ĐIỂM NHẤN & THÔNG SỐ -->
+                    <div class="rt-tab-pane" data-rt-pane="specs">
+                        <h4 class="rt-sec-title">✨ 4 Thẻ Điểm Nhấn Không Gian</h4>
+                        <div class="rt-highlights-grid" id="rtHighlightsEditor">
+                            <div class="rt-hl-card" data-hl-idx="0">
+                                <div class="rt-hl-head">Thẻ điểm nhấn 1</div>
+                                <div class="rt-hl-row">
+                                    <input type="text" class="form-control rt-hl-icon" placeholder="Icon (VD: ✨)" maxlength="8" value="✨">
+                                    <input type="text" class="form-control rt-hl-title" placeholder="Tiêu đề ngắn">
+                                </div>
+                                <input type="text" class="form-control rt-hl-desc" placeholder="Mô tả ngắn gọn điểm nhấn">
+                            </div>
+                            <div class="rt-hl-card" data-hl-idx="1">
+                                <div class="rt-hl-head">Thẻ điểm nhấn 2</div>
+                                <div class="rt-hl-row">
+                                    <input type="text" class="form-control rt-hl-icon" placeholder="Icon (VD: 🌆)" maxlength="8" value="🌆">
+                                    <input type="text" class="form-control rt-hl-title" placeholder="Tiêu đề ngắn">
+                                </div>
+                                <input type="text" class="form-control rt-hl-desc" placeholder="Mô tả ngắn gọn điểm nhấn">
+                            </div>
+                            <div class="rt-hl-card" data-hl-idx="2">
+                                <div class="rt-hl-head">Thẻ điểm nhấn 3</div>
+                                <div class="rt-hl-row">
+                                    <input type="text" class="form-control rt-hl-icon" placeholder="Icon (VD: 🛏️)" maxlength="8" value="🛏️">
+                                    <input type="text" class="form-control rt-hl-title" placeholder="Tiêu đề ngắn">
+                                </div>
+                                <input type="text" class="form-control rt-hl-desc" placeholder="Mô tả ngắn gọn điểm nhấn">
+                            </div>
+                            <div class="rt-hl-card" data-hl-idx="3">
+                                <div class="rt-hl-head">Thẻ điểm nhấn 4</div>
+                                <div class="rt-hl-row">
+                                    <input type="text" class="form-control rt-hl-icon" placeholder="Icon (VD: ☕)" maxlength="8" value="☕">
+                                    <input type="text" class="form-control rt-hl-title" placeholder="Tiêu đề ngắn">
+                                </div>
+                                <input type="text" class="form-control rt-hl-desc" placeholder="Mô tả ngắn gọn điểm nhấn">
+                            </div>
+                        </div>
+
+                        <h4 class="rt-sec-title" style="margin-top: 18px;">📐 Thông Số & Bố Cục Phòng</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Diện Tích (m²)</label>
+                                <input type="text" id="formDienTich" class="form-control" placeholder="VD: 35 m²">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vị Trí Tầng</label>
+                                <input type="text" id="formTang" class="form-control" placeholder="VD: Tầng 5 - Tầng 12">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bố Trí Giường & Đệm</label>
+                                <input type="text" id="formBoTriGiuong" class="form-control" placeholder="VD: 1 Giường King Size (1m8 x 2m)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tầm Nhìn / Hướng View</label>
+                                <input type="text" id="formHuongView" class="form-control" placeholder="VD: Hướng thành phố / Ban công thoáng đãng">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tiện Nghi Phòng Tắm</label>
+                                <input type="text" id="formTienNghiPhongTam" class="form-control" placeholder="VD: Phòng tắm đứng vòi sen mưa & bồn tắm riêng">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Quy Định Hút Thuốc</label>
+                                <select id="formQuyDinhHutThuoc" class="form-control">
+                                    <option value="">-- Chọn quy định --</option>
+                                    <option value="100% Không hút thuốc">100% Không hút thuốc</option>
+                                    <option value="Không hút thuốc trong phòng (có khu vực riêng)">Không hút thuốc trong phòng (có khu vực riêng)</option>
+                                    <option value="Cho phép hút thuốc ngoài ban công">Cho phép hút thuốc ngoài ban công</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: TIỆN NGHI -->
+                    <div class="rt-tab-pane" data-rt-pane="amenities">
+                        <div class="rt-amenity-toolbar">
+                            <input type="text" id="rtAmenitySearch" class="form-control" placeholder="🔍 Tìm nhanh tiện nghi theo tên hoặc nhóm..." oninput="renderRoomTypeAmenityLibrary()">
+                            <button type="button" class="btn-primary" style="white-space:nowrap;" onclick="toggleAddAmenityBox()">➕ Thêm tiện nghi mới</button>
+                        </div>
+
+                        <div id="rtAddAmenityBox" class="rt-add-amenity-box" style="display:none;">
+                            <div class="rt-add-amenity-grid">
+                                <input type="text" id="newAmenityName" class="form-control" placeholder="Tên tiện nghi mới (VD: Bồn sục Jacuzzi)">
+                                <select id="newAmenityGroup" class="form-control">
+                                    <option value="Phòng ngủ & Thư giãn">Phòng ngủ & Thư giãn</option>
+                                    <option value="Phòng tắm & Chăm sóc cá nhân">Phòng tắm & Chăm sóc cá nhân</option>
+                                    <option value="Công nghệ & Giải trí">Công nghệ & Giải trí</option>
+                                    <option value="Ẩm thực & Thức uống">Ẩm thực & Thức uống</option>
+                                    <option value="Tiện ích & Dịch vụ an toàn">Tiện ích & Dịch vụ an toàn</option>
+                                </select>
+                                <input type="text" id="newAmenityIcon" class="form-control" placeholder="Icon/Emoji (VD: 🛁)" maxlength="10">
+                                <div style="display:flex; gap:6px;">
+                                    <button type="button" class="btn-primary" onclick="handleCreateNewAmenity()">Lưu & Chọn</button>
+                                    <button type="button" class="btn-cancel" onclick="toggleAddAmenityBox(false)">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="rtAmenityLibraryContainer" class="rt-amenity-groups"></div>
+
+                        <div class="form-group" style="margin-top: 12px;">
+                            <label class="form-label">Chuỗi Tiện Nghi Tổng Hợp (tự đồng bộ để tương thích màn hình cũ)</label>
+                            <input type="text" id="formTienNghiLoaiPhong" class="form-control" readonly placeholder="Tự động cập nhật theo các tiện nghi đã chọn...">
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: ĐẶC QUYỀN & CHÍNH SÁCH -->
+                    <div class="rt-tab-pane" data-rt-pane="policies">
+                        <div class="rt-sec-head">
+                            <h4 class="rt-sec-title" style="margin:0;">👑 Đặc Quyền Bao Gồm</h4>
+                            <button type="button" class="btn-refresh" onclick="addRoomTypePerkRow('')">➕ Thêm dòng đặc quyền</button>
+                        </div>
+                        <div id="rtPerksListEditor" class="rt-perks-editor"></div>
+
+                        <h4 class="rt-sec-title" style="margin-top: 18px;">📜 Chính Sách Nhận / Trả Phòng & Lưu Trú</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Giờ Nhận Phòng (Check-in)</label>
+                                <input type="text" id="formGioNhanPhong" class="form-control" placeholder="Từ 14:00 (Hỗ trợ nhận phòng sớm theo tình trạng phòng)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giờ Trả Phòng (Check-out)</label>
+                                <input type="text" id="formGioTraPhong" class="form-control" placeholder="Trước 12:00 trưa">
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Chính Sách Hủy Phòng & Hoàn Tiền</label>
+                                <textarea id="formChinhSachHuy" class="form-control" rows="2" placeholder="Miễn phí hủy trước 7 ngày nhận phòng..."></textarea>
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Chính Sách Trẻ Em & Giường Phụ</label>
+                                <textarea id="formChinhSachTreEm" class="form-control" rows="2" placeholder="Miễn phí 01 trẻ em dưới 6 tuổi ngủ cùng bố mẹ..."></textarea>
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label class="form-label">Phương Thức Đặt Cọc & Thanh Toán</label>
+                                <textarea id="formPhuongThucCoc" class="form-control" rows="2" placeholder="Thanh toán trực tuyến qua VietQR hoặc trực tiếp tại quầy..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" id="btnModalToggleRoomTypeStatus" class="btn-action-stop" style="padding: 9px 16px; font-size: 13px; display: none;" onclick="handleModalToggleRoomTypeStatus()">
+                            ⏸️ Ngừng Kinh Doanh
+                        </button>
+                        <button type="button" id="btnModalDeleteRoomType" class="btn-action-stop" style="padding: 9px 14px; font-size: 13px; display: none; background: #fee2e2; color: #b91c1c; border-color: #fca5a5;" onclick="handleModalDeleteRoomType()">
+                            🗑️ Xóa Loại Phòng
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-cancel" onclick="closeRoomTypeModal()">✕ Hủy Bỏ</button>
+                        <button type="submit" class="btn-primary" id="btnSubmitRoomType">💾 Lưu Loại Phòng</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 3: THÊM / SỬA / BẢO TRÌ PHÒNG CỤ THỂ
+         ===================================================================== -->
+    <div id="roomModal" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="roomModalTitle">🚪 Quản Lý Phòng Cụ Thể</h3>
+                <button type="button" class="modal-close" onclick="closeRoomModal()">✕</button>
+            </div>
+            <form id="roomForm" onsubmit="handleSaveRoom(event)">
+                <input type="hidden" id="roomFormMode" value="add">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Số / Mã Phòng (MaPhong) <span class="req">*</span></label>
+                        <input type="text" id="formMaPhong" class="form-control" placeholder="VD: P101, P205, P502..." required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Thuộc Loại Phòng <span class="req">*</span></label>
+                        <select id="formLoaiPhongSelect" class="form-control" required>
+                            <!-- Tự động load danh sách loại phòng -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <button type="button" id="btnModalToggleRoomStatus" class="btn-action-stop" style="padding: 9px 16px; font-size: 13px; display: none;" onclick="handleModalToggleRoomStatus()">
+                            ⏸️ Đặt Bảo Trì
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-cancel" onclick="closeRoomModal()">✕ Hủy Bỏ</button>
+                        <button type="submit" class="btn-primary" id="btnSubmitRoom">💾 Lưu Phòng</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 4: THÊM / SỬA / NGỪNG KHUYẾN MÃI
+         ===================================================================== -->
+    <div id="promoModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="promoModalTitle">🎁 Quản Lý Khuyến Mãi & Voucher</h3>
+                <button type="button" class="modal-close" onclick="closePromoModal()">✕</button>
+            </div>
+            <form id="promoForm" onsubmit="handleSavePromo(event)">
+                <input type="hidden" id="promoFormMode" value="add">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Mã Khuyến Mãi <span class="req">*</span></label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="formMaKM" class="form-control" placeholder="VD: KM001" required>
+                                <button type="button" class="btn-refresh" style="padding: 0 12px;" onclick="regeneratePromoCode()" title="Tạo lại mã tự động">⚡</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hình Thức Ưu Đãi <span class="req">*</span></label>
+                            <select id="formLoaiKM" class="form-control" onchange="handleLoaiKMChange()">
+                                <option value="PhanTram">Giảm Theo Phần Trăm (%)</option>
+                                <option value="SoTien">Giảm Số Tiền Cố Định (VNĐ)</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Tên Chương Trình / Voucher <span class="req">*</span></label>
+                            <input type="text" id="formTenKM" class="form-control" placeholder="VD: Chào Hè Rực Rỡ 2026 - Giảm 15%" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" id="formGiaTriGiamLabel">Mức Giảm (%) <span class="req">*</span></label>
+                            <input type="number" id="formGiaTriGiam" class="form-control" min="0" placeholder="VD: 15" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số Đêm Lưu Trú Tối Thiểu</label>
+                            <input type="number" id="formSoDemToiThieu" class="form-control" min="0" value="0" placeholder="0 nếu không yêu cầu">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày Bắt Đầu Áp Dụng <span class="req">*</span></label>
+                            <input type="date" id="formNgayBatDau" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày Kết Thúc Áp Dụng <span class="req">*</span></label>
+                            <input type="date" id="formNgayKetThuc" class="form-control" required>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label">Trạng Thái Chương Trình</label>
+                            <select id="formTrangThaiKM" class="form-control">
+                                <option value="HoatDong">● Đang Hoạt Động (Áp dụng cho đặt phòng)</option>
+                                <option value="NgungApDung">● Ngừng Hoạt Động (Tạm dừng chương trình)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <button type="button" id="btnModalTogglePromoStatus" class="btn-action-stop" style="padding: 9px 16px; font-size: 13px; display: none;" onclick="handleModalTogglePromoStatus()">
+                            ⏸️ Ngừng Áp Dụng
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-cancel" onclick="closePromoModal()">✕ Hủy Bỏ</button>
+                        <button type="submit" class="btn-primary" id="btnSubmitPromo">💾 Lưu Khuyến Mãi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 5: XEM CHI TIẾT ĐÁNH GIÁ (UC21.3)
+         ===================================================================== -->
+    <div id="reviewDetailModal" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="reviewDetailModalTitle">📋 Chi Tiết Đánh Giá Của Khách Hàng</h3>
+                <button type="button" class="modal-close" onclick="closeReviewDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px; max-height: 75vh; overflow-y: auto;">
+                <!-- Thanh tóm tắt thông tin đối tượng & điểm số -->
+                <div id="reviewDetailSummaryBar" style="background: var(--adm-section, #F7FAFC); border: 1px solid var(--border-dark); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div id="reviewDetailTargetTitle" style="font-size: 16px; font-weight: 700; color: var(--gold-light);">🏨 Loại Phòng</div>
+                        <div id="reviewDetailPeriodText" style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">Kỳ đánh giá: ...</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="reviewDetailScoreBadge" class="score-pill score-pill-gold">★ 0.00 / 5.0</div>
+                        <span id="reviewDetailTotalBadge" class="badge badge-info">0 đánh giá</span>
+                    </div>
+                </div>
+
+                <!-- Bộ lọc số sao trong modal -->
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: var(--text-muted);">Lọc theo sao:</span>
+                    <button type="button" class="review-star-filter-btn active" id="btnFilterStarAll" onclick="filterReviewDetailByStars('all')">Tất Cả</button>
+                    <button type="button" class="review-star-filter-btn" id="btnFilterStar5" onclick="filterReviewDetailByStars(5)">5 ★</button>
+                    <button type="button" class="review-star-filter-btn" id="btnFilterStar4" onclick="filterReviewDetailByStars(4)">4 ★</button>
+                    <button type="button" class="review-star-filter-btn" id="btnFilterStar3" onclick="filterReviewDetailByStars(3)">3 ★</button>
+                    <button type="button" class="review-star-filter-btn" id="btnFilterStar2" onclick="filterReviewDetailByStars(2)">2 ★</button>
+                    <button type="button" class="review-star-filter-btn" id="btnFilterStar1" onclick="filterReviewDetailByStars(1)">1 ★</button>
+                </div>
+
+                <!-- Danh sách đánh giá cụ thể -->
+                <div id="reviewDetailListContainer">
+                    <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-dark); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn-cancel" onclick="closeReviewDetailModal()">Đóng Cửa Sổ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 6: XEM CHI TIẾT PHIẾU NHẬN PHÒNG (ADMIN)
+         ===================================================================== -->
+    <div id="modalAdminSlipDetail" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 900px; width: 95%;">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Chi Tiết Phiếu Nhận Phòng <span id="adminSlipDetailTitleId" style="color: var(--gold-light);"></span></h3>
+                <button type="button" class="modal-close" onclick="closeAdminSlipDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="adminSlipDetailBody" style="padding: 20px 24px; max-height: 75vh; overflow-y: auto;">
+                <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <button type="button" class="btn-action-print" onclick="printAdminSlipDetail()">
+                        🖨️ In Biên Bản Phiếu
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn-cancel" onclick="closeAdminSlipDetailModal()">Đóng Cửa Sổ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 7: XEM CHI TIẾT HÓA ĐƠN ĐIỆN TỬ (ADMIN)
+         ===================================================================== -->
+    <div id="modalAdminInvoiceDetail" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 900px; width: 95%;">
+            <div class="modal-header">
+                <h3 class="modal-title">🧾 Chi Tiết Hóa Đơn Điện Tử <span id="adminInvoiceDetailTitleId" style="color: var(--primary-light);"></span></h3>
+                <button type="button" class="modal-close" onclick="closeAdminInvoiceDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="adminInvoiceDetailBody" style="padding: 20px 24px; max-height: 75vh; overflow-y: auto;">
+                <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <button type="button" class="btn-action-print" onclick="printAdminInvoiceDetail()">
+                        🖨️ In Hóa Đơn
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn-cancel" onclick="closeAdminInvoiceDetailModal()">Đóng Cửa Sổ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 8: BIÊN BẢN CHI TIẾT HỦY PHIẾU & QUYẾT TOÁN HOÀN TIỀN
+         ===================================================================== -->
+    <div id="modalCancelDetail" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 720px; width: 95%;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">📄</span>
+                    <div>
+                        <h3 class="modal-title" style="color: var(--adm-err, #C0392B);" id="cancelDetailTitle">Chi Tiết Hủy Phiếu & Quyết Toán Hoàn Tiền</h3>
+                        <div style="font-size: 12px; color: var(--gold-light);">Biên bản ghi nhận lý do hủy phòng, nhân sự tiếp nhận & quyết toán số tiền hoàn trả cho khách</div>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeCancelDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="cancelDetailBody" style="padding: 20px 24px; max-height: 75vh; overflow-y: auto;">
+                <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn-action-print" onclick="printCancelDetailSlip()">
+                    🖨️ In Biên Bản Hủy
+                </button>
+                <button type="button" class="btn-cancel" onclick="closeCancelDetailModal()">Đóng Cửa Sổ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 9: XEM DỊCH VỤ PHÁT SINH PHÒNG ĐÃ DÙNG
+         ===================================================================== -->
+    <div id="modalAdminServices" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 800px; width: 95%;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="adminServicesModalTitle">🛎️ Dịch Vụ Phát Sinh Trong Kỳ Lưu Trú</h3>
+                <button type="button" class="modal-close" onclick="closeAdminServicesModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="adminServicesModalBody" style="padding: 20px 24px; max-height: 75vh; overflow-y: auto;">
+                <div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div></div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-dark); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn-cancel" onclick="closeAdminServicesModal()">Đóng Cửa Sổ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Thông Báo Nổi -->
+    <div id="adminToast" class="toast-notification"></div>
+  </main>
+</div>
+
+<script src="../js/hotel-api.js?v=17"></script>
+<script src="../js/ui-dialog.js?v=1"></script>
+<script src="../js/dashboard-quan-ly.js?v=33"></script>
+</body>
+</html>

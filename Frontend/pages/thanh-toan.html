@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light only" />
+    <title>SkyHotel - Thanh toán</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+<script src="../js/theme.js?v=24"></script>
+  <link rel="stylesheet" href="../css/theme.css?v=24">
+  <link rel="stylesheet" href="../css/thanh-toan.css?v=24" />
+  </head>
+  <body data-page="pay">
+    <main>
+    <div class="wrap">
+      <div class="ey pay-ey">ĐẶT PHÒNG</div>
+      <div class="steps">
+        <div class="st done"><i>✓</i>Thông tin khách hàng</div>
+        <div class="ln"></div>
+        <div class="st on" id="s2"><i>2</i>Thanh toán</div>
+        <div class="ln"></div>
+        <div class="st" id="s3"><i>3</i>Xác nhận</div>
+      </div>
+
+      <div class="cols" id="main">
+        <div class="card">
+          <h3>Phương thức thanh toán</h3>
+          <div class="opt on">
+            <div class="h">
+              <span>VNPay Hosted Checkout</span><small>Thanh toán trên trang VNPay</small>
+            </div>
+            <div class="sub">
+              <p>Sky Hotel không thu thập số thẻ hoặc mã bảo mật. Tính năng chuyển sang VNPay sẽ được bật sau khi cấu hình máy chủ HTTPS và xác minh giao dịch phía máy chủ.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card promo-card" id="promoCard">
+            <h3 class="promo-title">Mã ưu đãi & Voucher</h3>
+            <div class="promo-input-row">
+              <input type="text" id="pay-promo-code" class="promo-input" placeholder="Nhập mã ưu đãi (VD: SKYWELCOME...)">
+              <button type="button" id="btn-pay-promo" class="promo-btn">Áp dụng</button>
+            </div>
+            <div id="pay-promo-msg" class="promo-msg"></div>
+            <div id="pay-promo-hints" class="promo-hints"></div>
+          </div>
+
+          <div class="card sum">
+            <h3>Tóm tắt đơn hàng</h3>
+            <div id="sumBody"><div class="msg">Đang tải đơn đặt phòng…</div></div>
+            <div class="msg pay-err-msg" id="e-pay" role="alert"></div>
+            <button class="pay" id="pay" disabled>Thanh toán chưa khả dụng</button>
+            <div class="sec">Không nhập thông tin thẻ trên website Sky Hotel.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card done-box" id="done">
+        <div class="done-icon">✅</div>
+        <b id="doneTitle">Thanh toán đã được xác nhận</b>
+        <span class="done-sub" id="doneMsg"></span>
+      </div>
+    </div>
+    </main>
+    <footer class="sfoot"><div class="sfoot-in">
+<div><div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div><p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p></div>
+<div><h4>Liên hệ</h4><p>☎ <span data-h="phone">028 3930 8888</span></p><p>✉ <span data-h="email">contact@skyhotel.vn</span></p><p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p></div>
+<div><h4>Liên kết nhanh</h4><p><a data-go="home">Trang chủ</a></p><p><a data-go="rooms">Phòng nghỉ</a></p><p><a data-go="hist">Lịch sử đặt phòng</a></p></div>
+</div><div class="fb"><span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span><span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span></div></footer>
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/thanh-toan.js?v=18"></script>
+<script src="../js/bridge.js?v=17"></script>
+  </body>
+</html>

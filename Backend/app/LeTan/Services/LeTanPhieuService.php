@@ -9,6 +9,7 @@ use App\LeTan\Repositories\LeTanPhongVaKhachRepository;
 use Database\Database;
 use Exception;
 use PDO;
+use Shared\ChinhSachHoanHuy;
 
 /**
  * Service chuyên trách quản lý Phiếu nhận phòng, Check-in tại quầy và Hủy phiếu.
@@ -196,9 +197,8 @@ class LeTanPhieuService
                 }
             }
 
-            // 3. Quy tắc giữ phòng cho khách đến trễ:
-            $traPhongTimestamp = strtotime($p['ThoiGianTraPhong']);
-            if ($currentTimestamp > $traPhongTimestamp) {
+            // 3. Quy tắc giữ phòng cho khách đến trễ: chỉ hủy No-show khi quá giờ trả phòng dự kiến
+            if (ChinhSachHoanHuy::daQuaHanTraPhong($p['ThoiGianTraPhong'], $currentTimestamp)) {
                 $lyDoQuaHan = "Đã quá thời gian trả phòng dự kiến ({$p['ThoiGianTraPhong']}) mà khách không đến nhận phòng";
                 $this->phieuRepo->capNhatHuy($maPhieu, $maLeTan, $pId, $lyDoQuaHan);
                 throw new Exception("Check-in thất bại: Đã quá thời gian trả phòng dự kiến ({$p['ThoiGianTraPhong']}) mà khách không đến nhận. Phòng {$pId} đã được chuyển sang trạng thái 'Đã hủy'.", 400);
@@ -233,16 +233,43 @@ class LeTanPhieuService
     }
 
     /**
-     * Tính toán số tiền hoàn hủy phòng theo chính sách khách sạn:
-     * - Trước ngày nhận phòng từ 7 ngày trở lên: Hoàn 100%, Phí hủy 0%
-     * - Trước ngày nhận phòng từ 3 đến dưới 7 ngày: Hoàn 50%, Phí hủy 50%
-     * - Trước ngày nhận phòng dưới 3 ngày: Hoàn 0%, Phí hủy 100%
-     * - Không đến nhận phòng, không báo hủy (hoặc sau thời gian nhận): Hoàn 0%, Phí hủy 100%
+     * Xác thực vai trò/quyền sở hữu trước khi tính tiền hoàn hoặc hủy phiếu.
+     */
+    private function xacThucQuyenHuy(array $phieu, array $params): void
+    {
+        $actor = trim((string)($params['actor'] ?? ''));
+
+        if ($actor === 'khachHang') {
+            $maKH = trim((string)($params['maKH'] ?? ''));
+            if (empty($maKH)) {
+                throw new Exception("Vui lòng đăng nhập tài khoản khách hàng để thực hiện hủy phòng.", 401);
+            }
+            if (($phieu['MaKH'] ?? '') !== $maKH) {
+                throw new Exception("Bạn không có quyền thao tác hủy trên phiếu đặt phòng này.", 403);
+            }
+            return;
+        }
+
+        // Nếu truyền maTK ở luồng Lễ tân/Admin, chặn tài khoản KhachHang gọi endpoint nội bộ
+        $maTK = trim((string)($params['maTK'] ?? ($params['MaTK'] ?? '')));
+        if (!empty($maTK)) {
+            $db = Database::getConnection();
+            $stmt = $db->prepare("SELECT VaiTro FROM TaiKhoan WHERE MaTK = ? LIMIT 1");
+            $stmt->execute([$maTK]);
+            $vaiTro = $stmt->fetchColumn();
+            if ($vaiTro !== false && $vaiTro === 'KhachHang') {
+                throw new Exception("Tài khoản khách hàng vui lòng sử dụng chức năng tự hủy phòng dành cho khách.", 403);
+            }
+        }
+    }
+
+    /**
+     * Tính toán số tiền hoàn hủy phòng theo quy tắc chuẩn Shared\ChinhSachHoanHuy.
      */
     public function tinhTienHoanHuyPhong(array $params = []): array
     {
-        $maPhieu = trim($params['maPhieu'] ?? ($params['MaPhieu'] ?? ''));
-        $maPhong = trim($params['maPhong'] ?? ($params['MaPhong'] ?? ''));
+        $maPhieu = trim((string)($params['maPhieu'] ?? ($params['MaPhieu'] ?? ($params['MaPNP'] ?? ($params['maPNP'] ?? '')))));
+        $maPhong = trim((string)($params['maPhong'] ?? ($params['MaPhong'] ?? '')));
 
         if (empty($maPhieu)) {
             throw new Exception("Vui lòng cung cấp mã phiếu đặt phòng.", 400);
@@ -254,23 +281,76 @@ class LeTanPhieuService
         }
 
         $phieu = $detail['phieu'];
+        $this->xacThucQuyenHuy($phieu, $params);
+
+        $trangThaiPhieu = $phieu['TrangThai'] ?? '';
+        if ($trangThaiPhieu === 'DaTraPhong') {
+            throw new Exception("Phiếu này đã hoàn tất trả phòng, không thể hủy.", 400);
+        }
+        if ($trangThaiPhieu === 'DaHuy') {
+            throw new Exception("Phiếu đặt phòng '{$maPhieu}' đã bị hủy trước đó.", 400);
+        }
+
         $chiTietPhong = $detail['danhSachPhong'] ?? ($detail['chiTietPhong'] ?? []);
+        $isSingleRoom = !empty($maPhong) && $maPhong !== 'ALL';
 
-        // Lấy ngày nhận phòng dự kiến từ danh sách phòng hoặc phiếu
-        $thoiGianNhan = !empty($chiTietPhong[0]['ThoiGianNhanPhong']) 
-            ? $chiTietPhong[0]['ThoiGianNhanPhong'] 
-            : ($phieu['NgayNhan'] ?? date('Y-m-d 14:00:00'));
-
-        // Tính tổng tiền của các phòng được chọn để hủy
-        $tongTienHuy = 0.0;
-        $phongHuyList = [];
+        $tongGiaTriTatCaPhong = 0.0;
+        $tongPhiHuyTruocDo = 0.0;
+        $soPhongCoTheHuyConLai = 0;
+        $phongTargetList = [];
+        $targetRow = null;
 
         foreach ($chiTietPhong as $cp) {
-            if ($cp['TrangThai'] !== 'DaDatPhong') {
-                continue;
+            $giaPhong = (float)($cp['GiaPhong'] ?? ($cp['Gia'] ?? 0));
+            $start = strtotime($cp['ThoiGianNhanPhong'] ?? $phieu['NgayNhan']);
+            $end = strtotime($cp['ThoiGianTraPhong'] ?? $phieu['NgayTra']);
+            $soDem = max(1, (int)round(($end - $start) / 86400));
+            $thanhTienPhong = $giaPhong * $soDem;
+
+            $tongGiaTriTatCaPhong += $thanhTienPhong;
+            $cpTrangThai = $cp['TrangThai'] ?? '';
+
+            if ($cpTrangThai === 'DaHuy') {
+                $tongPhiHuyTruocDo += (float)($cp['PhiHuy'] ?? 0);
+            }
+            if (in_array($cpTrangThai, ['DaDatPhong', 'ChoThanhToan'], true)) {
+                $soPhongCoTheHuyConLai++;
             }
 
-            if (!empty($maPhong) && $maPhong !== 'ALL' && $cp['MaPhong'] !== $maPhong) {
+            if ($isSingleRoom && ($cp['MaPhong'] ?? '') === $maPhong) {
+                $targetRow = $cp;
+            }
+        }
+
+        if ($isSingleRoom && !$targetRow) {
+            throw new Exception("Phòng '{$maPhong}' không thuộc phiếu #{$maPhieu}.", 404);
+        }
+        if ($isSingleRoom) {
+            $st = $targetRow['TrangThai'] ?? '';
+            if ($st === 'DangLuuTru') {
+                throw new Exception("Phòng {$maPhong} đang lưu trú (đã nhận phòng), không thể hủy trực tiếp; vui lòng thực hiện Check-out trả phòng sớm.", 400);
+            }
+            if ($st === 'DaHuy') {
+                throw new Exception("Phòng {$maPhong} đã được hủy trước đó.", 400);
+            }
+            if ($st === 'DaTraPhong') {
+                throw new Exception("Phòng {$maPhong} đã hoàn tất trả phòng, không thể hủy.", 400);
+            }
+        }
+
+        $thoiGianNhan = null;
+        $tongTienPhongHuy = 0.0;
+        $hasDangLuuTru = false;
+
+        foreach ($chiTietPhong as $cp) {
+            $cpTrangThai = $cp['TrangThai'] ?? '';
+            if ($cpTrangThai === 'DangLuuTru') {
+                $hasDangLuuTru = true;
+            }
+            if (!in_array($cpTrangThai, ['DaDatPhong', 'ChoThanhToan'], true)) {
+                continue;
+            }
+            if ($isSingleRoom && ($cp['MaPhong'] ?? '') !== $maPhong) {
                 continue;
             }
 
@@ -280,113 +360,209 @@ class LeTanPhieuService
             $soDem = max(1, (int)round(($end - $start) / 86400));
             $thanhTienPhong = $giaPhong * $soDem;
 
-            $tongTienHuy += $thanhTienPhong;
-            $phongHuyList[] = [
+            if ($thoiGianNhan === null || strtotime($cp['ThoiGianNhanPhong']) < strtotime($thoiGianNhan)) {
+                $thoiGianNhan = $cp['ThoiGianNhanPhong'];
+            }
+
+            $tongTienPhongHuy += $thanhTienPhong;
+            $phongTargetList[] = [
                 'maPhong' => $cp['MaPhong'],
                 'tenLoaiPhong' => $cp['TenLoaiPhong'] ?? '',
                 'donGia' => $giaPhong,
                 'soDem' => $soDem,
-                'thanhTien' => $thanhTienPhong
+                'thanhTien' => $thanhTienPhong,
+                'thoiGianNhanPhong' => $cp['ThoiGianNhanPhong'],
             ];
         }
 
-        if ($tongTienHuy <= 0) {
-            $tongTienHuy = (float)($phieu['TongTienSauVAT'] ?? ($phieu['TongTien'] ?? 0));
+        if (empty($phongTargetList)) {
+            if ($hasDangLuuTru) {
+                throw new Exception("Phiếu đang có phòng lưu trú (đã nhận phòng), vui lòng chọn hủy từng phòng chưa nhận hoặc thực hiện Check-out.", 400);
+            }
+            throw new Exception("Không còn phòng hợp lệ ở trạng thái có thể hủy trong phiếu #{$maPhieu}.", 400);
         }
 
-        // Tính khoảng cách thời gian theo ngày từ thời điểm hiện tại đến thời gian nhận phòng
-        $nowTs = time();
-        $nhanTs = strtotime($thoiGianNhan);
-        $diffSeconds = $nhanTs - $nowTs;
-        $diffDays = $diffSeconds / 86400.0;
+        $thoiGianNhan = $thoiGianNhan ?? ($phieu['NgayNhan'] ?? date('Y-m-d 14:00:00'));
 
-        $tiLeHoan = 0.0;
-        $tiLePhiHuy = 100.0;
-        $moTaChinhSach = "Trước ngày nhận phòng dưới 3 ngày";
+        // Kiểm tra số tiền thực tế đã thanh toán trên bảng ThanhToan
+        $danhSachTT = $detail['danhSachThanhToan'] ?? [];
+        $tongDaThu = 0.0;
+        $tongDaHoanTruocDo = 0.0;
+        foreach ($danhSachTT as $tt) {
+            $ttStatus = $tt['TrangThaiThanhToan'] ?? '';
+            if (in_array($ttStatus, [ChinhSachHoanHuy::TT_HOAN_TAT, ChinhSachHoanHuy::TT_HOAN_MOT_PHAN], true)) {
+                $tongDaThu += (float)($tt['SoTien'] ?? 0);
+                $tongDaHoanTruocDo += (float)($tt['SoTienHoan'] ?? 0);
+            }
+        }
 
-        if ($diffDays >= 7.0) {
-            $tiLeHoan = 100.0;
-            $tiLePhiHuy = 0.0;
-            $moTaChinhSach = "Trước ngày nhận từ 7 ngày trở lên (Hoàn 100% tiền phòng)";
-        } elseif ($diffDays >= 3.0) {
-            $tiLeHoan = 50.0;
-            $tiLePhiHuy = 50.0;
-            $moTaChinhSach = "Trước ngày nhận từ 3 đến dưới 7 ngày (Hoàn 50% tiền phòng, Phí hủy 50%)";
+        $daThanhToan = $tongDaThu > 0 && $trangThaiPhieu !== 'ChoThanhToan';
+        $isCancelAllRemaining = !$isSingleRoom || (count($phongTargetList) >= $soPhongCoTheHuyConLai);
+
+        $soTienCoSo = $daThanhToan
+            ? ChinhSachHoanHuy::tinhTienCoSoPhanBo(
+                $tongTienPhongHuy,
+                $tongGiaTriTatCaPhong,
+                $tongDaThu,
+                $tongDaHoanTruocDo,
+                $tongPhiHuyTruocDo,
+                $isCancelAllRemaining
+            )
+            : 0.0;
+
+        $isNoShow = !empty($params['isNoShow']);
+        if (!$daThanhToan) {
+            $nowTs = time();
+            $diffDays = (strtotime($thoiGianNhan) - $nowTs) / 86400.0;
+            $policyRes = [
+                'maMoc' => 'UNPAID',
+                'moTaChinhSach' => 'Đơn đặt phòng chưa thanh toán (Hủy giữ phòng - Hoàn 0 đ)',
+                'diffDays' => round($diffDays, 2),
+                'tiLeHoan' => 0.0,
+                'tiLePhiHuy' => 0.0,
+                'soTienHoan' => 0.0,
+                'phiHuy' => 0.0,
+            ];
         } else {
-            $tiLeHoan = 0.0;
-            $tiLePhiHuy = 100.0;
-            $moTaChinhSach = $diffDays < 0 
-                ? "Đã qua thời gian nhận phòng (Không hoàn tiền - Phí hủy 100%)" 
-                : "Trước ngày nhận phòng dưới 3 ngày (Không hoàn tiền - Phí hủy 100%)";
+            $policyRes = ChinhSachHoanHuy::tinhHoanTheoThoiGian($thoiGianNhan, $soTienCoSo, null, $isNoShow);
         }
 
-        $soTienHoan = round(($tongTienHuy * $tiLeHoan) / 100);
-        $phiHuy = round(($tongTienHuy * $tiLePhiHuy) / 100);
+        // Phân bổ tiền hoàn & phí hủy xuống từng phòng để lưu vết & quyết toán Check-out chính xác
+        $chiTietPhongKetQua = [];
+        $tongTienHoan = (float)$policyRes['soTienHoan'];
+        $tongPhiHuy = (float)$policyRes['phiHuy'];
+        $countRooms = count($phongTargetList);
+        $daChiaHoan = 0.0;
+        $daChiaPhi = 0.0;
+
+        foreach ($phongTargetList as $idx => $pt) {
+            if ($idx === $countRooms - 1) {
+                $rHoan = max(0.0, round($tongTienHoan - $daChiaHoan, 0));
+                $rPhi = max(0.0, round($tongPhiHuy - $daChiaPhi, 0));
+            } else {
+                $tyTrong = ($tongTienPhongHuy > 0) ? ($pt['thanhTien'] / $tongTienPhongHuy) : (1 / $countRooms);
+                $rHoan = round($tongTienHoan * $tyTrong, 0);
+                $rPhi = round($tongPhiHuy * $tyTrong, 0);
+                $daChiaHoan += $rHoan;
+                $daChiaPhi += $rPhi;
+            }
+            $pt['tiLeHoan'] = $policyRes['tiLeHoan'];
+            $pt['soTienHoan'] = $rHoan;
+            $pt['phiHuy'] = $rPhi;
+            $chiTietPhongKetQua[] = $pt;
+        }
+
+        $soGioConLai = $policyRes['soGioConLai'] ?? round((strtotime($thoiGianNhan) - time()) / 3600, 1);
+        $soDemChinh = $phongTargetList[0]['soDem'] ?? 1;
+        $tongTienPhieuGoc = (float)($phieu['TongTienSauVAT'] ?? ($detail['hoaDon']['TongTienSauVAT'] ?? $tongGiaTriTatCaPhong));
 
         return [
+            // CamelCase chuẩn mới
             'maPhieu' => $maPhieu,
             'maPhong' => $maPhong ?: 'ALL',
             'ngayNhan' => $thoiGianNhan,
-            'diffDays' => round($diffDays, 1),
-            'tongTienHuy' => $tongTienHuy,
-            'tiLeHoan' => $tiLeHoan,
-            'tiLePhiHuy' => $tiLePhiHuy,
-            'soTienHoan' => $soTienHoan,
-            'phiHuy' => $phiHuy,
-            'moTaChinhSach' => $moTaChinhSach,
-            'danhSachPhongHuy' => $phongHuyList
+            'diffDays' => $policyRes['diffDays'],
+            'daThanhToan' => $daThanhToan,
+            'tongTienDaThanhToan' => $tongDaThu,
+            'soTienCoSo' => $soTienCoSo,
+            'tongTienHuy' => $daThanhToan ? $soTienCoSo : $tongTienPhongHuy,
+            'tiLeHoan' => $policyRes['tiLeHoan'],
+            'tiLePhiHuy' => $policyRes['tiLePhiHuy'],
+            'soTienHoan' => $tongTienHoan,
+            'phiHuy' => $tongPhiHuy,
+            'maMoc' => $policyRes['maMoc'],
+            'moTaChinhSach' => $policyRes['moTaChinhSach'],
+            'canThongTinNganHang' => $tongTienHoan > 0,
+            'danhSachPhongHuy' => $chiTietPhongKetQua,
+            'quyTac' => ChinhSachHoanHuy::danhSachQuyTac(),
+
+            // PascalCase tương thích giao diện Dashboard Lễ tân
+            'MaPNP' => $maPhieu,
+            'TrangThaiHienTai' => $trangThaiPhieu,
+            'NgayNhanPhong' => $thoiGianNhan,
+            'SoGioTruocCheckIn' => $soGioConLai,
+            'SoDem' => $soDemChinh,
+            'SoPhongDangHoatDong' => $soPhongCoTheHuyConLai,
+            'TongTienPhieu' => $tongTienPhieuGoc,
+            'TienPhongMucTieu' => $tongTienPhongHuy,
+            'DaThanhToan' => $soTienCoSo,
+            'TyLeHoan' => $policyRes['tiLeHoan'],
+            'PhiHuy' => $tongPhiHuy,
+            'SoTienHoan' => $tongTienHoan,
+            'ChinhSachApDung' => $policyRes['moTaChinhSach'],
         ];
     }
 
     /**
-     * Hủy phiếu đặt phòng theo yêu cầu chủ động của khách
-     * Hỗ trợ hủy toàn bộ phiếu hoặc hủy riêng từng phòng lẻ, tự động tính tiền hoàn theo chính sách
+     * Hủy phiếu đặt phòng / từng phòng (dùng chung cho Khách hàng tự hủy, Lễ tân và ThanhToan).
      */
     public function huyPhieu(array $params = []): array
     {
-        $maPhieu = trim($params['maPhieu'] ?? ($params['MaPhieu'] ?? ''));
-        $maPhong = trim($params['maPhong'] ?? ($params['MaPhong'] ?? ''));
-        $lyDo = trim($params['lyDo'] ?? ($params['ly_do'] ?? 'Khách hàng chủ động yêu cầu hủy phòng'));
-        $rawLeTan = trim($params['maLeTan'] ?? ($params['MaLeTan'] ?? 'LT001'));
-        $maLeTan = $this->resolveMaLeTan($rawLeTan);
+        $maPhieu = trim((string)($params['maPhieu'] ?? ($params['MaPhieu'] ?? ($params['MaPNP'] ?? ($params['maPNP'] ?? '')))));
+        $maPhong = trim((string)($params['maPhong'] ?? ($params['MaPhong'] ?? '')));
+        $lyDo = trim((string)($params['lyDo'] ?? ($params['lyDoHuy'] ?? ($params['ly_do'] ?? 'Khách hàng chủ động yêu cầu hủy phòng'))));
+        $actor = trim((string)($params['actor'] ?? ''));
+
+        $nganHangHoan = trim((string)($params['nganHangHoan'] ?? ($params['NganHangHoan'] ?? '')));
+        $stkHoan = trim((string)($params['stkHoan'] ?? ($params['STKHoan'] ?? '')));
+        $tenChuTKHoan = trim((string)($params['tenChuTKHoan'] ?? ($params['TenChuTKHoan'] ?? '')));
+
+        $maLeTan = null;
+        if ($actor !== 'khachHang') {
+            $rawLeTan = trim((string)($params['maLeTan'] ?? ($params['MaLeTan'] ?? 'LT001')));
+            $maLeTan = $this->resolveMaLeTan($rawLeTan);
+        }
 
         if (empty($maPhieu)) {
             throw new Exception("Vui lòng cung cấp mã phiếu nhận phòng (MaPhieu).", 400);
         }
 
-        $detail = $this->phieuRepo->getChiTietPhieu($maPhieu);
-        if (!$detail) {
-            throw new Exception("Không tìm thấy phiếu nhận phòng '{$maPhieu}'.", 404);
+        // 1. Kiểm tra quyền & tính toán chính sách hoàn tiền qua quy tắc chuẩn duy nhất
+        $hoanInfo = $this->tinhTienHoanHuyPhong($params);
+
+        // Nếu khách tự hủy & có tiền hoàn > 0: bắt buộc cung cấp tài khoản ngân hàng nhận tiền hoàn
+        if ($actor === 'khachHang' && $hoanInfo['soTienHoan'] > 0) {
+            if (empty($nganHangHoan) || empty($stkHoan) || empty($tenChuTKHoan)) {
+                throw new Exception("Vui lòng nhập đầy đủ Ngân hàng, Số tài khoản và Tên chủ tài khoản để nhận tiền hoàn.", 400);
+            }
         }
 
-        $phieu = $detail['phieu'];
-        $trangThai = $phieu['TrangThai'];
-        if ($trangThai === 'DaTraPhong') {
-            throw new Exception("Phiếu đã hoàn tất trả phòng, không thể hủy.", 400);
-        }
+        $prefixNguoiHuy = ($actor === 'khachHang') ? 'Khách tự hủy' : 'Lễ tân tiếp nhận hủy';
+        $lyDoDayDu = "{$prefixNguoiHuy}: {$lyDo} [Chính sách: {$hoanInfo['moTaChinhSach']} | Hoàn tiền: "
+            . number_format($hoanInfo['soTienHoan'], 0, ',', '.') . " đ ({$hoanInfo['tiLeHoan']}%), Phí hủy: "
+            . number_format($hoanInfo['phiHuy'], 0, ',', '.') . " đ]";
 
-        // 1. Tính toán chính sách hoàn tiền
-        $hoanInfo = $this->tinhTienHoanHuyPhong([
-            'maPhieu' => $maPhieu,
-            'maPhong' => $maPhong
+        // 2. Cập nhật hủy trong CSDL, đồng bộ ThanhToan & giải phóng phòng an toàn
+        $this->phieuRepo->capNhatHuy($maPhieu, $maLeTan, $maPhong ?: null, $lyDoDayDu, [
+            'tiLeHoan' => $hoanInfo['tiLeHoan'],
+            'soTienHoan' => $hoanInfo['soTienHoan'],
+            'chiTietPhong' => $hoanInfo['danhSachPhongHuy'],
+            'nganHangHoan' => $nganHangHoan,
+            'stkHoan' => $stkHoan,
+            'tenChuTKHoan' => $tenChuTKHoan,
         ]);
 
-        $lyDoDayDu = "Khách yêu cầu hủy: {$lyDo} [Chính sách: {$hoanInfo['moTaChinhSach']} | Hoàn tiền: " . number_format($hoanInfo['soTienHoan'], 0, ',', '.') . " đ ({$hoanInfo['tiLeHoan']}%), Phí hủy: " . number_format($hoanInfo['phiHuy'], 0, ',', '.') . " đ]";
-
-        // 2. Cập nhật hủy trong cơ sở dữ liệu và giải phóng phòng về 'Trong'
-        $this->phieuRepo->capNhatHuy($maPhieu, $maLeTan, $maPhong ?: null, $lyDoDayDu);
-
         $targetText = !empty($maPhong) && $maPhong !== 'ALL' ? "phòng {$maPhong} thuộc phiếu #{$maPhieu}" : "phiếu #{$maPhieu}";
+        $msg = $hoanInfo['soTienHoan'] > 0
+            ? "Đã hủy thành công {$targetText}. Số tiền hoàn dự kiến: " . number_format($hoanInfo['soTienHoan'], 0, ',', '.') . " đ ({$hoanInfo['tiLeHoan']}%)."
+            : "Đã hủy thành công {$targetText}. ({$hoanInfo['moTaChinhSach']}).";
+
         return [
             'success' => true,
-            'message' => "Đã tiếp nhận hủy thành công {$targetText}. Số tiền hoàn lại: " . number_format($hoanInfo['soTienHoan'], 0, ',', '.') . " đ ({$hoanInfo['tiLeHoan']}%)",
+            'message' => $msg,
+            'SoTienHoan' => $hoanInfo['soTienHoan'],
+            'TyLeHoan' => $hoanInfo['tiLeHoan'],
+            'PhiHuy' => $hoanInfo['phiHuy'],
             'data' => [
                 'maPhieu' => $maPhieu,
-                'maPhong' => $maPhong ?: null,
+                'maPhong' => (!empty($maPhong) && $maPhong !== 'ALL') ? $maPhong : null,
                 'trangThai' => 'DaHuy',
                 'lyDo' => $lyDoDayDu,
-                'hoanTien' => $hoanInfo
-            ]
+                'SoTienHoan' => $hoanInfo['soTienHoan'],
+                'TyLeHoan' => $hoanInfo['tiLeHoan'],
+                'PhiHuy' => $hoanInfo['phiHuy'],
+                'hoanTien' => $hoanInfo,
+            ],
         ];
     }
 }

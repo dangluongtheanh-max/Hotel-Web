@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light only" />
+  <title>SkyHotel - Nghiệp vụ Lễ tân & Đặt phòng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+  <script src="../js/theme.js?v=24"></script>
+  <link rel="stylesheet" href="../css/admin-common.css?v=24">
+  <link rel="stylesheet" href="../css/theme.css?v=24">
+  <link rel="stylesheet" href="../css/dashboard-le-tan.css?v=33">
+</head>
+<body data-page="rec">
+<div class="app">
+  <aside class="side">
+    <div class="logo"><span class="logo-mark-box"><img src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"></span><span>SKY HOTEL</span></div>
+    <a href="#bookings" class="on" id="sideTabBookings" onclick="switchMainTab('bookings'); return false;">🛎️ Tiếp đón &amp; Quản lý phiếu</a>
+    <a href="#rooms" id="sideTabRooms" onclick="switchMainTab('rooms'); return false;">📊 Sơ đồ &amp; Trạng thái loại phòng</a>
+    <a href="#">🛏 Quản lý phòng</a>
+    <a href="#">🏷 Loại phòng</a>
+    <a href="#">👥 Khách hàng</a>
+    <a href="#">🧾 Hóa đơn &amp; Thu chi</a>
+    <a href="#">🍽 Quản lý dịch vụ</a>
+  </aside>
+
+  <main class="main">
+    <!-- HEADER NGHIỆP VỤ LỄ TÂN -->
+    <div class="hd rec-hd">
+      <div>
+        <div class="rec-eyebrow">LỄ TÂN · SKY HOTEL</div>
+        <h1>Nghiệp Vụ Lễ Tân &amp; Quản Lý Lưu Trú</h1>
+        <p class="sub-desc">Hệ thống kiểm soát nhận phòng (Check-in), trả phòng (Check-out), dịch vụ phòng và sơ đồ trạng thái phòng thời gian thực.</p>
+      </div>
+      <div class="rec-hd-actions">
+        <div class="staff-pill" id="receptionistBadge" title="Nhân viên trực ca">
+          <span class="staff-dot"></span>
+          <span id="receptionistNameText">Trực ca: Chưa đăng nhập</span>
+        </div>
+        <button type="button" class="btn o" onclick="loadReceptions(); if(currentMainTab==='rooms') loadRoomStatusMap();">
+          🔄 Làm mới dữ liệu
+        </button>
+      </div>
+    </div>
+
+    <!-- THANH CHUYỂN TAB CHÍNH: đã chuyển lên thanh bên trái (dọc). Giữ lại ẩn để switchMainTab() dùng chung trạng thái nút. -->
+    <div class="main-tab-switcher" hidden style="display: none;">
+      <button type="button" class="main-tab-btn active" id="tabBtnBookings" onclick="switchMainTab('bookings')">
+        <span>🛎️</span> Tiếp Đón &amp; Quản Lý Phiếu
+      </button>
+      <button type="button" class="main-tab-btn" id="tabBtnRooms" onclick="switchMainTab('rooms')">
+        <span>📊</span> Sơ Đồ &amp; Trạng Thái Loại Phòng
+        <span class="tab-badge-count" id="tabRoomCountBadge">66 phòng</span>
+      </button>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: TIẾP ĐÓN & QUẢN LÝ PHIẾU                                           -->
+    <!-- ========================================================================= -->
+    <div id="tabBookingsContent">
+      <!-- KPI THỐNG KÊ NHANH -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-amber" data-kpi-status="DaDatPhong" onclick="filterByStatusFromKpi('DaDatPhong')" title="Nhấn để lọc danh sách phiếu chờ nhận phòng">
+          <div>
+            <div class="kpi-label">Chờ nhận phòng</div>
+            <div class="kpi-value" id="kpiBooked">0</div>
+            <div class="kpi-sub">Click để lọc phiếu sắp đến</div>
+          </div>
+          <div class="kpi-icon">📅</div>
+        </div>
+
+        <div class="kpi-card kpi-green" data-kpi-status="DangLuuTru" onclick="filterByStatusFromKpi('DangLuuTru')" title="Nhấn để lọc danh sách khách đang lưu trú">
+          <div>
+            <div class="kpi-label">Đang lưu trú (In-house)</div>
+            <div class="kpi-value" id="kpiStaying">0</div>
+            <div class="kpi-sub">Click để lọc khách đang ở</div>
+          </div>
+          <div class="kpi-icon">🏨</div>
+        </div>
+
+        <div class="kpi-card kpi-blue" data-kpi-status="DaTraPhong" onclick="filterByStatusFromKpi('DaTraPhong')" title="Nhấn để lọc danh sách phiếu đã trả phòng">
+          <div>
+            <div class="kpi-label">Đã trả phòng (Hoàn tất)</div>
+            <div class="kpi-value" id="kpiCheckedOut">0</div>
+            <div class="kpi-sub">Click để lọc phiếu hoàn tất</div>
+          </div>
+          <div class="kpi-icon">✅</div>
+        </div>
+
+        <div class="kpi-card kpi-red" data-kpi-status="DaHuy" onclick="filterByStatusFromKpi('DaHuy')" title="Nhấn để lọc danh sách phiếu đã hủy">
+          <div>
+            <div class="kpi-label">Phiếu đã hủy</div>
+            <div class="kpi-value" id="kpiCancelled">0</div>
+            <div class="kpi-sub">Click để lọc phiếu đã hủy</div>
+          </div>
+          <div class="kpi-icon">🚫</div>
+        </div>
+      </div>
+
+      <!-- BỘ LỌC & TÌM KIẾM -->
+      <div class="toolbar">
+        <div class="filter-tabs" id="filterChips">
+          <button type="button" class="filter-chip active" data-status="ALL" onclick="setFilterStatus('ALL', this)">Tất cả</button>
+          <button type="button" class="filter-chip" data-status="ChoThanhToan" onclick="setFilterStatus('ChoThanhToan', this)">⏳ Chờ thanh toán</button>
+          <button type="button" class="filter-chip" data-status="ThanhToanThatBai" onclick="setFilterStatus('ThanhToanThatBai', this)">⚠️ Lỗi TT</button>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Tìm theo Mã phiếu, Tên khách, SĐT, Số phòng (VD: P101)..." oninput="renderReceptionTable()">
+        </div>
+      </div>
+
+      <!-- BẢNG DANH SÁCH PHIẾU ĐẶT PHÒNG -->
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã Phiếu / Ngày Đặt</th>
+                <th>Khách Hàng Đặt</th>
+                <th>Phòng Phân Bổ</th>
+                <th>Thời Gian Lưu Trú</th>
+                <th>Trạng Thái</th>
+                <th class="rec-th-actions">Tác Vụ Lễ Tân</th>
+              </tr>
+            </thead>
+            <tbody id="receptionTableBody">
+              <tr>
+                <td colspan="6" class="empty-state">Đang tải dữ liệu danh sách phiếu nhận phòng...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- KẾT THÚC TAB 1 -->
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: SƠ ĐỒ TRẠNG THÁI PHÒNG LIỀN MẠCH (SINGLE-PAGE ROOM RACK)          -->
+    <!-- ========================================================================= -->
+    <div id="tabRoomsContent" style="display: none;">
+      <div class="section-header-bar room-rack-topbar">
+        <div>
+          <h2 class="section-title-gold">🏨 Sơ Đồ Trạng Thái Phòng</h2>
+          <p class="section-desc">Theo dõi lịch phòng trống, trạng thái phòng theo khoảng ngày và mã phiếu đặt phòng (thao tác xử lý phiếu thực hiện tại mục Tiếp đón &amp; Quản lý phiếu).</p>
+        </div>
+      </div>
+
+      <!-- 1. THANH LỌC KHOẢNG NGÀY LƯU TRÚ -->
+      <div class="room-date-bar">
+        <div class="room-date-inputs">
+          <label class="room-date-field">
+            <span>Nhận phòng</span>
+            <input type="date" id="roomFilterCheckIn" class="room-date-input" onchange="onRoomDateInputChange()">
+          </label>
+          <span class="room-date-arrow">→</span>
+          <label class="room-date-field">
+            <span>Trả phòng</span>
+            <input type="date" id="roomFilterCheckOut" class="room-date-input" onchange="onRoomDateInputChange()">
+          </label>
+          <span class="room-range-badge" id="roomDateSummaryBadge">1 đêm</span>
+        </div>
+
+        <div class="room-preset-group" role="group" aria-label="Chọn nhanh khoảng ngày">
+          <button type="button" class="room-preset-btn active" data-nights="1" onclick="setRoomDatePreset(1)">Đêm nay</button>
+          <button type="button" class="room-preset-btn" data-nights="2" onclick="setRoomDatePreset(2)">2 đêm tới</button>
+          <button type="button" class="room-preset-btn" data-nights="3" onclick="setRoomDatePreset(3)">3 đêm tới</button>
+        </div>
+      </div>
+
+      <!-- 2. THANH LỌC NHANH HẠNG PHÒNG (CATEGORY PILLS) -->
+      <div class="room-category-pills-wrap" id="roomCategoryPills" aria-label="Lọc nhanh hạng phòng">
+        <button type="button" class="room-cat-pill active">Tất cả hạng phòng</button>
+      </div>
+
+      <!-- 3. DẢI LỌC TRẠNG THÁI & TÌM KIẾM -->
+      <div class="toolbar room-status-toolbar">
+        <div class="filter-tabs" id="roomSubFilterChips">
+          <button type="button" class="filter-chip active" data-rstatus="ALL" onclick="setRoomSubFilter('ALL', this)">Tất cả (0)</button>
+          <button type="button" class="filter-chip" data-rstatus="Trong" onclick="setRoomSubFilter('Trong', this)">🟢 Trống (0)</button>
+          <button type="button" class="filter-chip" data-rstatus="DangO" onclick="setRoomSubFilter('DangO', this)">🔴 Đang ở (0)</button>
+          <button type="button" class="filter-chip" data-rstatus="DaDat" onclick="setRoomSubFilter('DaDat', this)">🔵 Đã đặt (0)</button>
+          <button type="button" class="filter-chip" data-rstatus="ChoThanhToan" onclick="setRoomSubFilter('ChoThanhToan', this)">🟡 Chờ TT (0)</button>
+          <button type="button" class="filter-chip" data-rstatus="BaoTri" onclick="setRoomSubFilter('BaoTri', this)">🛠️ Bảo trì (0)</button>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="roomSearchInput" class="search-input" placeholder="🔍 Số phòng, tên khách, mã phiếu..." oninput="renderRoomRack()">
+        </div>
+      </div>
+
+      <!-- 4. LƯỚI SƠ ĐỒ PHÒNG GOM NHÓM / THEO HẠNG -->
+      <div id="roomRackContainer" class="room-rack-container">
+        <div class="empty-state">Đang tải sơ đồ trạng thái phòng...</div>
+      </div>
+    </div>
+    <!-- KẾT THÚC TAB 2 -->
+  </main>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 1. MODAL KIỂM TRA HỒ SƠ ĐỐI CHIẾU & GIẤY TỜ TÙY THÂN (CHECK-IN AUDIT)      -->
+<!-- ========================================================================= -->
+<div id="modalAudit" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalAudit')">
+  <div class="modal-card modal-card-wide">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🪪</span>
+        <div>
+          <h3>Kiểm Tra &amp; Đối Chiếu Nhận Phòng</h3>
+          <p>Mã phiếu: <strong id="auditMaPNP" style="color: var(--primary);">---</strong> • Kiểm tra CCCD/Passport &amp; sửa thông tin sai lệch</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalAudit')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="auditModalBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalAudit')">Đóng cửa sổ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 2. MODAL XÁC NHẬN CHECK-IN                                                 -->
+<!-- ========================================================================= -->
+<div id="modalCheckin" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalCheckin')">
+  <div class="modal-card" style="max-width: 580px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🔑</span>
+        <div>
+          <h3>Xác Nhận Thủ Tục Check-In</h3>
+          <p>Giao chìa khóa phòng &amp; kích hoạt lưu trú trên hệ thống</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalCheckin')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="checkinConfirmBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalCheckin')">Hủy bỏ</button>
+      <button type="button" class="btn btn-emerald" id="btnConfirmCheckinExec" onclick="executeCheckin()">
+        ✅ XÁC NHẬN CHECK-IN NGAY
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 3. MODAL XÁC NHẬN CHECK-OUT & TỔNG KẾT HÓA ĐƠN                             -->
+<!-- ========================================================================= -->
+<div id="modalCheckout" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalCheckout')">
+  <div class="modal-card" style="max-width: 780px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🏁</span>
+        <div>
+          <h3>Thủ Tục Check-Out &amp; Quyết Toán Hóa Đơn</h3>
+          <p>Kiểm tra tiền phòng, dịch vụ phát sinh &amp; phụ thu trả phòng muộn (nếu có)</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalCheckout')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="checkoutConfirmBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalCheckout')">Đóng lại</button>
+      <button type="button" class="btn btn-amber" id="btnConfirmCheckoutExec" onclick="executeCheckout()">
+        🏁 HOÀN TẤT CHECK-OUT &amp; XUẤT BILL
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 4. MODAL XEM DỊCH VỤ PHÁT SINH CỦA PHIẾU                                  -->
+<!-- ========================================================================= -->
+<div id="modalServices" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalServices')">
+  <div class="modal-card" style="max-width: 780px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🍽️</span>
+        <div>
+          <h3>Danh Sách Dịch Vụ Đã Đặt Theo Phiếu</h3>
+          <p>Mã phiếu: <strong id="serviceModalMaPNP" style="color: var(--primary);">---</strong></p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalServices')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="servicesModalBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalServices')">Đóng cửa sổ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 5. MODAL XÁC NHẬN HỦY PHIẾU ĐẶT PHÒNG & TÍNH TIỀN HOÀN (LỄ TÂN)            -->
+<!-- ========================================================================= -->
+<div id="modalCancelSlip" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalCancelSlip')">
+  <div class="modal-card" style="max-width: 660px;">
+    <div class="modal-header modal-header-danger">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🚫</span>
+        <div>
+          <h3 id="cancelSlipModalTitle">Xác Nhận Hủy Phiếu Đặt Phòng</h3>
+          <p id="cancelSlipSubtitle">Tính toán tiền hoàn tự động theo chính sách khách sạn</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalCancelSlip')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="cancelSlipModalBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalCancelSlip')">Đóng lại</button>
+      <button type="button" class="btn btn-danger" id="btnConfirmCancelSlipExec" onclick="executeCancelSlip()">
+        🚫 XÁC NHẬN HỦY &amp; HOÀN TIỀN
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 6. MODAL XEM CHI TIẾT HỒ SƠ HỦY ĐẶT PHÒNG & HOÀN TIỀN                      -->
+<!-- ========================================================================= -->
+<div id="modalCancelDetail" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalCancelDetail')">
+  <div class="modal-card" style="max-width: 720px;">
+    <div class="modal-header modal-header-danger">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">📑</span>
+        <div>
+          <h3>Hồ Sơ Chi Tiết Hủy Đặt Phòng &amp; Hoàn Tiền</h3>
+          <p>Mã phiếu: <strong id="cancelDetailMaPNP" style="color: var(--err);">---</strong> • Biên bản quyết toán hoàn tiền</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalCancelDetail')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="cancelDetailModalBody">
+      <!-- Dynamic Content -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalCancelDetail')">Đóng cửa sổ</button>
+      <button type="button" class="btn btn-amber" onclick="printCancelDetailSlip()">🖨️ In Biên Bản Hủy / Hoàn Tiền</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 7. MODAL CHỈNH SỬA THÔNG TIN NGƯỜI LƯU TRÚ (DÀNH CHO LỄ TÂN KHI ĐỐI CHIẾU) -->
+<!-- ========================================================================= -->
+<div id="modalSuaNLT" class="modal-backdrop" style="z-index: 2200;" onclick="closeModalOnOutside(event, 'modalSuaNLT')">
+  <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 26px;">✏️</span>
+        <div>
+          <h3>Sửa Thông Tin Người Lưu Trú</h3>
+          <p>Cập nhật chính xác theo giấy tờ gốc xuất trình tại quầy</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalSuaNLT')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="editMaNLT">
+
+      <div class="form-group">
+        <label class="form-label">Họ và tên khách lưu trú *</label>
+        <input type="text" id="editHoTenNLT" class="form-input" placeholder="Nhập đầy đủ họ và tên có dấu">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ngày sinh * (Hệ thống tự động tính tuổi)</label>
+        <input type="date" id="editNgaySinhNLT" class="form-input">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">Loại giấy tờ</label>
+          <select id="editLoaiGiayTo" class="form-select" onchange="updateHintGiayTo()">
+            <option value="CCCD">CCCD (12 số)</option>
+            <option value="CMND">CMND (9 số)</option>
+            <option value="Passport">Hộ chiếu / Passport</option>
+            <option value="GiayKhaiSinh">Giấy khai sinh (Trẻ em)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Số giấy tờ tùy thân *</label>
+          <input type="text" id="editCCCD" class="form-input" placeholder="Số CCCD / Passport">
+        </div>
+      </div>
+      <div id="hintGiayToText" style="font-size: 12px; color: var(--primary); margin-top: -10px; margin-bottom: 14px; font-weight: 500;">
+        📌 CCCD bắt buộc đúng 12 chữ số.
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Số điện thoại liên hệ (Nếu có)</label>
+        <input type="text" id="editSDTNLT" class="form-input" placeholder="Nhập 10 chữ số (bắt đầu bằng 0)">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalSuaNLT')">Hủy</button>
+      <button type="button" class="btn btn-emerald" id="btnSaveSuaNLT" onclick="submitSuaNLT()">💾 Lưu Cập Nhật</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 8. MODAL ĐẶT DỊCH VỤ PHÒNG NHANH (TỪ SƠ ĐỒ PHÒNG TRỰC TIẾP)               -->
+<!-- ========================================================================= -->
+<div id="modalFastService" class="modal-backdrop" style="z-index: 2150;" onclick="closeModalOnOutside(event, 'modalFastService')">
+  <div class="modal-card" style="max-width: 720px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">🍽️</span>
+        <div>
+          <h3>Đặt Dịch Vụ Phòng Nhanh (Tại Quầy Lễ Tân)</h3>
+          <p>Phòng đang lưu trú: <strong id="fastServiceRoomTitle" style="color: var(--primary);">---</strong> • Mã phiếu: <strong id="fastServiceMaPNPBadge" style="color: var(--ok);">---</strong></p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalFastService')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="fastServiceRoomVal">
+      <input type="hidden" id="fastServiceMaPNPVal">
+
+      <div class="fast-service-notice">
+        💡 Chọn loại dịch vụ và số lượng khách yêu cầu. Chi phí sẽ được tự động ghi nhận vào phiếu <strong id="fastServiceNoticePNP">---</strong> và tổng hợp khi khách Check-out.
+      </div>
+
+      <!-- Chọn nhóm dịch vụ -->
+      <div class="filter-tabs" style="margin-bottom: 16px;">
+        <button type="button" class="filter-chip active" id="fastSvcTab_DVDoAn" onclick="switchFastServiceCategory('DVDoAn')">🍽️ Đồ Ăn &amp; Thức Uống</button>
+        <button type="button" class="filter-chip" id="fastSvcTab_DVGiatUi" onclick="switchFastServiceCategory('DVGiatUi')">👕 Giặt Ủi Lấy Ngay</button>
+        <button type="button" class="filter-chip" id="fastSvcTab_DVThueXe" onclick="switchFastServiceCategory('DVThueXe')">🛵 Thuê Xe Máy</button>
+      </div>
+
+      <!-- Danh sách dịch vụ -->
+      <div id="fastServiceCatalogList" class="fast-service-catalog">
+        <div class="empty-state" style="padding: 30px;">Đang tải danh mục dịch vụ...</div>
+      </div>
+
+      <!-- Thời gian giao / sử dụng -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center; background: var(--section); padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line);">
+        <div>
+          <label class="form-label" style="margin-bottom: 4px;">⏰ Thời gian phục vụ / sử dụng</label>
+          <input type="datetime-local" id="fastServiceTimeInput" class="form-input" style="padding: 8px 12px;">
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 12px; color: var(--muted);">Tổng cộng dịch vụ vừa chọn (<span id="fastServiceSelectedCount">0</span> món):</div>
+          <div id="fastServiceTotalMoney" style="font-size: 22px; font-weight: 800; color: var(--gold-text); margin-top: 2px;">0 đ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalFastService')">Đóng lại</button>
+      <button type="button" class="btn btn-amber" id="btnSubmitFastService" onclick="submitFastRoomService()">
+        ➕ XÁC NHẬN THÊM DỊCH VỤ VÀO PHÒNG
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. MODAL XEM LỊCH ĐẶT PHÒNG SẮP TỚI -->
+<div id="modalRoomSchedule" class="modal-backdrop" onclick="closeModalOnOutside(event, 'modalRoomSchedule')">
+  <div class="modal-card" style="max-width: 620px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span style="font-size: 28px;">📅</span>
+        <div>
+          <h3>Lịch Đặt Phòng <span id="roomScheduleTitle" style="color: var(--primary);">---</span></h3>
+          <p id="roomScheduleSubtitle">Danh sách các phiếu đặt phòng đang có hiệu lực và sắp tới</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modalRoomSchedule')">&times;</button>
+    </div>
+
+    <div class="modal-body" id="roomScheduleModalBody">
+      <!-- Dynamic schedule list -->
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn o" onclick="closeModal('modalRoomSchedule')">Đóng lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toastBox" class="toast-msg">
+  <span id="toastIcon">✅</span>
+  <span id="toastText">Thông báo hệ thống</span>
+</div>
+
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/ui-dialog.js?v=1"></script>
+<script src="../js/dashboard-le-tan.js?v=37"></script>
+<script src="../js/bridge.js"></script>
+</body>
+</html>

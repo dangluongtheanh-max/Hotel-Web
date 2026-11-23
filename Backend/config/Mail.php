@@ -10,5 +10,5 @@ return [
     'password' => $_ENV['MAIL_PASSWORD'] ?? '',
     'encryption' => $_ENV['MAIL_ENCRYPTION'] ?? 'tls',
     'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? ($_ENV['MAIL_USERNAME'] ?? ''),
-    'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Royal Lotus Hotel',
+    'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'SKY HOTEL',
 ];

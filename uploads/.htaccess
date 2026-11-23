@@ -1,0 +1,6 @@
+# Ngăn thực thi script trong thư mục uploads
+<FilesMatch "\.(php|phtml|php3|php4|php5|phar|pl|py|jsp|asp|sh|cgi)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes -ExecCGI
+

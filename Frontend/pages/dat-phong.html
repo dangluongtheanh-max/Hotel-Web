@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light only" />
+    <title>SkyHotel - Đặt phòng &amp; Thanh toán</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+    <script src="../js/theme.js?v=24"></script>
+  <link rel="stylesheet" href="../css/theme.css?v=24">
+  <link rel="stylesheet" href="../css/dat-phong.css?v=30" />
+  </head>
+  <body data-page="book">
+    <main>
+      <div class="wrap">
+        <div class="ey book-ey">ĐẶT PHÒNG &amp; THANH TOÁN</div>
+        <div class="steps" id="stepsBar">
+          <div class="st on" id="stepIndicator1"><i>1</i>Thông tin khách hàng</div>
+          <div class="ln"></div>
+          <div class="st" id="stepIndicator2"><i>2</i>Thanh toán</div>
+          <div class="ln"></div>
+          <div class="st" id="stepIndicator3"><i>3</i>Xác nhận</div>
+        </div>
+
+        <!-- BƯỚC 1 & 2: KHAI BÁO THÔNG TIN & CHI PHÍ ĐẶT PHÒNG -->
+        <div class="cols" id="bookingMainCols">
+          <!-- CỘT TRÁI: THÔNG TIN NGƯỜI ĐẶT & KHAI BÁO NGƯỜI LƯU TRÚ -->
+          <div>
+            <!-- Card 1: Thông tin người đại diện đặt phòng (Booker) -->
+            <div class="card" id="bookerCard">
+              <div class="card-head-row">
+                <div>
+                  <h3>Thông tin người đặt phòng</h3>
+                  <p class="card-desc" style="margin-bottom:0">Nhập SĐT để hệ thống tự động tra cứu khách hàng thành viên hoặc điền thông tin người đứng ra đặt.</p>
+                </div>
+                <span id="bookerTypeBadge" class="booker-type-badge">Chưa tra cứu SĐT</span>
+              </div>
+
+              <div class="grid-2col" style="margin-top: 10px;">
+                <div>
+                  <label for="bookerPhone">Số điện thoại người đặt <em>*</em></label>
+                  <input
+                    id="bookerPhone"
+                    placeholder="Nhập SĐT 10 số (tự động tra cứu)"
+                    inputmode="tel"
+                    maxlength="10"
+                    autocomplete="tel"
+                    required
+                  />
+                  <div class="msg" id="bookerPhoneHint"></div>
+                </div>
+                <div>
+                  <label for="bookerName">Họ và tên người đặt <em>*</em></label>
+                  <input
+                    id="bookerName"
+                    placeholder="Ví dụ: Nguyễn Văn A"
+                    maxlength="100"
+                    autocomplete="name"
+                    required
+                  />
+                  <div class="msg" id="e-booker-name"></div>
+                </div>
+              </div>
+
+              <div>
+                <label for="bookerEmail">Email nhận xác nhận</label>
+                <input
+                  id="bookerEmail"
+                  placeholder="nguyenvana@gmail.com"
+                  type="email"
+                  maxlength="254"
+                  autocomplete="email"
+                />
+                <div class="msg" id="e-booker-email"></div>
+              </div>
+            </div>
+
+            <!-- Card 2: Khai báo thông tin người lưu trú từng phòng -->
+            <div class="card" id="guests-card">
+              <div class="card-head-row">
+                <div style="flex: 1; min-width: 240px;">
+                  <h3>Khai báo thông tin người lưu trú</h3>
+                  <p class="card-desc" style="margin-bottom:0">Khai báo đầy đủ thông tin từng khách lưu trú trước khi hoàn tất đặt phòng.</p>
+                </div>
+                <button type="button" class="btn-autofill-test" id="btnAutoFillGuests" style="flex-shrink: 0; white-space: nowrap;" title="Điền dữ liệu mẫu hợp lệ để thử nghiệm nhanh">
+                  ⚡ Điền nhanh mẫu test
+                </button>
+              </div>
+
+              <!-- Chỉ hiển thị khi người dùng nhập sai ngày sinh hoặc lệch cơ cấu Người lớn / Trẻ em -->
+              <div id="guestValidationAlert" class="guest-error-alert" role="alert" style="display: none;"></div>
+
+              <div id="guests-container">
+                <div class="msg" style="color:var(--muted)">Đang tải danh sách phòng…</div>
+              </div>
+
+              <!-- Gợi ý dịch vụ bổ sung -->
+              <div class="service-hint-box">
+                <div>
+                  🛎️ <strong>Dịch vụ ẩm thực, thuê xe máy &amp; giặt ủi:</strong> Khách sạn cung cấp đầy đủ dịch vụ tận phòng và thuê xe tự lái. Sau khi hoàn tất đặt phòng, quý khách có thể chủ động đặt trước chính xác theo giờ tại trang <a href="#" id="linkToAmenityService">Dịch Vụ Tiện Ích Khách Sạn</a>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CỘT PHẢI: THÔNG TIN ĐẶT PHÒNG, VOUCHER KHUYẾN MÃI & THANH TOÁN -->
+          <div>
+            <div class="card sticky-order-card" id="order">
+              <div class="order-card-head">
+                <h3>Thông tin đặt phòng &amp; Chi phí dự kiến</h3>
+                <span class="order-nights-badge" id="orderNightsBadge" style="display: none;"></span>
+              </div>
+              <div id="orderBody">
+                <div class="msg">Đang tải thông tin phòng đã chọn…</div>
+              </div>
+
+              <!-- Khu vực Ưu đãi & Mã khuyến mãi -->
+              <div class="promo-section-wrap">
+                <label class="promo-sec-label">Mã giảm giá</label>
+                <input type="hidden" id="promoCodeInput" value="" />
+
+                <!-- Khi CHƯA chọn mã: Nút mở Modal -->
+                <div id="promoNotSelectedView">
+                  <button type="button" class="btn-open-promo-modal" id="btnOpenPromoModal">
+                    <div class="promo-btn-text">
+                      <div class="promo-btn-title">Chọn mã giảm giá</div>
+                      <div class="promo-btn-sub">Áp dụng ưu đãi phù hợp cho đơn đặt phòng</div>
+                    </div>
+                    <span class="promo-btn-arrow">→</span>
+                  </button>
+                </div>
+
+                <!-- Khi ĐÃ chọn mã: Thẻ Voucher đã chọn -->
+                <div id="promoSelectedCard" style="display: none;">
+                  <div class="promo-selected-box">
+                    <div class="promo-sel-info">
+                      <div class="promo-sel-head">
+                        <span class="badge-promo-code" id="selectedPromoCodeBadge">KM---</span>
+                        <span class="promo-sel-name" id="selectedPromoName">Tên khuyến mãi</span>
+                      </div>
+                      <div class="promo-sel-desc" id="selectedPromoDiscountDesc">Đã giảm ...</div>
+                    </div>
+                    <div class="promo-sel-actions">
+                      <button type="button" class="btn-change-promo" id="btnChangePromo">Đổi mã</button>
+                      <button type="button" class="btn-remove-promo" id="btnRemovePromo">Bỏ chọn</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="promoMessage" class="msg" style="margin-top: 6px;"></div>
+              </div>
+
+              <!-- Chính sách đặt phòng & hoàn hủy (Tính theo ngày nhận phòng thực tế) -->
+              <div class="booking-policy-box" id="bookingPolicyBox">
+                <div class="policy-head">
+                  <span class="promo-sec-label" style="margin:0;">Chính sách đặt phòng</span>
+                  <button type="button" class="btn-policy-toggle" id="btnTogglePolicy">Xem chi tiết</button>
+                </div>
+                <ul class="policy-summary-list" id="policySummaryList">
+                  <li>Đang tải chính sách áp dụng cho ngày nhận phòng...</li>
+                </ul>
+                <div class="policy-detail-panel" id="policyDetailPanel" style="display: none;">
+                  <div><strong>Chính sách hủy &amp; hoàn tiền:</strong></div>
+                  <div id="policyDetailCancellation"></div>
+                  <div style="margin-top: 6px;"><strong>Nhận / trả phòng &amp; thay đổi:</strong> Nhận phòng từ 14:00, trả phòng trước 12:00. Thay đổi lịch hoặc số khách liên hệ lễ tân để kiểm tra phòng trống thực tế.</div>
+                </div>
+              </div>
+
+              <!-- Khu vực chọn hình thức thanh toán -->
+              <div class="payment-method-section">
+                <label class="promo-sec-label">Hình thức thanh toán</label>
+
+                <!-- Dành cho Lễ tân / Đặt tại quầy -->
+                <div id="counterPaymentChoiceArea" style="display: none;">
+                  <div class="pay-radio-grid">
+                    <label id="lblRadioTienMat" class="pay-radio-card active">
+                      <input type="radio" name="paymentMethodRadio" id="radioTienMat" value="TienMat" checked />
+                      <div>
+                        <strong>Tiền mặt tại khách sạn</strong>
+                        <small>Xác nhận thu tiền trực tiếp tại quầy lễ tân</small>
+                      </div>
+                    </label>
+                    <label id="lblRadioChuyenKhoan" class="pay-radio-card">
+                      <input type="radio" name="paymentMethodRadio" id="radioChuyenKhoan" value="ChuyenKhoan" />
+                      <div>
+                        <strong>Chuyển khoản VietQR (MBBank)</strong>
+                        <small>Tạo mã QR Napas 247 để quét thanh toán</small>
+                      </div>
+                    </label>
+                  </div>
+                  <div id="paymentMethodNote" class="pay-method-note">
+                    Xác nhận thu tiền mặt trực tiếp tại quầy để hoàn tất phiếu đặt phòng.
+                  </div>
+                </div>
+
+                <!-- Dành cho Khách hàng đặt trực tuyến -->
+                <div id="onlinePaymentInfoArea" class="online-pay-box">
+                  <div class="online-pay-row">
+                    <span class="online-pay-dot" aria-hidden="true"></span>
+                    <div>
+                      <strong>Chuyển khoản VietQR (MBBank Napas 247)</strong>
+                      <small>Giữ chỗ 20 phút. Bước tiếp theo sẽ tạo mã QR tự động điền đúng số tiền cần thanh toán.</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="msg" id="e-book" role="alert"></div>
+              <button class="go" id="next" type="button">Tiếp tục thanh toán</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 3: HOÀN TẤT ĐẶT PHÒNG THÀNH CÔNG (Đồng bộ legacy/datphong.html) -->
+        <div id="successBox" class="success-box" style="display: none;">
+          <div class="success-icon">🎉</div>
+          <div class="success-title">ĐẶT PHÒNG THÀNH CÔNG!</div>
+          <div class="success-detail" id="successMsgDetail"></div>
+
+          <div class="allocated-rooms" id="allocatedRoomsDisplay"></div>
+
+          <div class="allocated-guests-wrap">
+            <div class="allocated-guests-title">
+              📋 Danh Sách Người Lưu Trú Đã Khai Báo (Được Cấp Mã Hệ Thống)
+            </div>
+            <div id="allocatedGuestsDisplay"></div>
+          </div>
+
+          <div class="upsell-service-banner">
+            <div class="upsell-title">🛎️ Đặt trước Dịch vụ Tiện ích cho chuyến đi của bạn</div>
+            <p class="upsell-desc">
+              Quý khách có thể đặt trước <strong>Thuê xe máy nhận tại khách sạn</strong>, <strong>Ẩm thực phục vụ tận phòng</strong> hoặc <strong>Giặt ủi lấy ngay</strong>. Dịch vụ sẽ tự động ghi nhận theo mã phiếu vừa đặt!
+            </p>
+            <a href="#" id="btnGoAmenityFromSuccess" class="btn-upsell-service">
+              🏍️ Khám phá &amp; Đặt dịch vụ tiện ích ngay →
+            </a>
+          </div>
+
+          <div class="success-actions">
+            <button type="button" class="btn-action-primary" id="btnViewDetailPhieu">
+              📄 Xem Chi Tiết Phiếu Nhận Phòng &amp; CTPNP
+            </button>
+            <a href="javascript:void(0)" id="btnViewInvoiceSuccess" target="_blank" class="btn-action-outline" style="display: none;">
+              🧾 Xem &amp; In Hóa Đơn Điện Tử
+            </a>
+            <button type="button" class="btn-action-outline" id="btnGoHistorySuccess">
+              📜 Xem Lịch Sử Đặt Phòng
+            </button>
+            <a href="dashboard-le-tan.html" id="btnReturnToReception" class="btn-action-gold" style="display: none;">
+              🛎️ Trở Về Quầy Lễ Tân
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL 1: CHỌN MÃ KHUYẾN MÃI (VOUCHER POPUP TỪ BACKEND) -->
+    <div id="promoModal" class="sky-modal-backdrop" style="display: none;">
+      <div class="sky-modal-card promo-modal-card">
+        <div class="sky-modal-header">
+          <div class="sky-modal-title-group">
+            <span class="sky-modal-icon">🎟️</span>
+            <div>
+              <h4>Danh Sách Mã Khuyến Mãi SKY HOTEL</h4>
+              <small>Số lượng voucher có hạn từ Quản trị viên, áp dụng trực tiếp vào đơn đặt phòng</small>
+            </div>
+          </div>
+          <button type="button" class="sky-modal-close" id="btnClosePromoModal">&times;</button>
+        </div>
+        <div class="sky-modal-body" id="promoModalList">
+          <div class="modal-loading">Đang tải danh sách khuyến mãi khả dụng…</div>
+        </div>
+        <div class="sky-modal-footer">
+          <span class="modal-foot-hint">💡 Chọn mã phù hợp nhất để nhận ưu đãi tối đa</span>
+          <button type="button" class="btn-modal-secondary" id="btnClosePromoModalFoot">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: THANH TOÁN CHUYỂN KHOẢN VIETQR MBBANK (BƯỚC 2) -->
+    <div id="modalVietQR" class="sky-modal-backdrop" style="display: none;">
+      <div class="sky-modal-card vietqr-modal-card">
+        <div class="sky-modal-header">
+          <div class="sky-modal-title-group">
+            <span class="sky-modal-icon">💳</span>
+            <div>
+              <h4>THANH TOÁN CHUYỂN KHOẢN VIETQR</h4>
+              <small>Ngân hàng MBBank (Napas 247) · Quét mã thanh toán tức thì</small>
+            </div>
+          </div>
+          <span id="qrCountdownBadge" class="qr-countdown-badge">⏱️ 20:00</span>
+        </div>
+        <div class="sky-modal-body">
+          <div class="vietqr-grid">
+            <div class="vietqr-left">
+              <div class="vietqr-img-box">
+                <img id="vietQrImg" src="" alt="VietQR MBBank" />
+              </div>
+              <div class="vietqr-scan-caption">📱 Dùng App Ngân hàng quét mã QR</div>
+              <div class="qr-auto-status" id="qrAutoSyncStatus">🔄 Đang chờ quét mã &amp; nhận tiền tự động...</div>
+              <div class="qr-sim-actions">
+                <a class="btn-open-sim" id="btnOpenMbSim" href="#" target="_blank" rel="noopener">📱 Mở App MBBank giả lập</a>
+                <button type="button" class="btn-config-sim" id="btnConfigMbSim" title="Cấu hình địa chỉ Node MBBank Simulator (LAN / ngrok)">⚙️</button>
+              </div>
+            </div>
+            <div class="vietqr-right">
+              <div class="qr-info-box">
+                <small>Ngân hàng thụ hưởng</small>
+                <strong style="color: var(--primary);">MBBank (Ngân hàng Quân Đội)</strong>
+              </div>
+              <div class="qr-info-box qr-info-flex">
+                <div>
+                  <small>Số tài khoản</small>
+                  <strong id="qrAccountNum" class="qr-highlight">0589822346</strong>
+                </div>
+                <button type="button" class="btn-copy-qr" data-copy-target="qrAccountNum">📋 Sao chép</button>
+              </div>
+              <div class="qr-info-box">
+                <small>Chủ tài khoản</small>
+                <strong id="qrAccountName">NGUYEN HOANG ANH</strong>
+              </div>
+              <div class="qr-info-box qr-info-flex">
+                <div>
+                  <small>Số tiền thanh toán</small>
+                  <strong id="qrAmountText" class="qr-amount">0 đ</strong>
+                </div>
+                <button type="button" class="btn-copy-qr" id="btnCopyAmount">📋 Sao chép</button>
+              </div>
+              <div class="qr-info-box qr-info-flex qr-memo-box">
+                <div>
+                  <small>Nội dung chuyển khoản (Bắt buộc)</small>
+                  <strong id="qrTransferMemo" class="qr-memo">THANHTOAN</strong>
+                </div>
+                <button type="button" class="btn-copy-qr" id="btnCopyMemo">📋 Sao chép</button>
+              </div>
+            </div>
+          </div>
+          <div class="qr-notice-bar">
+            <span>ℹ️</span>
+            <span>Hệ thống tự động kiểm tra giao dịch mỗi 2 giây. Khi bạn quét mã và chuyển khoản thành công trên App MBBank, màn hình sẽ <b>tự động xác nhận đặt phòng</b> ngay lập tức.</span>
+          </div>
+        </div>
+        <div class="sky-modal-footer">
+          <button type="button" class="btn-modal-secondary" id="btnCloseVietQR">Để sau / Đóng</button>
+          <button type="button" class="btn-confirm-paid" id="btnConfirmPaid">
+            ✅ TÔI ĐÃ CHUYỂN KHOẢN THÀNH CÔNG
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: XEM CHI TIẾT PHIẾU NHẬN PHÒNG & CTPNP -->
+    <div id="modalChiTietPhieu" class="sky-modal-backdrop" style="display: none;">
+      <div class="sky-modal-card detail-pnp-modal-card">
+        <div class="sky-modal-header">
+          <div class="sky-modal-title-group">
+            <span class="sky-modal-icon">📋</span>
+            <div>
+              <h4>CHI TIẾT PHIẾU NHẬN PHÒNG &amp; PHÒNG ĐẶT (CTPNP)</h4>
+              <small>Hệ thống lưu trữ và quản lý đặt phòng SKY HOTEL</small>
+            </div>
+          </div>
+          <button type="button" class="sky-modal-close" id="btnCloseDetailModal">&times;</button>
+        </div>
+        <div class="sky-modal-body" id="modalDetailBody"></div>
+        <div class="sky-modal-footer">
+          <button type="button" class="btn-modal-secondary" id="btnCloseDetailModalFoot">Đóng cửa sổ</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="sfoot">
+      <div class="sfoot-in">
+        <div>
+          <div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div>
+          <p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p>
+        </div>
+        <div>
+          <h4>Liên hệ</h4>
+          <p>☎ <span data-h="phone">028 3930 8888</span></p>
+          <p>✉ <span data-h="email">contact@skyhotel.vn</span></p>
+          <p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p>
+        </div>
+        <div>
+          <h4>Liên kết nhanh</h4>
+          <p><a data-go="home">Trang chủ</a></p>
+          <p><a data-go="rooms">Phòng nghỉ</a></p>
+          <p><a data-go="hist">Lịch sử đặt phòng</a></p>
+        </div>
+      </div>
+      <div class="fb">
+        <span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span>
+        <span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span>
+      </div>
+    </footer>
+
+    <script src="../js/hotel-api.js?v=19"></script>
+    <script src="../js/sky-api.js?v=18"></script>
+    <script src="../js/ui-dialog.js?v=1"></script>
+    <script src="../js/mbbank-qr-helper.js?v=1"></script>
+    <script src="../js/dat-phong.js?v=40"></script>
+    <script src="../js/bridge.js?v=14"></script>
+  </body>
+</html>

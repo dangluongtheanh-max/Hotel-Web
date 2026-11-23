@@ -25,6 +25,99 @@ class LoaiPhongRepository
         return Database::getConnection();
     }
 
+    public function findLoaiPhongDetailById(string $id): ?array
+    {
+        $db = $this->getConnection();
+        $stmt = $db->prepare("SELECT * FROM LoaiPhong WHERE MaLoaiPhong = ? LIMIT 1");
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
+        }
+
+        $row['Gia'] = (float)$row['Gia'];
+        $row['SoNguoiToiDa'] = (int)$row['SoNguoiToiDa'];
+        $row['MoTa'] = $row['MoTa'] ?? '';
+        $row['TienNghi'] = $row['TienNghi'] ?? '';
+
+        $diemNhan = [];
+        if (!empty($row['diem_nhan'])) {
+            $decoded = json_decode((string)$row['diem_nhan'], true);
+            if (is_array($decoded)) {
+                $diemNhan = $decoded;
+            }
+        }
+        $dacQuyen = [];
+        if (!empty($row['dac_quyen'])) {
+            $decoded = json_decode((string)$row['dac_quyen'], true);
+            if (is_array($decoded)) {
+                $dacQuyen = $decoded;
+            }
+        }
+        $row['diem_nhan_list'] = $diemNhan;
+        $row['dac_quyen_list'] = $dacQuyen;
+
+        // Danh sách ảnh
+        $anh = [];
+        try {
+            $stmtAnh = $db->prepare(
+                "SELECT id, ma_loai_phong, duong_dan, la_anh_dai_dien, thu_tu
+                 FROM loai_phong_anh
+                 WHERE ma_loai_phong = ?
+                 ORDER BY la_anh_dai_dien DESC, thu_tu ASC, id ASC"
+            );
+            $stmtAnh->execute([$id]);
+            $anh = $stmtAnh->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($anh as &$a) {
+                $a['id'] = (int)$a['id'];
+                $a['la_anh_dai_dien'] = (int)$a['la_anh_dai_dien'];
+                $a['thu_tu'] = (int)$a['thu_tu'];
+            }
+            unset($a);
+        } catch (\Throwable $e) {
+            $anh = [];
+        }
+        $row['anh'] = $anh;
+
+        // Tiện nghi đã nhóm sẵn theo 5 nhóm
+        $groupsOrder = [
+            'Phòng ngủ & Thư giãn',
+            'Phòng tắm & Chăm sóc cá nhân',
+            'Công nghệ & Giải trí',
+            'Ẩm thực & Thức uống',
+            'Tiện ích & Dịch vụ an toàn',
+        ];
+        $grouped = [];
+        foreach ($groupsOrder as $g) {
+            $grouped[$g] = [];
+        }
+        $tienNghiIds = [];
+        try {
+            $stmtTn = $db->prepare(
+                "SELECT tn.id, tn.ten, tn.nhom, tn.icon
+                 FROM loai_phong_tien_nghi lptn
+                 INNER JOIN tien_nghi tn ON tn.id = lptn.tien_nghi_id
+                 WHERE lptn.ma_loai_phong = ?
+                 ORDER BY tn.id ASC"
+            );
+            $stmtTn->execute([$id]);
+            foreach ($stmtTn->fetchAll(PDO::FETCH_ASSOC) as $tn) {
+                $tn['id'] = (int)$tn['id'];
+                $tienNghiIds[] = $tn['id'];
+                $g = $tn['nhom'] ?: 'Tiện ích & Dịch vụ an toàn';
+                $grouped[$g][] = $tn;
+            }
+        } catch (\Throwable $e) {
+            // Bỏ qua nếu chưa chạy migration
+        }
+
+        // Loại bỏ nhóm rỗng để frontend dễ render
+        $row['tien_nghi_nhom'] = array_filter($grouped, static fn(array $items) => count($items) > 0);
+        $row['tien_nghi_ids'] = $tienNghiIds;
+
+        return $row;
+    }
+
     public function findLoaiPhongById(string $id): ?LoaiPhong
     {
         $db = $this->getConnection();

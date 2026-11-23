@@ -123,6 +123,16 @@ class ThanhToanController
     public function yeuCauHoanTien($request = null, $response = null)
     {
         $params = $this->getParams($request);
+        if (empty($params['maTK']) && empty($params['MaTK'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (empty($authHeader) && function_exists('getallheaders')) {
+                $headers = getallheaders();
+                $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+            }
+            if (!empty($authHeader)) {
+                $params['maTK'] = trim(str_replace(['Bearer ', 'bearer '], '', $authHeader));
+            }
+        }
         $result = $this->service->yeuCauHoanTien($params);
         $status = ($result['success'] ?? false) ? 200 : 400;
         return Response::json($response, $result, $status);

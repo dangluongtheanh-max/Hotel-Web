@@ -3,6 +3,13 @@ Backend/.env
 .env
 *.env.local
 
+# Tooling, AI agent configs, dependencies, packages & scratch
+.agent/
+.agents/
+**/node_modules/
+*.zip
+Backend/scratch/
+
 # File rác & file tạm hệ thống
 Thumbs.db
 desktop.ini

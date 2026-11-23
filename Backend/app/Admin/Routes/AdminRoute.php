@@ -144,6 +144,14 @@ class AdminRoute
         $router->post('/admin/themloaiphong', [AdminController::class, 'themLoaiPhong']);
         $router->post('/admin/sualoaiphong', [AdminController::class, 'suaLoaiPhong']);
         $router->post('/admin/doitrangthailoaiphong', [AdminController::class, 'doiTrangThaiLoaiPhong']);
+        $router->post('/admin/xoaloaiphong', [AdminController::class, 'xoaLoaiPhong']);
+        $router->get('/tiennghi/danhsach', [AdminController::class, 'xemDSTienNghi']);
+        $router->post('/tiennghi/danhsach', [AdminController::class, 'xemDSTienNghi']);
+        $router->post('/admin/tiennghi/them', [AdminController::class, 'themTienNghi']);
+        $router->post('/admin/loaiphong/upload-anh', [AdminController::class, 'uploadAnhLoaiPhong']);
+        $router->post('/admin/loaiphong/xoa-anh', [AdminController::class, 'xoaAnhLoaiPhong']);
+        $router->post('/admin/loaiphong/dat-anh-dai-dien', [AdminController::class, 'datAnhDaiDien']);
+        $router->post('/admin/loaiphong/sap-xep-anh', [AdminController::class, 'sapXepAnhLoaiPhong']);
         $router->post('/admin/themphong', [AdminController::class, 'themPhong']);
         $router->post('/admin/suaphong', [AdminController::class, 'suaPhong']);
         $router->post('/admin/doitrangthaiphong', [AdminController::class, 'doiTrangThaiPhong']);

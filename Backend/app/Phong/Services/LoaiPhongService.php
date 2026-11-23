@@ -45,7 +45,7 @@ class LoaiPhongService
             return $this->failure('Vui lòng cung cấp mã loại phòng (MaLoaiPhong).');
         }
 
-        $roomType = $this->repository->findLoaiPhongById($id);
+        $roomType = $this->repository->findLoaiPhongDetailById($id);
         if ($roomType === null) {
             return $this->failure("Không tìm thấy loại phòng '{$id}'.", 404);
         }

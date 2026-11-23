@@ -94,15 +94,16 @@ class TaiKhoanService
             }
         }
 
-        // Nếu là tài khoản Lễ tân, đính kèm MaLeTan và HoTen từ bảng LeTan
+        // Nếu là tài khoản Lễ tân, đính kèm MaLeTan, HoTen và SDT từ bảng LeTan
         if (strcasecmp($taiKhoan->getVaiTro(), 'LeTan') === 0) {
             $db = Database::getConnection();
-            $stmtLT = $db->prepare("SELECT MaLeTan, HoTen FROM LeTan WHERE MaTK = ?");
+            $stmtLT = $db->prepare("SELECT MaLeTan, HoTen, SDT FROM LeTan WHERE MaTK = ?");
             $stmtLT->execute([$taiKhoan->getMaTK()]);
             $lt = $stmtLT->fetch(PDO::FETCH_ASSOC);
             if ($lt) {
                 $result['MaLeTan'] = $lt['MaLeTan'];
                 $result['HoTen'] = $lt['HoTen'];
+                $result['SDT'] = $lt['SDT'];
             }
         }
 

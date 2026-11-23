@@ -1,0 +1,689 @@
+:root {
+  /* ========================================================================
+     SKYHOTEL DESIGN TOKENS — MODERN HOSPITALITY (WHITE / NEUTRAL / TEAL)
+     ======================================================================== */
+  color-scheme: light only;
+
+  /* Official Light Mode Tokens */
+  --color-primary: #0F7180;
+  --color-primary-hover: #0B5965;
+  --color-primary-active: #084C56;
+  --color-primary-light: #E6F3F4;
+  --color-on-primary: #FFFFFF;
+
+  --color-bg: #F8F8F7;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F3F4F4;
+
+  --color-heading: #292929;
+  --color-text: #666666;
+  --color-muted: #929292;
+
+  --color-border: #E8E8E6;
+  --color-divider: #EEEEEC;
+
+  --color-success: #16845B;
+  --color-warning: #B7791F;
+  --color-error: #DC4C4C;
+  --color-rating: #F5B942;
+
+  /* Derived Semantic Tokens (Light) */
+  --color-success-soft: rgba(22, 132, 91, 0.12);
+  --color-warning-soft: rgba(183, 121, 31, 0.12);
+  --color-error-soft: rgba(220, 76, 76, 0.12);
+  --color-focus-ring: rgba(15, 113, 128, 0.24);
+  --color-nav-bg: #FFFFFF;
+  --color-nav-text: #292929;
+  --color-nav-border: #E8E8E6;
+  --color-sidebar-bg: #FFFFFF;
+  --color-sidebar-text: #292929;
+  --color-sidebar-hover: #F3F4F4;
+  --color-overlay: rgba(20, 25, 31, 0.52);
+
+  /* Legacy / Project Compatibility Aliases */
+  --bg: var(--color-bg);
+  --card: var(--color-surface);
+  --section: var(--color-surface-secondary);
+  --highlight: var(--color-primary-light);
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --primary-active: var(--color-primary-active);
+  --primary-light: var(--color-primary);
+  --cta-gradient: var(--color-primary);
+  --navy: #14191F;
+  --gold: var(--color-primary);
+  --gold-light: var(--color-primary-hover);
+  --heading: var(--color-heading);
+  --text: var(--color-heading);
+  --body-text: var(--color-text);
+  --muted: var(--color-muted);
+  --line: var(--color-border);
+  --divider: var(--color-divider);
+  --gold-text: var(--color-primary);
+  --gold-soft: var(--color-primary-light);
+  --gold-border: rgba(15, 113, 128, 0.28);
+  --gold-1: var(--color-primary);
+  --gold-2: var(--color-primary-hover);
+  --gold-ink: var(--color-primary);
+
+  /* Status & Elevation */
+  --err: var(--color-error);
+  --ok: var(--color-success);
+  --warn: var(--color-warning);
+  --rating: var(--color-rating);
+  --shadow: 0 2px 10px rgba(41, 41, 41, 0.05);
+  --shadow-lg: 0 12px 32px rgba(41, 41, 41, 0.12);
+
+  /* Border Radius */
+  --radius: 8px;
+  --radius-sm: 6px;
+
+  /* Typography */
+  --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: "Lora", Georgia, "Times New Roman", serif;
+
+  /* Extended Aliases */
+  --cream: var(--color-bg);
+  --ink: var(--color-heading);
+  --sky: var(--color-primary);
+  --sky-dark: var(--color-primary-active);
+  --navy-deep: #14191F;
+  --background-color: var(--color-bg);
+  --surface-color: var(--color-surface);
+  --text-color: var(--color-text);
+  --muted-color: var(--color-muted);
+  --border-color: var(--color-border);
+  --primary-color: var(--color-primary);
+  --accent: var(--color-primary);
+  --accent-color: var(--color-primary);
+  --error-color: var(--color-error);
+  --success-color: var(--color-success);
+  --font-family: var(--sans);
+  --font-family-serif: var(--serif);
+  --font-size-body: 1rem;
+  --font-size-control: 0.9375rem;
+  --navy-color: var(--navy);
+  --nav: var(--color-nav-bg);
+  --side: var(--color-sidebar-bg);
+  --cp-navy: var(--color-surface);
+  --cp-navy-2: var(--color-surface-secondary);
+  --cp-champ: var(--color-primary);
+  --cp-warn: var(--color-warning);
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------- Nền tảng: chữ ---------- */
+html { scroll-behavior: smooth; }
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.65;
+  font-variant-numeric: lining-nums tabular-nums;
+  overflow-x: hidden;
+  letter-spacing: 0.05px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+button, input[type="button"], input[type="submit"], input[type="reset"], .btn, .go, .pay, .b, .ub, .tab, .tabs button, .pg button, .cp-state button, .cp-step button, .nv a, #sd .it, .mn div, .opt, .opt .h, .paper .cta, .soc button, .demo button, .pw button, .gold, body[data-page="book"] .b2, .home, .lk {
+  border-radius: var(--radius);
+}
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; color: var(--color-heading); }
+h1 { font-size: clamp(28px, 3.4vw, 38px); line-height: 1.24; letter-spacing: -0.01em; }
+h2 { font-size: 24px; line-height: 1.35; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.35; }
+a { color: inherit; }
+button, input[type="button"], input[type="submit"], input[type="reset"],
+.btn, .gold, .b, .go, .pay, .out, .ar, .cp-cancel, .cp-apply, .cp-add-room,
+.home-occupancy-trigger, .book-submit {
+  border-radius: var(--radius);
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+button:hover, .btn:hover, .gold:hover, .out:hover, .book-submit:hover,
+.cp-apply:hover, .cp-cancel:hover { transform: translateY(-1px); }
+
+/* ---------- Khả dụng & Tiếp cận (Accessibility) ---------- */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dòng nhỏ phía trên tiêu đề (giống "PHÒNG NGHỈ", "DỊCH VỤ" ở trang chủ) */
+.ey, h1.ey-h::before {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--gold); font: 500 11px var(--sans); letter-spacing: 2px; text-transform: uppercase;
+}
+.ey::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+.ey.wh { color: #e9d8b8; }
+h1.eb::before, .main h1::before {
+  content: var(--eb, "Quản trị");
+  display: block; padding-left: 38px; margin-bottom: 8px;
+  background: linear-gradient(currentColor, currentColor) left center / 28px 1px no-repeat;
+  color: var(--gold); font: 500 11px/1.6 var(--sans); letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ---------- Nút ---------- */
+.btn, .go, .pay, .paper .cta,
+body[data-page="book"] .b2 {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 12px 22px; box-shadow: none;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.btn:hover, .go:hover, .pay:hover, .paper .cta:hover, body[data-page="book"] .b2:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: var(--color-on-primary);
+}
+.btn:active, .go:active, .pay:active, .paper .cta:active, body[data-page="book"] .b2:active {
+  background: var(--color-primary-active);
+  border-color: var(--color-primary-active);
+  transform: translateY(0);
+}
+.btn:disabled, .go:disabled, .pay:disabled, button:disabled {
+  background: var(--color-surface-secondary) !important;
+  color: var(--color-muted) !important;
+  border-color: var(--color-border) !important;
+  cursor: not-allowed;
+  transform: none !important;
+  opacity: 0.78;
+}
+.btn.o {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.btn.o:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  filter: none;
+}
+.btn.o:active {
+  background: var(--color-primary-light);
+  color: var(--color-primary-active);
+  border-color: var(--color-primary-active);
+}
+.btn.o.on { background: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary); }
+.btn.sec {
+  background: var(--color-surface);
+  color: var(--color-heading);
+  border: 1px solid var(--color-border);
+}
+.btn.sec:hover {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.pay, .go { font-size: 14px; padding: 14px 28px; }
+body[data-page="login"] .btn { font-size: 14px; padding: 14px; }
+
+/* ---------- Ô nhập liệu ---------- */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select, textarea {
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface); color: var(--color-heading); font-size: var(--font-size-control);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--color-focus-ring); outline-offset: 0; border-color: var(--color-primary);
+}
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--color-primary); }
+label { letter-spacing: 0.2px; color: var(--color-heading); }
+
+/* ---------- Thẻ ---------- */
+.card, .stat, body[data-page="detail"] .box, dialog {
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+dialog { box-shadow: var(--shadow-lg); color: var(--color-text); }
+dialog::backdrop { background: var(--color-overlay); }
+.dlg h3 { font-size: 24px; }
+
+/* ---------- Thanh bước (Đặt phòng / Thanh toán) ---------- */
+.st i { font-family: var(--serif); font-size: 15px; font-weight: 600; }
+.st.on i { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.st.done i { background: var(--color-primary-hover); border-color: var(--color-primary-hover); color: var(--color-on-primary); }
+.st.on, .st.done { color: var(--color-heading); }
+
+/* ---------- Huy hiệu / công tắc / phân trang ---------- */
+.pend, .b1 { background: var(--color-warning-soft); color: var(--color-warning); }
+.paid, .on1 { background: var(--color-success-soft); color: var(--color-success); }
+.can, .off1, .b4 { background: var(--color-error-soft); color: var(--color-error); }
+.sw.on { background: var(--color-primary); }
+.pg button { border-radius: var(--radius-sm); }
+.pg button.on { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.tabs button.on, .tab.on { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.tab, .tabs button { border-radius: var(--radius-sm); font-size: 12px; letter-spacing: 0.4px; }
+.tabs { border-radius: var(--radius); }
+.rate s, .meta s, .st-star, .rating-star { color: var(--color-rating); }
+.empty { color: var(--color-muted); }
+
+/* ---------- Bảng (trang quản trị) ---------- */
+th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted);
+}
+tbody tr:hover td { background: var(--gold-soft); }
+.main { padding: 30px 36px 48px; }
+.stat b { font-family: var(--sans); font-weight: 700; font-size: 34px; line-height: 1.15; font-variant-numeric: lining-nums tabular-nums; }
+.stat i { border-radius: var(--radius-sm); }
+.card h3 { font-size: 21px; }
+.hint { color: var(--muted); }
+
+/* ==========================================================================
+   Banner đầu trang (giống hero trang chủ, thấp hơn)
+   ========================================================================== */
+.ph {
+  position: relative; isolation: isolate; color: #FFFFFF; min-height: 220px; display: flex; align-items: center;
+  background: #14191F;
+}
+.ph::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, rgba(20, 25, 31, 0.84), rgba(20, 25, 31, 0.35) 75%);
+}
+.ph-img {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%;
+  object-fit: cover;
+}
+.ph-in { width: 100%; max-width: 1100px; margin: 0 auto; padding: 42px 24px; }
+.ph h1 { color: #fff; margin: 12px 0 8px; }
+.ph p { margin: 0; max-width: 560px; opacity: 0.92; }
+.ph .ml { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 14px; font-size: 12px; opacity: 0.95; }
+
+/* ==========================================================================
+   Chân trang gọn cho các trang khách hàng
+   ========================================================================== */
+body:is([data-page="rooms"], [data-page="detail"], [data-page="book"], [data-page="pay"], [data-page="hist"]) {
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+body:is([data-page="rooms"], [data-page="detail"], [data-page="book"], [data-page="pay"], [data-page="hist"]) > .wrap,
+body:is([data-page="rooms"], [data-page="detail"], [data-page="book"], [data-page="pay"], [data-page="hist"]) > main {
+  width: 100%;
+}
+.sfoot { margin-top: auto; background: var(--navy); color: #cdd3de; padding: 40px 6% 16px; }
+.sfoot-in {
+  max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1.4fr 1fr; gap: 32px;
+}
+.sfoot .fl { display: flex; flex-direction: column; line-height: 1.1; color: #fff; }
+.sfoot .fl i { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 34px; color: var(--gold); }
+.sfoot .fl .fl-svg { width: 44px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; }
+.sfoot .fl b { font: 500 20px var(--serif); letter-spacing: 3px; }
+.sfoot .fl small { font-size: 10px; letter-spacing: 1.4px; opacity: 0.7; }
+.sfoot .tag { font: italic 15px var(--serif); opacity: 0.8; max-width: 220px; margin: 10px 0 0; }
+.sfoot h4 { color: #fff; font: 600 12px var(--sans); margin: 0 0 12px; letter-spacing: 0.5px; }
+.sfoot p { margin: 0 0 8px; font-size: 12px; }
+.sfoot a { cursor: pointer; }
+.sfoot a:hover { color: var(--gold-1); }
+.sfoot .fb {
+  max-width: 1100px; margin: 28px auto 0; padding-top: 14px; border-top: 1px solid #243046;
+  display: flex; justify-content: space-between; gap: 10px; font-size: 11px; opacity: 0.7;
+}
+@media (max-width: 767.98px) {
+  .sfoot-in { grid-template-columns: 1fr; }
+  .sfoot .fb { flex-direction: column; }
+}
+
+/* ==========================================================================
+   Danh sách phòng
+   ========================================================================== */
+body[data-page="rooms"] .layout { margin-top: 36px; margin-bottom: 56px; }
+body[data-page="rooms"] aside {
+  border-radius: 4px; box-shadow: var(--shadow); padding: 22px 20px;
+}
+body[data-page="rooms"] aside h3 { font-size: 24px; margin-bottom: 4px; }
+body[data-page="rooms"] aside h4 {
+  font: 600 11px var(--sans); letter-spacing: 1.6px; text-transform: uppercase; color: var(--gold); margin: 20px 0 8px;
+}
+body[data-page="rooms"] .bar h2 { font-size: 26px; text-transform: uppercase; letter-spacing: 0.5px; }
+body[data-page="rooms"] .room {
+  border: 0; border-radius: 4px; box-shadow: var(--shadow); padding: 14px; gap: 20px;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+body[data-page="rooms"] .room:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+body[data-page="rooms"] .room .img { border-radius: 2px; }
+body[data-page="rooms"] .room b { font: 600 25px var(--serif); display: block; margin-bottom: 2px; }
+body[data-page="rooms"] .am span {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 2px; font-size: 10.5px; padding: 3px 9px;
+}
+body[data-page="rooms"] .buy strong { font: 700 26px var(--sans); font-variant-numeric: lining-nums tabular-nums; color: var(--text); }
+body[data-page="rooms"] .buy small { color: var(--muted); font-size: 12px; }
+body[data-page="rooms"] .bar select { border-radius: 2px; }
+body[data-page="rooms"] .cp-price strong {
+  font: 700 28px var(--sans);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+body[data-page="rooms"] .cp-price small { font-size: 13px; }
+body[data-page="rooms"] .cp-price em { font-size: 14px; }
+body[data-page="rooms"] .cp-line .amt { font-size: 15px; font-variant-numeric: lining-nums tabular-nums; }
+body[data-page="rooms"] .cp-row { font-size: 14px; }
+.ph .ml span { white-space: nowrap; }
+
+/* ==========================================================================
+   Chi tiết phòng
+   ========================================================================== */
+body[data-page="detail"] { --eb: "Phòng nghỉ"; }
+body[data-page="detail"] .wrap { max-width: 1180px; padding: 0 24px 56px; }
+body[data-page="detail"] .back {
+  margin: 28px 0 14px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text);
+  border-bottom: 1px solid var(--text); padding-bottom: 2px;
+}
+body[data-page="detail"] .back:hover { color: var(--gold); border-color: var(--gold); }
+body[data-page="detail"] .slider { border-radius: 4px; box-shadow: var(--shadow-lg); height: 460px; }
+body[data-page="detail"] .thumbs div,
+body[data-page="detail"] .thumbs button { border-radius: 2px; }
+body[data-page="detail"] .thumbs div.on,
+body[data-page="detail"] .thumbs button.on { border-color: var(--gold); }
+body[data-page="detail"] h1 { margin: 28px 0 8px; }
+body[data-page="detail"] h1::before {
+  content: var(--eb); display: block; padding-left: 38px; margin-bottom: 8px;
+  background: linear-gradient(currentColor, currentColor) left center / 28px 1px no-repeat;
+  color: var(--gold); font: 500 11px/1.6 var(--sans); letter-spacing: 2px; text-transform: uppercase;
+}
+body[data-page="detail"] h3 { font-size: 24px; text-transform: uppercase; letter-spacing: 0.5px; margin: 6px 0 14px; }
+body[data-page="detail"] .am span { border-radius: 2px; box-shadow: var(--shadow); border-color: transparent; }
+body[data-page="detail"] ul li::marker { color: var(--gold); }
+body[data-page="detail"] .box {
+  position: sticky; top: 20px; padding: 24px;
+}
+body[data-page="detail"] .price { font: 700 36px var(--sans); font-variant-numeric: lining-nums tabular-nums; color: var(--text); }
+body[data-page="detail"] .price small { font: 400 14px var(--sans); }
+
+/* ==========================================================================
+   Đặt phòng + Thanh toán
+   ========================================================================== */
+body[data-page="book"], body[data-page="pay"] { --eb: "Đặt phòng"; }
+body:is([data-page="book"], [data-page="pay"]) .wrap { max-width: 1080px; padding: 36px 24px 56px; }
+body:is([data-page="book"], [data-page="pay"]) .steps { margin: 0 0 32px; }
+body:is([data-page="book"], [data-page="pay"]) .card { padding: 26px; border-radius: var(--radius); box-shadow: 0 6px 20px rgba(0,0,0,0.04); }
+body:is([data-page="book"], [data-page="pay"]) .card h3 { font-size: 22px; margin-bottom: 16px; letter-spacing: 0.3px; }
+body[data-page="book"] label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+body[data-page="book"] .room .img { border-radius: 2px; }
+body[data-page="book"] .tot strong, body[data-page="pay"] .sum .t strong {
+  font: 700 32px var(--sans); font-variant-numeric: lining-nums tabular-nums; color: var(--gold-text);
+}
+body[data-page="book"] .go { margin-left: auto; }
+body[data-page="pay"] .opt { border-radius: 2px; transition: border-color 0.2s, box-shadow 0.2s; }
+body[data-page="pay"] .opt.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+body[data-page="pay"] .opt.on .h:before { border-color: var(--gold); }
+body[data-page="pay"] .rm .img { border-radius: 2px; }
+body[data-page="pay"] .pay { width: 100%; }
+body[data-page="pay"] .sec { color: var(--muted); }
+
+/* ==========================================================================
+   Lịch sử đặt phòng
+   ========================================================================== */
+body[data-page="hist"] { --eb: "Tài khoản"; }
+body[data-page="hist"] .wrap { max-width: 1180px; padding: 36px 24px 56px; }
+body[data-page="hist"] aside { border-radius: 4px; box-shadow: var(--shadow); }
+body[data-page="hist"] .av { background: var(--primary); color: #fff; font-family: var(--serif); font-size: 20px; }
+body[data-page="hist"] aside a { border-radius: 2px; border-left: 2px solid transparent; }
+body[data-page="hist"] aside a:hover { background: var(--gold-soft); }
+body[data-page="hist"] aside a.on { background: var(--gold-soft); color: var(--gold-text); border-left-color: var(--gold); }
+body[data-page="hist"] .bk {
+  border: 0; border-radius: 4px; box-shadow: var(--shadow); padding: 14px;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+body[data-page="hist"] .bk:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+body[data-page="hist"] .bk .img { border-radius: 2px; }
+body[data-page="hist"] .bk b { font: 600 22px var(--serif); }
+body[data-page="hist"] .rt strong { font: 600 24px var(--serif); }
+body[data-page="hist"] .rt a { color: var(--gold-text); letter-spacing: 0.4px; }
+body[data-page="hist"] .rt a:hover { text-decoration: underline; }
+
+/* ==========================================================================
+   Đăng nhập / Đăng ký
+   ========================================================================== */
+body[data-page="login"] { --eb: "Thành viên"; }
+body[data-page="login"] .brand {
+  background:
+    linear-gradient(160deg, rgba(10, 16, 28, 0.86), rgba(10, 16, 28, 0.45)),
+    url(../images/login.jpg) center 25% / cover;
+}
+body[data-page="login"] .brand .logo {
+  display: flex; flex-direction: column; line-height: 1.1; margin-bottom: 36px; color: #fff;
+}
+body[data-page="login"] .brand .logo i { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 40px; color: var(--gold-1); }
+body[data-page="login"] .brand .logo b { font: 500 24px var(--serif); letter-spacing: 4px; }
+body[data-page="login"] .brand .logo small { font-size: 8px; letter-spacing: 2.5px; opacity: 0.75; margin-top: 3px; }
+body[data-page="login"] .brand h1 { font-size: clamp(30px, 3.6vw, 44px); margin-bottom: 14px; }
+body[data-page="login"] .brand ul { color: #efe2c5; font-size: 13px; }
+body[data-page="login"] h2 { font-size: 32px; text-transform: uppercase; letter-spacing: 0.5px; }
+body[data-page="login"] .tabs { padding: 4px; }
+body[data-page="login"] .home { color: var(--text); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
+body[data-page="login"] .home:hover, a.lk:hover { color: var(--gold); }
+a.lk { color: var(--gold-text); }
+body[data-page="login"] .demo { border-radius: 2px; border-color: var(--gold); background: var(--gold-soft); }
+body[data-page="login"] .soc button, body[data-page="login"] .demo button { border-radius: 2px; }
+body[data-page="login"] .notice { border-radius: 2px; background: var(--gold-soft); color: var(--gold-text); }
+body[data-page="login"] input:focus { outline-color: rgba(176, 138, 79, 0.3); }
+
+/* ==========================================================================
+   Trang quản trị
+   ========================================================================== */
+body[data-page="mgr"] { --eb: "Thống kê"; }
+body[data-page="rec"] { --eb: "Lễ tân"; }
+body[data-page="staff"] { --eb: "Nhân sự"; }
+body[data-page="hotel"] { --eb: "Khách sạn"; }
+.main h1 { margin-bottom: 20px; }
+.hd h1 { margin-bottom: 0; }
+.hd { margin-bottom: 22px; }
+.tb input { border-radius: 2px; }
+.stat small { letter-spacing: 0.4px; }
+.g2 { gap: 20px; }
+.stats { gap: 18px; }
+
+/* Biểu mẫu thông tin khách sạn */
+.hf label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Email */
+.it { border-radius: 2px; }
+.it.sel { background: var(--gold-soft); border-color: var(--gold); }
+.paper { border-radius: 4px; }
+.paper .hd { background: var(--navy); border-bottom: 2px solid var(--gold); font-family: var(--serif); font-size: 20px; letter-spacing: 3px; text-transform: uppercase; }
+.paper .cta { padding: 11px 22px; }
+.toast { background: var(--navy); border-radius: 2px; }
+
+/* ---------- Màn hình nhỏ ---------- */
+@media (max-width: 767.98px) {
+  .main { padding: 22px 16px 36px; }
+  body[data-page="detail"] .slider { height: 260px; }
+  body[data-page="detail"] .box { position: static; }
+  .ph { min-height: 180px; }
+}
+
+.b2:not(.b2[id]) { }
+body[data-page="rec"] .b2 { background: rgba(20, 28, 43, 0.1); color: var(--text); }
+body[data-page="rec"] .b3 { background: rgba(47, 143, 91, 0.14); color: var(--ok); }
+.more { color: var(--gold-text); }
+.rt a, .lk { color: var(--gold-text); }
+
+body[data-page="login"] .brand h1, body[data-page="login"] .brand p { color: #fff; }
+body[data-page="login"] .brand h1 { text-shadow: 0 2px 14px rgba(0,0,0,.5); }
+body[data-page="login"] .box { background: none; border: 0; box-shadow: none; }
+
+/* Dịch vụ */
+body[data-page="service"] .sv-hero h1 { color: #ffffff !important; text-shadow: 0 3px 20px rgba(0, 0, 0, 0.6); }
+body[data-page="service"] .sv-hero p { color: rgba(255, 255, 255, 0.95); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); }
+body[data-page="service"] .sv-hero .crumb { color: #f7e7c4; }
+body[data-page="service"] .sv-hero .ey.wh { color: #f7e7c4; }
+body[data-page="service"] .cta h2 { color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5); }
+body[data-page="service"] .cta p { color: rgba(255, 255, 255, 0.92); }
+
+/* SkyUI Dialog & Toast (B4) */
+.sky-ui-toast-host {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 10050;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.sky-ui-toast {
+  background: var(--color-surface);
+  color: var(--color-heading);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 11px 16px;
+  font: 500 13.5px/1.45 var(--sans, sans-serif);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  max-width: 360px;
+}
+.sky-ui-toast.show { opacity: 1; transform: translateY(0); }
+.sky-ui-toast-error { border-color: var(--color-error); background: var(--color-surface); color: var(--color-error); }
+.sky-ui-toast-success { border-color: var(--color-success); }
+.sky-ui-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10040;
+  background: var(--color-overlay);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.sky-ui-backdrop.show { opacity: 1; }
+.sky-ui-modal {
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  font-family: var(--sans, sans-serif);
+}
+.sky-ui-modal-title {
+  padding: 14px 18px 10px;
+  font: 700 16px/1.3 var(--serif, Georgia, serif);
+  color: var(--color-heading);
+  border-bottom: 1px solid var(--color-divider);
+}
+.sky-ui-modal-body {
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  color: var(--color-text);
+}
+.sky-ui-modal-input {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  color: var(--color-heading);
+  background: var(--color-surface-secondary);
+}
+.sky-ui-modal-footer {
+  padding: 12px 18px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.sky-ui-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font: 600 13.5px/1 var(--sans, sans-serif);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.sky-ui-btn-cancel {
+  background: var(--color-surface);
+  color: var(--color-heading);
+  border-color: var(--color-border);
+}
+.sky-ui-btn-ok {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+}
+
+/* Force consistent dd/mm/yyyy visual formatting on native date inputs */
+input[type="date"].sky-date-ddmmyyyy {
+  position: relative;
+  color: transparent !important;
+  caret-color: transparent;
+}
+
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit,
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit-fields-wrapper,
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit-text,
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit-month-field,
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit-day-field,
+input[type="date"].sky-date-ddmmyyyy::-webkit-datetime-edit-year-field {
+  color: transparent !important;
+}
+
+input[type="date"].sky-date-ddmmyyyy::before {
+  content: attr(data-display-date);
+  position: absolute;
+  left: var(--sky-date-left, 0px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sky-date-color, var(--text, #162230));
+  pointer-events: none;
+  white-space: nowrap;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: 1.2;
+}
+
+input[type="date"].sky-date-ddmmyyyy.is-placeholder::before {
+  color: var(--text-muted, #94a3b8);
+}
+
+input[type="date"].sky-date-ddmmyyyy::-webkit-calendar-picker-indicator {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+
+

@@ -37,6 +37,19 @@ class LichSuDatPhongService
      */
     public function layLichSuDatPhong(string $maTK, int $limit = 20, int $offset = 0): array
     {
+        try {
+            (new \App\LeTan\Repositories\LeTanPhieuRepository())->tuDongHuyPhieuQuaHanTraPhong();
+        } catch (\Throwable $e) {
+            // Không chặn việc xem lịch sử nếu tác vụ dọn dẹp nền gặp lỗi
+        }
+
+        $dbConn = \Database\Database::getConnection();
+        $stmtRole = $dbConn->prepare("SELECT VaiTro FROM TaiKhoan WHERE MaTK = ? LIMIT 1");
+        $stmtRole->execute([$maTK]);
+        if ($stmtRole->fetchColumn() === 'Admin') {
+            throw new Exception('Tài khoản Quản trị viên không sử dụng chức năng xem lịch sử đặt phòng cá nhân.');
+        }
+
         $khachHang = $this->khachHangRepo->findByMaTK($maTK);
         if (!$khachHang) {
             throw new Exception('Tài khoản không hợp lệ hoặc chưa đăng nhập.');

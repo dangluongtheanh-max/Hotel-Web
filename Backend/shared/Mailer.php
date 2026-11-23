@@ -46,7 +46,7 @@ class Mailer
 
         // Người gửi
         $fromAddress = !empty($config['from_address']) ? $config['from_address'] : $config['username'];
-        $fromName    = !empty($config['from_name']) ? $config['from_name'] : 'Royal Lotus Hotel';
+        $fromName    = !empty($config['from_name']) ? $config['from_name'] : 'SKY HOTEL';
         $mail->setFrom($fromAddress, $fromName);
 
         // Xử lý chứng chỉ SSL môi trường local XAMPP Windows
@@ -84,11 +84,11 @@ class Mailer
             $mail->addAddress($toEmail, $customerName);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Mã xác nhận đặt lại mật khẩu - Royal Lotus Hotel';
+            $mail->Subject = 'Mã xác nhận đặt lại mật khẩu - SKY HOTEL';
 
             $displayName = $customerName !== '' ? htmlspecialchars($customerName) : 'Quý khách';
 
-            // HTML Body sang trọng với phong cách Royal Lotus
+            // HTML Body sang trọng với phong cách SKY HOTEL
             $mail->Body = '
             <!DOCTYPE html>
             <html lang="vi">
@@ -110,12 +110,12 @@ class Mailer
             <body>
                 <div class="card">
                     <div class="header">
-                        <h1>ROYAL LOTUS HOTEL</h1>
+                        <h1>SKY HOTEL</h1>
                         <p>Hệ thống Khách sạn & Nghỉ dưỡng Cao cấp</p>
                     </div>
                     <div class="body">
                         <p>Kính gửi <strong>' . $displayName . '</strong>,</p>
-                        <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản liên kết với địa chỉ email này tại <strong>Royal Lotus Hotel</strong>.</p>
+                        <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản liên kết với địa chỉ email này tại <strong>SKY HOTEL</strong>.</p>
                         <p>Mã xác minh (OTP) dùng một lần của Quý khách là:</p>
                         
                         <div class="otp-box">
@@ -131,7 +131,7 @@ class Mailer
                         </div>
                     </div>
                     <div class="footer">
-                        Email này được gửi tự động từ hệ thống Royal Lotus Hotel.<br>
+                        Email này được gửi tự động từ hệ thống SKY HOTEL.<br>
                         Vui lòng không trả lời trực tiếp email này.
                     </div>
                 </div>
@@ -143,7 +143,7 @@ class Mailer
                 . "Mã xác nhận (OTP) đặt lại mật khẩu của bạn là: " . $otp . "\n"
                 . "Mã này có hiệu lực trong vòng " . $expiresInMinutes . " phút.\n"
                 . "Tuyệt đối không chia sẻ mã này cho bất kỳ ai.\n\n"
-                . "Trân trọng,\nRoyal Lotus Hotel";
+                . "Trân trọng,\nSKY HOTEL";
 
             return $mail->send();
         } catch (Exception $e) {

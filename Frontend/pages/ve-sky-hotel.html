@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light only" />
+  <title>VỀ SKY HOTEL - Giới thiệu Khách sạn 5 sao Sài Gòn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+  <script src="../js/theme.js?v=27"></script>
+  <link rel="stylesheet" href="../css/theme.css?v=27" />
+  <link rel="stylesheet" href="../css/ve-sky-hotel.css?v=27" />
+</head>
+<body data-page="about">
+
+<!-- ==========================================================================
+     Hero Banner & Carousel (Tham chiếu bố cục Image 4)
+     ========================================================================== -->
+<header class="about-hero">
+  <div class="about-carousel" id="about-carousel">
+    <div class="about-slide active" data-index="0">
+      <img src="../images/hotels/banquet-hero.jpg" alt="Không gian tiệc và dạ tiệc sang trọng tại SKY HOTEL" />
+    </div>
+    <div class="about-slide" data-index="1">
+      <img src="../images/hotels/tower-panoramic.jpg" alt="Toàn cảnh toà tháp SKY HOTEL bên sông Sài Gòn lúc hoàng hôn" loading="lazy" />
+    </div>
+    <div class="about-slide" data-index="2">
+      <img src="../images/hotels/rooftop-pool.jpg" alt="Hồ bơi vô cực và Sky Bar trên tầng cao SKY HOTEL" loading="lazy" />
+    </div>
+    <div class="about-slide" data-index="3">
+      <img src="../images/hotels/fine-dining.jpg" alt="Nhà hàng ẩm thực cao cấp ngắm cảnh sông Sài Gòn về đêm" loading="lazy" />
+    </div>
+  </div>
+  <div class="about-hero-overlay"></div>
+
+  <!-- Thanh chỉ số Carousel (— — — —) -->
+  <div class="about-hero-indicators" id="about-indicators" role="tablist" aria-label="Điều hướng hình ảnh">
+    <button class="active" type="button" data-to="0" aria-label="Hình 1: Không gian tiệc sang trọng"></button>
+    <button type="button" data-to="1" aria-label="Hình 2: Toàn cảnh toà tháp ven sông"></button>
+    <button type="button" data-to="2" aria-label="Hình 3: Hồ bơi vô cực tầng cao"></button>
+    <button type="button" data-to="3" aria-label="Hình 4: Nhà hàng ẩm thực thượng hạng"></button>
+  </div>
+
+  <!-- Nội dung Hero đồng bộ ngôn ngữ Trang chủ -->
+  <div class="about-hero-in">
+    <div class="about-hero-ey">
+      <span class="hero-ey-stars" aria-label="5 sao">★</span>
+      <span class="hero-ey-brand">SKY HOTEL</span>
+      <span class="hero-ey-sep" aria-hidden="true">·</span>
+      <span class="hero-ey-loc">123 THÀNH THÁI, QUẬN 10, TP. HCM</span>
+    </div>
+    <h1 class="about-hero-title">Về SKY HOTEL <em>Biểu tượng nghỉ dưỡng giữa lòng Sài Gòn</em></h1>
+    <p class="about-hero-sub">Kiến trúc đương đại thanh lịch giao hòa cùng chuẩn mực hiếu khách tận tâm 24/7 tại trung tâm TP. Hồ Chí Minh.</p>
+  </div>
+</header>
+
+<!-- ==========================================================================
+     Khung Đặt Phòng Nhanh (Đồng bộ Stitch v2 Light Mode)
+     ========================================================================== -->
+<section class="about-book-wrap" aria-label="Đặt phòng nhanh">
+  <div class="about-book-card">
+    <form class="about-book-form" id="about-booking-form" novalidate>
+      <label class="about-book-f" for="ab-d1">
+        <i class="about-f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></i>
+        <span class="lbl">
+          <small>Ngày nhận phòng</small>
+          <input type="date" id="ab-d1" required />
+        </span>
+      </label>
+      <label class="about-book-f" for="ab-d2">
+        <i class="about-f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></i>
+        <span class="lbl">
+          <small>Ngày trả phòng</small>
+          <input type="date" id="ab-d2" required />
+        </span>
+      </label>
+      <div class="about-book-f about-occupancy" id="about-occupancy">
+        <i class="about-f-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></i>
+        <span class="lbl">
+          <small>Khách &amp; Phòng</small>
+          <button
+            class="about-occupancy-trigger"
+            id="ab-occupancy-trigger"
+            data-occupancy-trigger
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="about-occupancy-panel"
+          ></button>
+        </span>
+        <section
+          class="cp-occupancy about-occupancy-panel"
+          id="about-occupancy-panel"
+          data-occupancy-panel
+          role="dialog"
+          aria-label="Chọn số người lớn, trẻ em và phòng"
+          hidden
+        >
+          <p class="cp-occupancy-limit">Tối thiểu 1 khách/phòng · Tối đa 6 phòng · 20 khách <span title="Tối thiểu 1 người lớn và 1 khách/phòng; tối đa 6 phòng và 20 khách tổng cộng.">ⓘ</span></p>
+          <div data-occupancy-rooms></div>
+          <div class="cp-room-customizer" data-occupancy-room-control>
+            <div class="cp-room-customizer-info">
+              <span>Số phòng</span>
+              <small data-occupancy-max-rooms>Tối đa 6 phòng</small>
+            </div>
+            <div class="cp-room-stepper">
+              <button class="cp-room-step-btn" type="button" data-occupancy-step="-1" aria-label="Giảm số phòng">−</button>
+              <input class="cp-room-count-input" type="number" min="1" max="6" value="1" data-occupancy-count aria-label="Số lượng phòng muốn đặt">
+              <button class="cp-room-step-btn" type="button" data-occupancy-step="1" aria-label="Tăng số phòng">+</button>
+            </div>
+          </div>
+          <div class="cp-occupancy-error" data-occupancy-error role="alert"></div>
+          <div class="cp-occupancy-actions">
+            <button class="cp-cancel" data-occupancy-cancel type="button">Hủy</button>
+            <button class="cp-apply" data-occupancy-apply type="button">Áp dụng</button>
+          </div>
+        </section>
+      </div>
+      <button class="about-book-btn-pri" type="submit">TÌM PHÒNG</button>
+    </form>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     Nội dung chính: VỀ SKY HOTEL (Tham chiếu Image 4)
+     ========================================================================== -->
+<main class="about-main">
+  <!-- Tiêu đề lớn -->
+  <header class="about-title-block">
+    <div class="about-tag">✦ &nbsp; BIỂU TƯỢNG NGHỈ DƯỠNG THƯỢNG LƯU &nbsp; ✦</div>
+    <h2 class="about-main-h2">VỀ SKY HOTEL</h2>
+    <div class="about-gold-rule"></div>
+  </header>
+
+  <!-- Đoạn dẫn nhập tổng quan -->
+  <p class="about-lead">
+    <b>SKY HOTEL</b> là khách sạn 5 sao quốc tế tọa lạc bên bờ sông Sài Gòn tại Thành phố Hồ Chí Minh, kết hợp hoàn mỹ giữa phòng nghỉ thượng hạng, nhà hàng ẩm thực tinh hoa, rooftop sky bar &amp; lounge và trung tâm hội nghị, sự kiện đẳng cấp. Với kiến trúc đương đại tráng lệ, mặt kính panorama thu trọn khúc quanh sông Sài Gòn và nhịp sống đô thị rực rỡ, SKY HOTEL đáp ứng trọn vẹn mọi nhu cầu nghỉ dưỡng xa hoa, chuyến công tác cao cấp, hội nghị thượng đỉnh, tiệc gala dinner và sự kiện doanh nghiệp tầm cỡ.
+  </p>
+
+  <!-- Mục 1: Một điểm đến, nhiều trải nghiệm + GÁN GHÉP HÌNH ẢNH 1 -->
+  <section class="about-section">
+    <h2>Một điểm đến, nhiều trải nghiệm</h2>
+    <p>
+      Hệ thống 120 phòng nghỉ và suites sang trọng tại SKY HOTEL mở ra không gian nghỉ ngơi thanh bình, tách biệt khỏi nhịp sống hối hả của đô thị. Từng căn phòng đều được thiết kế với ban công rộng hoặc hệ kính kịch trần đón trọn luồng gió mát lành từ dòng sông Sài Gòn. Du khách có thể bắt đầu ngày mới bằng việc bơi lội tại hồ bơi vô cực trên tầng cao, tái tạo năng lượng với liệu trình chuyên sâu tại Sky Spa &amp; Wellness, hoặc thưởng thức ly cocktail độc bản ngắm hoàng hôn buông lơi tại Sky Bar &amp; Lounge.
+    </p>
+    <p>
+      Dù là doanh nhân cần tìm sự cân bằng sau giờ làm việc, gia đình cùng nhau sẻ chia những kỳ nghỉ đáng nhớ hay những người mong muốn tìm lại sự lắng đọng riêng tư, SKY HOTEL luôn hân hoan chào đón Quý khách đến trải nghiệm không gian lưu trú, ẩm thực và thư giãn mang tầm vóc quốc tế.
+    </p>
+
+    <!-- HÌNH ẢNH THỨ NHẤT: Hồ bơi vô cực & Sky Bar trên tầng cao -->
+    <article class="about-feature-card">
+      <div class="about-card-media">
+        <img src="../images/hotels/rooftop-pool.jpg" alt="Hồ bơi vô cực và Sky Bar & Lounge trên tầng cao SKY HOTEL" loading="lazy" />
+        <span class="about-card-badge">TẦNG THƯỢNG · SKY BAR &amp; POOL</span>
+      </div>
+      <div class="about-card-caption">
+        <p>Hồ bơi vô cực chân mây &amp; Sky Bar &amp; Lounge trên tầng cao ngắm trọn khúc quanh sông Sài Gòn và toà tháp Bitexco lúc hoàng hôn.</p>
+        <a data-go="service:spa">Khám phá tiện ích &nbsp;→</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Mục 2: Ngôn ngữ thiết kế & Kiến trúc + GÁN GHÉP HÌNH ẢNH 3 -->
+  <section class="about-section">
+    <h2>Ngôn ngữ thiết kế &amp; Kiến trúc</h2>
+    <p>
+      Dấu ấn kiến trúc của SKY HOTEL là sự giao thoa hài hòa giữa phong cách đương đại quốc tế và vẻ đẹp hoa lệ của Sài Gòn – Hòn ngọc Viễn Đông. Từng đường nét hình khối kiên cố, hệ thống vách kính Low-E tràn viền panorama, đá cẩm thạch marble tự nhiên và kim loại mạ vàng champagne được kết hợp tinh tế bởi những bàn tay kiến trúc sư danh tiếng.
+    </p>
+    <p>
+      Không gian nội thất ưu tiên tối đa ánh sáng tự nhiên vào ban ngày và phản chiếu vẻ lung linh của ánh đèn thành phố khi đêm về. Bên cạnh vẻ đẹp kiến trúc tráng lệ, SKY HOTEL còn chú trọng đến những chi tiết công nghệ thông minh, từ hệ thống điều hòa thanh lọc không khí ion âm đến khóa cửa bảo mật tân tiến, đảm bảo trải nghiệm an tâm và tuyệt đối riêng tư cho mọi du khách lưu trú.
+    </p>
+
+    <!-- HÌNH ẢNH THỨ BA: Toàn cảnh toà tháp SKY HOTEL bên sông Sài Gòn -->
+    <article class="about-feature-card">
+      <div class="about-card-media">
+        <img src="../images/hotels/tower-panoramic.jpg" alt="Toàn cảnh toà tháp SKY HOTEL kiêu hãnh bên sông Sài Gòn" loading="lazy" />
+        <span class="about-card-badge">KIẾN TRÚC BIỂU TƯỢNG · VEN SÔNG</span>
+      </div>
+      <div class="about-card-caption">
+        <p>Toàn cảnh toà tháp SKY HOTEL kiêu hãnh bên khúc quanh sông Sài Gòn – Biểu tượng kiến trúc nghỉ dưỡng 5 sao giữa trung tâm thành phố.</p>
+        <a data-go="rooms">Xem vị trí &amp; phòng &nbsp;→</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Mục 3: Trải nghiệm theo nhu cầu + GÁN GHÉP HÌNH ẢNH 2 -->
+  <section class="about-section">
+    <h2>Trải nghiệm theo nhu cầu</h2>
+    <p>
+      SKY HOTEL mang đến hệ sinh thái dịch vụ đa dạng được thiết kế riêng biệt để đáp ứng tối đa kỳ vọng của từng đối tượng khách hàng:
+    </p>
+
+    <!-- Lưới 4 nhóm nhu cầu -->
+    <div class="about-needs-grid">
+      <div class="about-need-item">
+        <div class="about-need-head">
+          <i class="about-need-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></i>
+          <h3>Nghỉ dưỡng &amp; Lãng mạn</h3>
+        </div>
+        <p>Bữa tối lãng mạn dưới ánh nến tại nhà hàng ven sông, ngắm hoàng hôn rực rỡ từ Sky Bar &amp; Lounge, liệu trình spa đôi thư thái.</p>
+      </div>
+
+      <div class="about-need-item">
+        <div class="about-need-head">
+          <i class="about-need-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></i>
+          <h3>Doanh nhân &amp; Công tác</h3>
+        </div>
+        <p>Hạng phòng Executive Suite tiện nghi, wifi tốc độ cao, dịch vụ đưa đón xe sang và phòng họp VIP bảo mật riêng tư.</p>
+      </div>
+
+      <div class="about-need-item">
+        <div class="about-need-head">
+          <i class="about-need-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></i>
+          <h3>Gia đình &amp; Hội nhóm</h3>
+        </div>
+        <p>Các hạng phòng kết nối thông minh (connecting rooms), menu ẩm thực phong phú cho trẻ em và dịch vụ chăm sóc tận tâm 24/7.</p>
+      </div>
+
+      <div class="about-need-item">
+        <div class="about-need-head">
+          <i class="about-need-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg></i>
+          <h3>Hội nghị &amp; Dạ tiệc</h3>
+        </div>
+        <p>Trung tâm hội nghị sang trọng với sức chứa linh hoạt, thiết bị âm thanh ánh sáng hiện đại cho tiệc gala dinner và hội nghị quốc tế.</p>
+      </div>
+    </div>
+
+    <!-- HÌNH ẢNH THỨ HAI: Nhà hàng ẩm thực thượng hạng ngắm sông đêm -->
+    <article class="about-feature-card">
+      <div class="about-card-media">
+        <img src="../images/hotels/fine-dining.jpg" alt="Nhà hàng ẩm thực fine dining thượng hạng ngắm sông Sài Gòn" loading="lazy" />
+        <span class="about-card-badge">ẨM THỰC THƯỢNG HẠNG · RIVERSIDE DINING</span>
+      </div>
+      <div class="about-card-caption">
+        <p>Nhà hàng ẩm thực fine dining với tầm nhìn panorama triệu đô hướng ra khúc sông Sài Gòn lấp lánh và tháp Bitexco rực rỡ về đêm.</p>
+        <a data-go="service:nha-hang">Khám phá nhà hàng &nbsp;→</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Hộp kêu gọi hành động (Call To Action) -->
+  <section class="about-cta-box">
+    <h3>Sẵn sàng cho kỳ nghỉ thượng lưu tại SKY HOTEL?</h3>
+    <p>Trải nghiệm sự tinh tế trong từng khoảnh khắc, chiêm ngưỡng toàn cảnh sông Sài Gòn từ toà tháp khách sạn biểu tượng.</p>
+    <div class="about-cta-actions">
+      <button class="about-cta-btn-gold" type="button" data-go="rooms">ĐẶT PHÒNG NGAY &nbsp;→</button>
+      <button class="about-cta-btn-out" type="button" data-go="service:nha-hang">Khám phá Dịch vụ</button>
+    </div>
+  </section>
+</main>
+
+<!-- ==========================================================================
+     Footer Nhận Diện Thương Hiệu Chuẩn (Tham chiếu Image 4)
+     ========================================================================== -->
+<footer class="about-footer">
+  <div class="about-footer-inner">
+    <!-- Logo & Khẩu hiệu trung tâm -->
+    <div class="about-footer-brand">
+      <img class="about-footer-logo-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true">
+      <h3 class="about-footer-brand-name">SKY HOTEL</h3>
+      <p class="about-footer-brand-motto">DISTRICT 10 · HCMC</p>
+    </div>
+
+    <!-- Cột liên kết & Thông tin -->
+    <div class="about-footer-grid">
+      <div class="about-footer-col">
+        <h4>Service Links</h4>
+        <ul class="about-footer-links">
+          <li><a data-go="home">Trang chủ</a></li>
+          <li><a data-go="rooms">Phòng nghỉ</a></li>
+          <li><a data-go="service:nha-hang">Nhà hàng &amp; Bar</a></li>
+          <li><a data-go="service:spa">Spa &amp; Wellness</a></li>
+          <li><a data-go="rooms">Ưu đãi đặt phòng</a></li>
+          <li><a data-go="about">Về SKY HOTEL</a></li>
+        </ul>
+      </div>
+
+      <div class="about-footer-col about-footer-info">
+        <h4>SKY HOTEL SAIGON</h4>
+        <p><strong>Hotline đặt phòng:</strong> 028 3930 8888</p>
+        <p><strong>Email:</strong> contact@skyhotel.vn</p>
+        <p><strong>Website:</strong> www.skyhotel.vn</p>
+        <p><strong>Địa chỉ:</strong> 123 Thành Thái, Quận 10, TP. Hồ Chí Minh</p>
+      </div>
+    </div>
+
+    <!-- Dòng bản quyền -->
+    <div class="about-footer-bottom">
+      <p>© 2026 SKY HOTEL. TẤT CẢ QUYỀN ĐƯỢC BẢO LƯU.</p>
+      <p>ĐƠN VỊ CHỦ QUẢN: CÔNG TY CP TẬP ĐOÀN SKY GROUP</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="../js/occupancy-picker.js?v=2"></script>
+<script>
+(function () {
+  // 1. Khởi tạo ngày tìm phòng mặc định (Hôm nay & Ngày mai)
+  var d1 = document.getElementById("ab-d1");
+  var d2 = document.getElementById("ab-d2");
+  var now = new Date();
+  var t1 = now.toISOString().split("T")[0];
+  var tomorrow = new Date(now.getTime() + 86400000);
+  var t2 = tomorrow.toISOString().split("T")[0];
+
+  if (d1 && d2) {
+    d1.value = t1;
+    d1.min = t1;
+    d2.value = t2;
+    d2.min = t1;
+
+    d1.addEventListener("change", function () {
+      if (d2.value <= d1.value) {
+        var n = new Date(new Date(d1.value).getTime() + 86400000);
+        d2.value = n.toISOString().split("T")[0];
+      }
+      d2.min = d1.value;
+    });
+  }
+
+  // 2. Khởi tạo bộ chọn số lượng khách và phòng chuẩn OccupancyPicker
+  var initialOcc = { adults: 2, children: 0, rooms: 1 };
+  try {
+    var saved = JSON.parse(localStorage.getItem("sky_sel") || "null");
+    if (saved) {
+      if (saved.checkIn && saved.checkIn >= t1 && d1) {
+        d1.value = saved.checkIn;
+        d1.min = t1;
+        if (saved.checkOut && saved.checkOut > saved.checkIn && d2) {
+          d2.value = saved.checkOut;
+          d2.min = saved.checkIn;
+        }
+      }
+      if (saved.occupancy) {
+        initialOcc = window.SkyOccupancyPicker.toState(saved.occupancy);
+      } else if (saved.adults || saved.rooms) {
+        initialOcc = window.SkyOccupancyPicker.toState({
+          adults: saved.adults || saved.guests || 2,
+          children: saved.children || 0,
+          rooms: saved.rooms || 1
+        });
+      }
+    }
+  } catch (err) {}
+
+  var occPicker = window.SkyOccupancyPicker.init(
+    document.getElementById("about-occupancy"),
+    initialOcc
+  );
+
+  function saveAndGoRooms() {
+    var occ = occPicker ? occPicker.getValue() : initialOcc;
+    var totalGuests = occ.adults + occ.children;
+    try {
+      localStorage.setItem("sky_sel", JSON.stringify({
+        checkIn: d1 ? d1.value : t1,
+        checkOut: d2 ? d2.value : t2,
+        guests: totalGuests,
+        adults: occ.adults,
+        children: occ.children,
+        rooms: occ.rooms,
+        occupancy: occ,
+        items: [],
+        savedAt: Date.now()
+      }));
+    } catch (err) {}
+    parent.postMessage({ skyGo: "rooms" }, "*");
+  }
+
+  // 3. Xử lý form tìm phòng & nút Xem bảng giá
+  var form = document.getElementById("about-booking-form");
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      saveAndGoRooms();
+    });
+  }
+
+  // 4. Carousel Hero Auto-rotation & Indicators
+  var slides = document.querySelectorAll(".about-slide");
+  var indicators = document.querySelectorAll("#about-indicators button");
+  var curIndex = 0;
+  var timer = null;
+
+  function showSlide(idx) {
+    curIndex = (idx + slides.length) % slides.length;
+    slides.forEach(function (s, i) {
+      s.classList.toggle("active", i === curIndex);
+    });
+    indicators.forEach(function (btn, i) {
+      btn.classList.toggle("active", i === curIndex);
+    });
+  }
+
+  function nextSlide() {
+    showSlide(curIndex + 1);
+  }
+
+  indicators.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var target = parseInt(btn.getAttribute("data-to"), 10);
+      showSlide(target);
+      resetTimer();
+    });
+  });
+
+  function startTimer() {
+    timer = setInterval(nextSlide, 4500);
+  }
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+  startTimer();
+
+  // 5. Click delegation cho các nút data-go
+  document.addEventListener("click", function (e) {
+    var g = e.target.closest("[data-go]");
+    if (g && !g.classList.contains("about-book-btn-sec")) {
+      e.preventDefault();
+      parent.postMessage({ skyGo: g.getAttribute("data-go") }, "*");
+    }
+  });
+})();
+</script>
+<script src="../js/bridge.js"></script>
+</body>
+</html>

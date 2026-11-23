@@ -5,16 +5,17 @@ hoa: moi module nghiep vu co du 4 lop `Routes -> Controllers -> Services -> Repo
 
 ## Danh sach module
 
-- `TaiKhoan` (BE1) — model: TaiKhoan
-- `KhachHang` (BE1) — model: KhachHang
-- `DatPhong` (BE1) — entities: PhieuNhanPhong, ChiTietPhieuNhanPhong, KhuyenMai
-- `DanhGia` (BE1) — model: DanhGia
-- `LeTan` (BE2) — model: LeTan
-- `Phong` (BE3) — model: Phong, LoaiPhong
-- `DichVu` — catalog and service-booking controller; other layers remain unimplemented
-- `ThanhToan` (BE4) — model: ThanhToan
-- `HoaDon` (BE4) — model: HoaDon, CTHD
-- `Admin` (BE4) — model: Admin
+- `TaiKhoan` — model: `TaiKhoan`
+- `KhachHang` — model: `KhachHang`
+- `DatPhong` — models: `PhieuNhanPhong`, `ChiTietPhieuNhanPhong`, `NguoiLuuTru`
+- `DanhGia` — model: `DanhGia`
+- `LeTan` — model: `LeTan`
+- `Phong` — models: `Phong`, `LoaiPhong`
+- `DichVu` — đã triển khai đủ các tầng (`Routes -> Controllers -> Services -> Repositories -> Models`), gồm dịch vụ chung, đặt đồ ăn, giặt ủi, thuê xe máy — models: `DichVu`, `ChiTietDichVu`, `CTSuDungDichVu`
+- `KhuyenMai` — đã triển khai đủ các tầng kèm `View` — model: `KhuyenMai`
+- `ThanhToan` — đã triển khai đủ các tầng kèm `View` — model: `ThanhToan`
+- `HoaDon` — đã triển khai đủ các tầng kèm `View` — models: `HoaDon`, `CTHD`
+- `Admin` — đã triển khai đủ các tầng kèm `View` — model: `Admin`
 
 ## Nguyen tac quan trong
 

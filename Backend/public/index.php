@@ -234,8 +234,8 @@ $uri = parse_url(
     PHP_URL_PATH
 );
 
-// Xử lý URI khi chạy PHP Server từ thư mục gốc
-$uri = str_replace('/Backend/public/index.php', '', $uri);
+// Xử lý URI khi chạy PHP Server từ thư mục gốc hoặc qua XAMPP (/HotelWeb-final/Backend/public/index.php)
+$uri = preg_replace('#^.*/Backend/public(?:/index\.php)?#', '', $uri);
 if ($uri === '' || $uri === '/') {
     $uri = '/';
 }

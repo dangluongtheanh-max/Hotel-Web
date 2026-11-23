@@ -9,9 +9,12 @@ use App\DanhGia\Services\DanhGiaService;
 use App\DatPhong\Repositories\DatPhongRepository;
 use App\HoaDon\Repositories\HoaDonRepository;
 use App\KhachHang\Repositories\KhachHangRepository;
+use App\LeTan\Services\LeTanPhieuService;
 use App\Phong\Services\PhongService;
 use App\ThanhToan\Repositories\ThanhToanRepository;
 use Database\Database;
+use Exception;
+use Shared\ChinhSachHoanHuy;
 
 /**
  * Facade Service cho module DatPhong.
@@ -36,6 +39,7 @@ class DatPhongService
     private ThucHienDatPhongService $thucHienService;
     private ChiTietDatPhongService $chiTietService;
     private NguoiLuuTruService $nguoiLuuTruService;
+    private LeTanPhieuService $leTanPhieuService;
 
     public function __construct(
         DatPhongRepository $repository,
@@ -49,7 +53,8 @@ class DatPhongService
         ?DanhGiaService $danhGiaService = null,
         ?ThucHienDatPhongService $thucHienService = null,
         ?ChiTietDatPhongService $chiTietService = null,
-        ?NguoiLuuTruService $nguoiLuuTruService = null
+        ?NguoiLuuTruService $nguoiLuuTruService = null,
+        ?LeTanPhieuService $leTanPhieuService = null
     ) {
         $this->repository = $repository;
         $this->phongService = $phongService;
@@ -60,6 +65,7 @@ class DatPhongService
         $this->hoaDonRepo = $hoaDonRepo ?? new HoaDonRepository();
         $this->thanhToanRepo = $thanhToanRepo ?? new ThanhToanRepository();
         $this->danhGiaService = $danhGiaService ?? new DanhGiaService(new DanhGiaRepository());
+        $this->leTanPhieuService = $leTanPhieuService ?? new LeTanPhieuService();
 
         $this->thucHienService = $thucHienService ?? new ThucHienDatPhongService(
             $this->repository,
@@ -176,5 +182,47 @@ class DatPhongService
     public function capNhatNguoiLuuTru(array $params, ?string $maTK = null): array
     {
         return $this->nguoiLuuTruService->capNhatNguoiLuuTru($params, $maTK);
+    }
+
+    // =========================================================================
+    // CHÍNH SÁCH & KHÁCH HÀNG TỰ HỦY PHÒNG (Ủy quyền quy tắc chuẩn duy nhất)
+    // =========================================================================
+
+    public function layChinhSachHoanHuy(): array
+    {
+        return [
+            'quyTac' => ChinhSachHoanHuy::danhSachQuyTac(),
+        ];
+    }
+
+    private function resolveMaKHFromMaTK(?string $maTK): string
+    {
+        $maTK = trim((string)$maTK);
+        if ($maTK === '') {
+            throw new Exception('Vui lòng đăng nhập tài khoản khách hàng để thực hiện thao tác này.', 401);
+        }
+        $khachHang = $this->khachHangRepo->findByMaTK($maTK);
+        if (!$khachHang || empty($khachHang['MaKH'])) {
+            throw new Exception('Không tìm thấy hồ sơ khách hàng hợp lệ cho tài khoản đang đăng nhập.', 403);
+        }
+        return $khachHang['MaKH'];
+    }
+
+    public function tinhTienHoanKhach(array $params, ?string $maTK = null): array
+    {
+        $maKH = $this->resolveMaKHFromMaTK($maTK);
+        return $this->leTanPhieuService->tinhTienHoanHuyPhong(array_merge($params, [
+            'actor' => 'khachHang',
+            'maKH' => $maKH,
+        ]));
+    }
+
+    public function huyDatPhongKhach(array $params, ?string $maTK = null): array
+    {
+        $maKH = $this->resolveMaKHFromMaTK($maTK);
+        return $this->leTanPhieuService->huyPhieu(array_merge($params, [
+            'actor' => 'khachHang',
+            'maKH' => $maKH,
+        ]));
     }
 }

@@ -16,8 +16,6 @@ use PDO;
  */
 class PhongService
 {
-    private const TRANG_THAI_PHONG = ['Trong', 'ChoThanhToan', 'DaDat', 'DangSuDung', 'BaoTri'];
-
     private PhongRepository $repository;
     private LoaiPhongService $loaiPhongService;
 
@@ -81,8 +79,9 @@ class PhongService
         if (strlen($typeId) > 50) {
             return $this->failure('MaLoaiPhong không được dài quá 50 ký tự.');
         }
-        if (!$this->isValidStatus($status)) {
-            return $this->failure('Trạng thái phòng không hợp lệ.');
+        $statusError = Phong::validateInitialStatus($status);
+        if ($statusError !== null) {
+            return $this->failure($statusError);
         }
         if (!$this->repository->existsLoaiPhong($typeId)) {
             return $this->failure("Không tìm thấy loại phòng '{$typeId}'.", 404);
@@ -120,8 +119,11 @@ class PhongService
         if (array_key_exists('MaLoaiPhong', $params) && $typeId === '') {
             return $this->failure('MaLoaiPhong không được để trống.');
         }
-        if (array_key_exists('TrangThaiPhong', $params) && !$this->isValidStatus($status)) {
-            return $this->failure('Trạng thái phòng không hợp lệ.');
+        if (array_key_exists('TrangThaiPhong', $params)) {
+            $statusError = Phong::validateManualStatusTransition((string)$current['TrangThaiPhong'], $status, $id);
+            if ($statusError !== null) {
+                return $this->failure($statusError);
+            }
         }
         if (array_key_exists('MaLoaiPhong', $params) && !$this->repository->existsLoaiPhong($typeId)) {
             return $this->failure("Không tìm thấy loại phòng '{$typeId}'.", 404);
@@ -275,7 +277,7 @@ class PhongService
 
     private function isValidStatus(string $status): bool
     {
-        return in_array($status, self::TRANG_THAI_PHONG, true);
+        return Phong::isValidStatus($status);
     }
 
     private function failure(string $message, int $statusCode = 400): array

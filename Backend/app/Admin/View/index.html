@@ -4486,18 +4486,65 @@
         ).join('');
     }
 
+    function configureRoomStatusControls(mode, currentStatus = 'Trong') {
+        const selStatus = document.getElementById('formTrangThaiPhong');
+        const btnToggle = document.getElementById('btnModalToggleRoomStatus');
+        const manualAllowed = ['Trong', 'BaoTri'];
+        const normalizedStatus = currentStatus || 'Trong';
+
+        if (selStatus) {
+            Array.from(selStatus.options).forEach(opt => {
+                opt.disabled = !manualAllowed.includes(opt.value) && opt.value !== normalizedStatus;
+            });
+            selStatus.value = normalizedStatus;
+            selStatus.disabled = (mode === 'edit' && !manualAllowed.includes(normalizedStatus));
+        }
+
+        if (!btnToggle) return;
+        if (mode === 'add') {
+            btnToggle.style.display = 'none';
+            return;
+        }
+
+        btnToggle.style.display = 'inline-flex';
+        if (normalizedStatus === 'BaoTri') {
+            btnToggle.className = 'btn-action-start';
+            btnToggle.innerHTML = '▶️ Mở Lại (Phòng Trống)';
+            btnToggle.title = 'Chuyển trạng thái sang phòng trống sẵn sàng đón khách';
+            btnToggle.disabled = false;
+        } else if (normalizedStatus === 'Trong') {
+            btnToggle.className = 'btn-action-stop';
+            btnToggle.innerHTML = '⏸️ Đặt Chế Độ Bảo Trì';
+            btnToggle.title = 'Tạm ngừng đón khách để bảo trì phòng';
+            btnToggle.disabled = false;
+        } else if (normalizedStatus === 'ChoThanhToan') {
+            btnToggle.className = 'btn-action-stop';
+            btnToggle.innerHTML = '⏳ Đang Chờ Thanh Toán';
+            btnToggle.title = 'Phòng đang giữ chỗ chờ thanh toán, phải hủy giao dịch về Trống trước khi bảo trì';
+            btnToggle.disabled = true;
+        } else if (normalizedStatus === 'DaDat') {
+            btnToggle.className = 'btn-action-stop';
+            btnToggle.innerHTML = '📅 Đã Có Đơn Đặt';
+            btnToggle.title = 'Phòng đã được đặt trước, phải hủy phiếu đặt về Trống trước khi bảo trì';
+            btnToggle.disabled = true;
+        } else {
+            btnToggle.className = 'btn-action-stop';
+            btnToggle.innerHTML = '⚠️ Khách Đang Ở';
+            btnToggle.title = 'Phòng đang có khách lưu trú, không thể đặt bảo trì';
+            btnToggle.disabled = true;
+        }
+    }
+
     function openAddRoomModal(defaultMaLoaiPhong = '') {
         document.getElementById('roomFormMode').value = 'add';
         document.getElementById('roomModalTitle').innerHTML = '🚪 Thêm Phòng Cụ Thể';
         document.getElementById('btnSubmitRoom').innerHTML = '💾 Lưu Phòng Mới';
-        const btnToggle = document.getElementById('btnModalToggleRoomStatus');
-        if (btnToggle) btnToggle.style.display = 'none';
 
         populateRoomTypeSelect(defaultMaLoaiPhong);
         const codeInput = document.getElementById('formMaPhong');
         codeInput.value = '';
         codeInput.readOnly = false;
-        document.getElementById('formTrangThaiPhong').value = 'Trong';
+        configureRoomStatusControls('add', 'Trong');
 
         document.getElementById('roomModal').classList.add('active');
     }
@@ -4512,28 +4559,7 @@
         codeInput.value = maPhong;
         codeInput.readOnly = true;
 
-        document.getElementById('formTrangThaiPhong').value = trangThai || 'Trong';
-
-        const btnToggle = document.getElementById('btnModalToggleRoomStatus');
-        if (btnToggle) {
-            btnToggle.style.display = 'inline-flex';
-            if (trangThai === 'BaoTri') {
-                btnToggle.className = 'btn-action-start';
-                btnToggle.innerHTML = '▶️ Mở Lại (Phòng Trống)';
-                btnToggle.title = 'Chuyển trạng thái sang phòng trống sẵn sàng đón khách';
-                btnToggle.disabled = false;
-            } else if (trangThai === 'DangSuDung') {
-                btnToggle.className = 'btn-action-stop';
-                btnToggle.innerHTML = '⚠️ Khách Đang Ở';
-                btnToggle.title = 'Phòng đang có khách lưu trú, không thể đặt bảo trì';
-                btnToggle.disabled = true;
-            } else {
-                btnToggle.className = 'btn-action-stop';
-                btnToggle.innerHTML = '⏸️ Đặt Chế Độ Bảo Trì';
-                btnToggle.title = 'Tạm ngừng đón khách để bảo trì phòng';
-                btnToggle.disabled = false;
-            }
-        }
+        configureRoomStatusControls('edit', trangThai);
 
         document.getElementById('roomModal').classList.add('active');
     }

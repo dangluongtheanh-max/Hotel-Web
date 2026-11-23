@@ -166,12 +166,18 @@ class LeTanPhongVaKhachService
     }
 
     /**
-     * Tra cứu thống kê sơ đồ trạng thái Loại phòng và Phòng
+     * Tra cứu thống kê sơ đồ trạng thái Loại phòng và Phòng theo khoảng ngày
      */
     public function xemTrangThaiLoaiPhongVaPhong(array $params = []): array
     {
         $maLoaiPhong = trim($params['maLoaiPhong'] ?? ($params['MaLoaiPhong'] ?? ''));
-        return $this->phongVaKhachRepo->getThongKeLoaiPhongVaPhong(!empty($maLoaiPhong) ? $maLoaiPhong : null);
+        $tuNgay = trim($params['tuNgay'] ?? ($params['ngayNhan'] ?? ($params['checkIn'] ?? '')));
+        $denNgay = trim($params['denNgay'] ?? ($params['ngayTra'] ?? ($params['checkOut'] ?? '')));
+        return $this->phongVaKhachRepo->getThongKeLoaiPhongVaPhong(
+            !empty($maLoaiPhong) ? $maLoaiPhong : null,
+            !empty($tuNgay) ? $tuNgay : null,
+            !empty($denNgay) ? $denNgay : null
+        );
     }
 
     // Các hàm tương thích với sơ đồ lớp và RESTful API

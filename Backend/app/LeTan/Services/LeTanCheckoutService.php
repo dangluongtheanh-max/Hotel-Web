@@ -118,12 +118,24 @@ class LeTanCheckoutService
         $danhSachDichVu = $detail['danhSachDichVu'];
         $danhSachThanhToan = $detail['danhSachThanhToan'];
 
-        // 1. Phân tích chi tiết tiền phòng từng phòng theo chuẩn hóa đơn
+        // 1. Phân tích chi tiết tiền phòng từng phòng (bỏ qua phòng đã hủy, nhưng ghi nhận phí hủy giữ lại nếu có)
         $danhSachChiTietPhong = [];
         $tamTinhTienPhong = 0;
+        $phiHuyDaGiu = 0;
+        $hasCancelledRooms = false;
+        $hasOtherActiveRooms = false;
 
         foreach ($detail['danhSachPhong'] as $p) {
+            $trangThaiRoom = $p['TrangThai'] ?? '';
+            if ($trangThaiRoom === 'DaHuy') {
+                $hasCancelledRooms = true;
+                $phiHuyDaGiu += (float)($p['PhiHuy'] ?? 0);
+                continue;
+            }
             if (!empty($maPhong) && $p['MaPhong'] !== $maPhong) {
+                if (in_array($trangThaiRoom, ['DangLuuTru', 'DaDatPhong'], true)) {
+                    $hasOtherActiveRooms = true;
+                }
                 continue;
             }
             $thoiGianNhan = $p['ThoiGianNhanPhong'];
@@ -170,12 +182,15 @@ class LeTanCheckoutService
         $vatPhong = round($tienPhongSauKM * $vatPhongRate, 2);
         $tongTienPhongSauVAT = $tienPhongSauKM + $vatPhong;
 
-        // Nếu trả toàn bộ phiếu và hóa đơn có sẵn tổng tiền sau VAT thì dùng giá trị hóa đơn gốc
-        if (empty($maPhong) && $hoaDon && (float)$hoaDon['TongTienSauVAT'] > 0) {
+        // Chỉ dùng TongTienSauVAT gốc từ HoaDon khi trả toàn bộ phiếu và KHÔNG có phòng đã hủy riêng
+        if (empty($maPhong) && !$hasCancelledRooms && $hoaDon && (float)$hoaDon['TongTienSauVAT'] > 0) {
             $tienPhongGoc = (float)$hoaDon['TongTienSauVAT'];
         } else {
             $tienPhongGoc = $tongTienPhongSauVAT;
         }
+
+        // Phí hủy giữ lại của các phòng đã hủy (cộng vào quyết toán chung của phiếu khi chốt hóa đơn cuối)
+        $phiHuyTinhVaoPhieu = (empty($maPhong) || !$hasOtherActiveRooms) ? $phiHuyDaGiu : 0;
 
         // 2. Tính tiền dịch vụ phát sinh trong quá trình ở (lọc theo phòng nếu có)
         $filteredDichVu = [];
@@ -209,16 +224,19 @@ class LeTanCheckoutService
             }
         }
 
-        // 4. Tổng chi phí toàn bộ kỳ lưu trú (Phòng gốc + Dịch vụ + Phụ phí trễ)
-        $tongChiPhiSauVAT = $tienPhongGoc + $tongTienDichVu + $tongPhuPhiTreGio;
+        // 4. Tổng chi phí hợp lệ toàn bộ kỳ lưu trú (Phòng đang ở + Phí hủy giữ lại + Dịch vụ + Phụ phí trễ)
+        $tongChiPhiSauVAT = $tienPhongGoc + $phiHuyTinhVaoPhieu + $tongTienDichVu + $tongPhuPhiTreGio;
 
-        // 5. Số tiền đã thanh toán hoàn tất trước đó
-        $daThanhToan = 0;
+        // 5. Số tiền thực thu ròng đã thanh toán trước đó (đã trừ phần hoàn lại nếu từng hủy bớt phòng)
+        $tongDaThu = 0;
+        $tongDaHoan = 0;
         foreach ($danhSachThanhToan as $tt) {
-            if ($tt['TrangThaiThanhToan'] === 'HoanTat') {
-                $daThanhToan += (float)$tt['SoTien'];
+            if (in_array($tt['TrangThaiThanhToan'] ?? '', ['HoanTat', 'HoanTienMotPhan', 'DaHoanTien'], true)) {
+                $tongDaThu += (float)$tt['SoTien'];
+                $tongDaHoan += (float)($tt['SoTienHoan'] ?? 0);
             }
         }
+        $daThanhToan = max(0, $tongDaThu - $tongDaHoan);
 
         // 6. Số tiền phụ thu / chênh lệch còn lại cần thanh toán
         $conLai = max(0, $tongChiPhiSauVAT - $daThanhToan);
@@ -237,6 +255,8 @@ class LeTanCheckoutService
                 'trangThaiPhieu' => $phieu['TrangThai'],
                 'maHD' => $hoaDon ? $hoaDon['MaHD'] : null,
                 'tienPhongGoc' => $tienPhongGoc,
+                'tongPhiHuyGiuLai' => $phiHuyTinhVaoPhieu,
+                'daHoanTien' => $tongDaHoan,
                 
                 // Đầy đủ chi tiết phòng theo chuẩn hóa đơn
                 'danhSachChiTietPhong' => $danhSachChiTietPhong,

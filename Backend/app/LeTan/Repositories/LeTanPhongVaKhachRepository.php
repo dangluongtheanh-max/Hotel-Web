@@ -101,49 +101,26 @@ class LeTanPhongVaKhachRepository
      * Lấy thống kê KPI toàn khách sạn, danh sách các loại phòng kèm chỉ số phòng,
      * và danh sách chi tiết các phòng kèm thông tin người đứng phiếu và người lưu trú thực tế.
      */
-    public function getThongKeLoaiPhongVaPhong(?string $maLoaiPhong = null): array
+    public function getThongKeLoaiPhongVaPhong(?string $maLoaiPhong = null, ?string $tuNgay = null, ?string $denNgay = null): array
     {
-        // 1. Tự động quét và hủy các phiếu quá hạn 24h & quét giải phóng phòng quá hạn 20 phút ChoThanhToan
-        $this->phieuRepo->tuDongHuyPhieuQuaHan24h();
+        // 1. Tự động quét No-show quá thời gian trả phòng dự kiến & giải phóng phòng ChoThanhToan quá hạn 20 phút
+        $this->phieuRepo->tuDongHuyPhieuQuaHanTraPhong();
         try {
             (new \App\ThanhToan\Services\ThanhToanService())->quetVaXuLyTatCaPhieuHetHan();
         } catch (\Throwable $e) {}
 
         $db = $this->getConnection();
 
-        // 2. Thống kê KPI tổng thể khách sạn
-        $kpiRow = $db->query("
-            SELECT 
-                COUNT(*) as tongSoPhong,
-                SUM(CASE WHEN TrangThaiPhong = 'Trong' THEN 1 ELSE 0 END) as soPhongTrong,
-                SUM(CASE WHEN TrangThaiPhong = 'ChoThanhToan' THEN 1 ELSE 0 END) as soPhongChoThanhToan,
-                SUM(CASE WHEN TrangThaiPhong = 'DangSuDung' THEN 1 ELSE 0 END) as soPhongDangO,
-                SUM(CASE WHEN TrangThaiPhong = 'DaDat' THEN 1 ELSE 0 END) as soPhongDaDat,
-                SUM(CASE WHEN TrangThaiPhong = 'BaoTri' THEN 1 ELSE 0 END) as soPhongBaoTri
-            FROM Phong
-        ")->fetch(PDO::FETCH_ASSOC);
+        $todayStr = date('Y-m-d');
+        $tuNgayNorm = (!empty($tuNgay) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $tuNgay)) ? $tuNgay : $todayStr;
+        if (!empty($denNgay) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $denNgay) && $denNgay > $tuNgayNorm) {
+            $denNgayNorm = $denNgay;
+        } else {
+            $denNgayNorm = date('Y-m-d', strtotime($tuNgayNorm . ' +1 day'));
+        }
+        $includesToday = ($tuNgayNorm <= $todayStr && $denNgayNorm > $todayStr);
 
-        $tongSoPhong = (int)($kpiRow['tongSoPhong'] ?? 0);
-        $soPhongTrong = (int)($kpiRow['soPhongTrong'] ?? 0);
-        $soPhongChoThanhToan = (int)($kpiRow['soPhongChoThanhToan'] ?? 0);
-        $soPhongDangO = (int)($kpiRow['soPhongDangO'] ?? 0);
-        $soPhongDaDat = (int)($kpiRow['soPhongDaDat'] ?? 0);
-        $soPhongBaoTri = (int)($kpiRow['soPhongBaoTri'] ?? 0);
-        $tyLeLapDay = $tongSoPhong > 0 
-            ? round((($soPhongDangO + $soPhongDaDat + $soPhongChoThanhToan) / $tongSoPhong) * 100, 1) 
-            : 0.0;
-
-        $kpi = [
-            'tongSoPhong' => $tongSoPhong,
-            'soPhongTrong' => $soPhongTrong,
-            'soPhongChoThanhToan' => $soPhongChoThanhToan,
-            'soPhongDangO' => $soPhongDangO,
-            'soPhongDaDat' => $soPhongDaDat,
-            'soPhongBaoTri' => $soPhongBaoTri,
-            'tyLeLapDay' => $tyLeLapDay
-        ];
-
-        // 3. Danh sách Loại phòng kèm thống kê phòng
+        // 2. Lấy danh sách Loại phòng
         $lpSql = "
             SELECT 
                 lp.MaLoaiPhong,
@@ -152,41 +129,34 @@ class LeTanPhongVaKhachRepository
                 lp.SoNguoiToiDa,
                 lp.MoTa,
                 lp.TienNghi,
-                lp.TinhTrang,
-                COUNT(p.MaPhong) as tongPhong,
-                SUM(CASE WHEN p.TrangThaiPhong = 'Trong' THEN 1 ELSE 0 END) as soPhongTrong,
-                SUM(CASE WHEN p.TrangThaiPhong = 'ChoThanhToan' THEN 1 ELSE 0 END) as soPhongChoThanhToan,
-                SUM(CASE WHEN p.TrangThaiPhong = 'DangSuDung' THEN 1 ELSE 0 END) as soPhongDangO,
-                SUM(CASE WHEN p.TrangThaiPhong = 'DaDat' THEN 1 ELSE 0 END) as soPhongDaDat,
-                SUM(CASE WHEN p.TrangThaiPhong = 'BaoTri' THEN 1 ELSE 0 END) as soPhongBaoTri
+                lp.TinhTrang
             FROM LoaiPhong lp
-            LEFT JOIN Phong p ON lp.MaLoaiPhong = p.MaLoaiPhong
         ";
         $lpParams = [];
         if (!empty($maLoaiPhong)) {
             $lpSql .= " WHERE lp.MaLoaiPhong = ?";
             $lpParams[] = $maLoaiPhong;
         }
-        $lpSql .= " GROUP BY lp.MaLoaiPhong, lp.TenLoaiPhong, lp.Gia, lp.SoNguoiToiDa, lp.MoTa, lp.TienNghi, lp.TinhTrang ORDER BY lp.MaLoaiPhong ASC";
+        $lpSql .= " ORDER BY lp.MaLoaiPhong ASC";
 
         $lpStmt = $db->prepare($lpSql);
         $lpStmt->execute($lpParams);
         $loaiPhongs = $lpStmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $lpStatsMap = [];
         foreach ($loaiPhongs as &$lp) {
-            $lp['tongPhong'] = (int)$lp['tongPhong'];
-            $lp['soPhongTrong'] = (int)$lp['soPhongTrong'];
-            $lp['soPhongChoThanhToan'] = (int)($lp['soPhongChoThanhToan'] ?? 0);
-            $lp['soPhongDangO'] = (int)$lp['soPhongDangO'];
-            $lp['soPhongDaDat'] = (int)$lp['soPhongDaDat'];
-            $lp['soPhongBaoTri'] = (int)($lp['soPhongBaoTri'] ?? 0);
-            $lp['tyLeSuDung'] = $lp['tongPhong'] > 0
-                ? round((($lp['soPhongDangO'] + $lp['soPhongDaDat'] + $lp['soPhongChoThanhToan']) / $lp['tongPhong']) * 100, 1)
-                : 0.0;
+            $lp['tongPhong'] = 0;
+            $lp['soPhongTrong'] = 0;
+            $lp['soPhongChoThanhToan'] = 0;
+            $lp['soPhongDangO'] = 0;
+            $lp['soPhongDaDat'] = 0;
+            $lp['soPhongBaoTri'] = 0;
+            $lp['tyLeSuDung'] = 0.0;
+            $lpStatsMap[$lp['MaLoaiPhong']] = &$lp;
         }
         unset($lp);
 
-        // 4. Danh sách chi tiết các phòng kèm thông tin phiếu đang hoạt động
+        // 3. Lấy toàn bộ phòng vật lý
         $phongSql = "
             SELECT 
                 p.MaPhong,
@@ -194,34 +164,9 @@ class LeTanPhongVaKhachRepository
                 lp.TenLoaiPhong,
                 lp.Gia,
                 lp.SoNguoiToiDa,
-                p.TrangThaiPhong,
-                ctp.MaPhieu,
-                ctp.TrangThai as TrangThaiLuuTru,
-                ctp.ThoiGianNhanPhong,
-                ctp.ThoiGianTraPhong,
-                kh.HoTen as TenNguoiDat,
-                kh.SDT as SDTNguoiDat
+                p.TrangThaiPhong
             FROM Phong p
             JOIN LoaiPhong lp ON p.MaLoaiPhong = lp.MaLoaiPhong
-            LEFT JOIN (
-                SELECT c1.* 
-                FROM ChiTietPhieuNhanPhong c1
-                INNER JOIN (
-                    SELECT ctp_sub.MaPhong, MAX(ctp_sub.MaPhieu) as MaxMaPhieu
-                    FROM ChiTietPhieuNhanPhong ctp_sub
-                    JOIN Phong p_sub ON ctp_sub.MaPhong = p_sub.MaPhong
-                    WHERE (p_sub.TrangThaiPhong = 'DangSuDung' AND ctp_sub.TrangThai = 'DangLuuTru')
-                       OR (p_sub.TrangThaiPhong = 'DaDat' AND ctp_sub.TrangThai = 'DaDatPhong')
-                       OR (p_sub.TrangThaiPhong = 'ChoThanhToan' AND ctp_sub.TrangThai = 'ChoThanhToan')
-                    GROUP BY ctp_sub.MaPhong
-                ) c2 ON c1.MaPhong = c2.MaPhong AND c1.MaPhieu = c2.MaxMaPhieu
-            ) ctp ON p.MaPhong = ctp.MaPhong AND (
-                (p.TrangThaiPhong = 'DangSuDung' AND ctp.TrangThai = 'DangLuuTru')
-                OR (p.TrangThaiPhong = 'DaDat' AND ctp.TrangThai = 'DaDatPhong')
-                OR (p.TrangThaiPhong = 'ChoThanhToan' AND ctp.TrangThai = 'ChoThanhToan')
-            )
-            LEFT JOIN PhieuNhanPhong pnp ON ctp.MaPhieu = pnp.MaPhieu
-            LEFT JOIN KhachHang kh ON pnp.MaKH = kh.MaKH
         ";
         $phongParams = [];
         if (!empty($maLoaiPhong)) {
@@ -234,7 +179,167 @@ class LeTanPhongVaKhachRepository
         $phongStmt->execute($phongParams);
         $phongs = $phongStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // 5. Lấy danh sách người lưu trú thực tế cho các phòng đang có phiếu
+        // 4. Lấy tất cả chi tiết phiếu còn hiệu lực (bỏ qua đã hủy / đã trả / thanh toán thất bại)
+        $slipsSql = "
+            SELECT 
+                ctp.MaPhieu,
+                ctp.MaPhong,
+                ctp.TrangThai AS TrangThaiLuuTru,
+                ctp.ThoiGianNhanPhong,
+                ctp.ThoiGianTraPhong,
+                kh.HoTen AS TenNguoiDat,
+                kh.SDT AS SDTNguoiDat
+            FROM ChiTietPhieuNhanPhong ctp
+            JOIN PhieuNhanPhong pnp ON ctp.MaPhieu = pnp.MaPhieu
+            JOIN Phong p ON ctp.MaPhong = p.MaPhong
+            LEFT JOIN KhachHang kh ON pnp.MaKH = kh.MaKH
+            WHERE ctp.TrangThai NOT IN ('DaHuy', 'DaTraPhong', 'ThanhToanThatBai')
+              AND pnp.TrangThai NOT IN ('DaHuy', 'DaTraPhong', 'ThanhToanThatBai')
+        ";
+        $slipsParams = [];
+        if (!empty($maLoaiPhong)) {
+            $slipsSql .= " AND p.MaLoaiPhong = ?";
+            $slipsParams[] = $maLoaiPhong;
+        }
+        $slipsSql .= " ORDER BY ctp.ThoiGianNhanPhong ASC, ctp.MaPhieu ASC";
+
+        $slipsStmt = $db->prepare($slipsSql);
+        $slipsStmt->execute($slipsParams);
+        $allActiveSlips = $slipsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $slipsByRoom = [];
+        foreach ($allActiveSlips as $sl) {
+            $slipsByRoom[$sl['MaPhong']][] = $sl;
+        }
+
+        // 5. Tính trạng thái từng phòng trong kỳ lọc [tuNgayNorm, denNgayNorm) và lịch đặt sắp tới
+        $priorityMap = [
+            'DangLuuTru' => 3,
+            'DaDatPhong' => 2,
+            'ChoThanhToan' => 1
+        ];
+        $statusMapFromSlip = [
+            'DangLuuTru' => 'DangSuDung',
+            'DaDatPhong' => 'DaDat',
+            'ChoThanhToan' => 'ChoThanhToan'
+        ];
+
+        $tongSoPhong = 0;
+        $soPhongTrong = 0;
+        $soPhongChoThanhToan = 0;
+        $soPhongDangO = 0;
+        $soPhongDaDat = 0;
+        $soPhongBaoTri = 0;
+
+        foreach ($phongs as &$phong) {
+            $maPhong = $phong['MaPhong'];
+            $physicalStatus = $phong['TrangThaiPhong'];
+            $phong['TrangThaiPhongVatLy'] = $physicalStatus;
+
+            $roomSlips = $slipsByRoom[$maPhong] ?? [];
+            $matchedSlip = null;
+            $matchedScore = -1;
+            $lichSapToi = [];
+
+            foreach ($roomSlips as $sl) {
+                $ngayNhan = substr((string)$sl['ThoiGianNhanPhong'], 0, 10);
+                $ngayTra = substr((string)$sl['ThoiGianTraPhong'], 0, 10);
+
+                // Thu thập lịch đặt còn hiệu lực sắp tới hoặc đang lưu trú
+                if ($ngayTra >= $todayStr || $sl['TrangThaiLuuTru'] === 'DangLuuTru') {
+                    $lichSapToi[] = [
+                        'MaPhieu' => $sl['MaPhieu'],
+                        'TrangThaiLuuTru' => $sl['TrangThaiLuuTru'],
+                        'ThoiGianNhanPhong' => $sl['ThoiGianNhanPhong'],
+                        'ThoiGianTraPhong' => $sl['ThoiGianTraPhong'],
+                        'TenNguoiDat' => $sl['TenNguoiDat'],
+                        'SDTNguoiDat' => $sl['SDTNguoiDat'],
+                    ];
+                }
+
+                // Kiểm tra trùng khoảng ngày lọc: ngay_nhan_phieu < ngay_tra_loc AND ngay_tra_phieu > ngay_nhan_loc
+                $isOverlap = ($ngayNhan < $denNgayNorm && $ngayTra > $tuNgayNorm);
+                $isCurrentInHouse = ($includesToday && $sl['TrangThaiLuuTru'] === 'DangLuuTru');
+
+                if ($isOverlap || $isCurrentInHouse) {
+                    $score = $priorityMap[$sl['TrangThaiLuuTru']] ?? 0;
+                    if ($score > $matchedScore) {
+                        $matchedScore = $score;
+                        $matchedSlip = $sl;
+                    }
+                }
+            }
+
+            if ($matchedSlip) {
+                $effectiveStatus = $statusMapFromSlip[$matchedSlip['TrangThaiLuuTru']] ?? 'DaDat';
+                $phong['TrangThaiPhong'] = $effectiveStatus;
+                $phong['MaPhieu'] = $matchedSlip['MaPhieu'];
+                $phong['TrangThaiLuuTru'] = $matchedSlip['TrangThaiLuuTru'];
+                $phong['ThoiGianNhanPhong'] = $matchedSlip['ThoiGianNhanPhong'];
+                $phong['ThoiGianTraPhong'] = $matchedSlip['ThoiGianTraPhong'];
+                $phong['TenNguoiDat'] = $matchedSlip['TenNguoiDat'];
+                $phong['SDTNguoiDat'] = $matchedSlip['SDTNguoiDat'];
+            } else {
+                $effectiveStatus = ($physicalStatus === 'BaoTri') ? 'BaoTri' : 'Trong';
+                $phong['TrangThaiPhong'] = $effectiveStatus;
+                $phong['MaPhieu'] = null;
+                $phong['TrangThaiLuuTru'] = null;
+                $phong['ThoiGianNhanPhong'] = null;
+                $phong['ThoiGianTraPhong'] = null;
+                $phong['TenNguoiDat'] = null;
+                $phong['SDTNguoiDat'] = null;
+            }
+
+            $phong['lichDatSapToi'] = $lichSapToi;
+
+            // Cộng dồn KPI tổng thể và theo hạng phòng
+            $tongSoPhong++;
+            $maLP = $phong['MaLoaiPhong'];
+            if (isset($lpStatsMap[$maLP])) {
+                $lpStatsMap[$maLP]['tongPhong']++;
+            }
+
+            if ($effectiveStatus === 'DangSuDung') {
+                $soPhongDangO++;
+                if (isset($lpStatsMap[$maLP])) $lpStatsMap[$maLP]['soPhongDangO']++;
+            } elseif ($effectiveStatus === 'DaDat') {
+                $soPhongDaDat++;
+                if (isset($lpStatsMap[$maLP])) $lpStatsMap[$maLP]['soPhongDaDat']++;
+            } elseif ($effectiveStatus === 'ChoThanhToan') {
+                $soPhongChoThanhToan++;
+                if (isset($lpStatsMap[$maLP])) $lpStatsMap[$maLP]['soPhongChoThanhToan']++;
+            } elseif ($effectiveStatus === 'BaoTri') {
+                $soPhongBaoTri++;
+                if (isset($lpStatsMap[$maLP])) $lpStatsMap[$maLP]['soPhongBaoTri']++;
+            } else {
+                $soPhongTrong++;
+                if (isset($lpStatsMap[$maLP])) $lpStatsMap[$maLP]['soPhongTrong']++;
+            }
+        }
+        unset($phong);
+
+        foreach ($loaiPhongs as &$lp) {
+            $lp['tyLeSuDung'] = $lp['tongPhong'] > 0
+                ? round((($lp['soPhongDangO'] + $lp['soPhongDaDat'] + $lp['soPhongChoThanhToan']) / $lp['tongPhong']) * 100, 1)
+                : 0.0;
+        }
+        unset($lp);
+
+        $tyLeLapDay = $tongSoPhong > 0
+            ? round((($soPhongDangO + $soPhongDaDat + $soPhongChoThanhToan) / $tongSoPhong) * 100, 1)
+            : 0.0;
+
+        $kpi = [
+            'tongSoPhong' => $tongSoPhong,
+            'soPhongTrong' => $soPhongTrong,
+            'soPhongChoThanhToan' => $soPhongChoThanhToan,
+            'soPhongDangO' => $soPhongDangO,
+            'soPhongDaDat' => $soPhongDaDat,
+            'soPhongBaoTri' => $soPhongBaoTri,
+            'tyLeLapDay' => $tyLeLapDay
+        ];
+
+        // 6. Lấy danh sách người lưu trú thực tế cho các phòng đang có phiếu trong kỳ
         $activePhieuList = array_values(array_filter(array_unique(array_column($phongs, 'MaPhieu'))));
         $nltMap = [];
         if (!empty($activePhieuList)) {
@@ -265,6 +370,11 @@ class LeTanPhongVaKhachRepository
         unset($phong);
 
         return [
+            'boLocNgay' => [
+                'tuNgay' => $tuNgayNorm,
+                'denNgay' => $denNgayNorm,
+                'homNay' => $todayStr
+            ],
             'kpi' => $kpi,
             'loaiPhong' => $loaiPhongs,
             'danhSachPhong' => $phongs

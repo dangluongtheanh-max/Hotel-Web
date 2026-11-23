@@ -91,6 +91,13 @@ class AdminService
     public function themLoaiPhong(array $data): array { return $this->phongService->themLoaiPhong($data); }
     public function suaLoaiPhong(string $maLoaiPhong, array $data): array { return $this->phongService->suaLoaiPhong($maLoaiPhong, $data); }
     public function doiTrangThaiLoaiPhong(string $maLoaiPhong): array { return $this->phongService->doiTrangThaiLoaiPhong($maLoaiPhong); }
+    public function xoaLoaiPhong(string $maLoaiPhong): array { return $this->phongService->xoaLoaiPhong($maLoaiPhong); }
+    public function xemDSTienNghi(): array { return $this->phongService->xemDSTienNghi(); }
+    public function themTienNghi(array $data): array { return $this->phongService->themTienNghi($data); }
+    public function uploadAnhLoaiPhong(string $maLoaiPhong, array $files): array { return $this->phongService->uploadAnhLoaiPhong($maLoaiPhong, $files); }
+    public function xoaAnhLoaiPhong(int $id, string $maLoaiPhong): array { return $this->phongService->xoaAnhLoaiPhong($id, $maLoaiPhong); }
+    public function datAnhDaiDien(int $id, string $maLoaiPhong): array { return $this->phongService->datAnhDaiDien($id, $maLoaiPhong); }
+    public function sapXepAnhLoaiPhong(string $maLoaiPhong, array $order): array { return $this->phongService->sapXepAnhLoaiPhong($maLoaiPhong, $order); }
     public function themPhong(array $data): array { return $this->phongService->themPhong($data); }
     public function suaPhong(string $maPhong, array $data): array { return $this->phongService->suaPhong($maPhong, $data); }
     public function doiTrangThaiPhong(string $maPhong): array { return $this->phongService->doiTrangThaiPhong($maPhong); }

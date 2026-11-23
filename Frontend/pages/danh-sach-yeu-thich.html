@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkyHotel - Phòng nghỉ yêu thích</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap">
+<script src="../js/theme.js?v=1"></script>
+  <link rel="stylesheet" href="../css/theme.css">
+  <link rel="stylesheet" href="../css/danh-sach-yeu-thich.css">
+</head>
+<body data-page="fav">
+
+<header class="fav-hero">
+  <div class="fav-hero-in">
+    <div class="fav-eyebrow">DANH SÁCH YÊU THÍCH CỦA BẠN</div>
+    <h1>Không gian nghỉ dưỡng đã lưu</h1>
+    <p>Dễ dàng so sánh các hạng phòng, theo dõi mức giá và chuẩn bị cho kỳ nghỉ hoàn hảo của bạn tại SKY HOTEL.</p>
+  </div>
+</header>
+
+<main class="fav-container">
+  <div class="fav-toolbar">
+    <div class="fav-status" id="fav-status">
+      Bạn đang lưu <span id="fav-count-num">0</span> hạng phòng
+    </div>
+    <div class="fav-actions">
+      <button class="fav-btn-action" id="btn-clear-all" type="button">Xóa tất cả</button>
+      <button class="fav-btn-explore" id="btn-back-rooms" type="button">Khám phá thêm phòng →</button>
+    </div>
+  </div>
+
+  <div id="fav-list-view"></div>
+</main>
+
+<footer class="sfoot">
+  <div class="sfoot-in">
+    <div>
+      <div class="fl"><img class="fl-svg" src="../images/logo-sky-hotel-mark.svg" alt="" aria-hidden="true"><b>SKY HOTEL</b><small>DISTRICT 10 · HCMC</small></div>
+      <p class="tag">Nơi mỗi kỳ nghỉ là một trải nghiệm đáng nhớ.</p>
+    </div>
+    <div>
+      <h4>Liên hệ</h4>
+      <p>☎ <span data-h="phone">028 3930 8888</span></p>
+      <p>✉ <span data-h="email">contact@skyhotel.vn</span></p>
+      <p>⌖ <span data-h="addr">123 Thanh Thái, Quận 10, TP. Hồ Chí Minh</span></p>
+    </div>
+    <div>
+      <h4>Liên kết nhanh</h4>
+      <p><a data-go="home">Trang chủ</a></p>
+      <p><a data-go="rooms">Phòng nghỉ</a></p>
+      <p><a data-go="hist">Lịch sử đặt phòng</a></p>
+    </div>
+  </div>
+  <div class="fb">
+    <span>© 2026 SKY HOTEL. Tất cả quyền được bảo lưu.</span>
+    <span>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</span>
+  </div>
+</footer>
+
+<script src="../js/hotel-api.js?v=19"></script>
+<script src="../js/sky-api.js?v=18"></script>
+<script src="../js/wishlist.js"></script>
+<script>
+(function () {
+  if (window.HotelAPI && window.HotelAPI.isAdminSession && window.HotelAPI.isAdminSession()) {
+    if (parent !== window) {
+      parent.postMessage({ skyToast: "Tài khoản Quản trị viên không sử dụng danh sách phòng yêu thích.", skyGo: "mgr" }, "*");
+    } else {
+      location.replace("dashboard-quan-ly.html");
+    }
+    return;
+  }
+  var listView = document.getElementById("fav-list-view");
+  var countNum = document.getElementById("fav-count-num");
+  var clearBtn = document.getElementById("btn-clear-all");
+  var backBtn = document.getElementById("btn-back-rooms");
+
+  function fmt(n) {
+    return Number(n).toLocaleString("vi-VN") + "đ";
+  }
+
+  function render() {
+    var ids = window.SkyWishlist ? window.SkyWishlist.getAll() : [];
+    countNum.textContent = ids.length;
+
+    if (!ids.length) {
+      clearBtn.style.display = "none";
+      listView.innerHTML =
+        '<div class="fav-empty">' +
+        '<div class="fav-empty-icon">🤍</div>' +
+        '<h3>Chưa có phòng nào trong danh sách yêu thích</h3>' +
+        '<p>Khám phá 5 hạng phòng cao cấp từ Superior đến Presidential Suite và nhấn nút “Lưu vào danh sách” để lưu lại xem sau.</p>' +
+        '<button class="btn-go-rooms" id="empty-go-rooms" type="button">Khám phá các hạng phòng ngay</button>' +
+        '</div>';
+
+      var goRooms = document.getElementById("empty-go-rooms");
+      if (goRooms) {
+        goRooms.onclick = function () {
+          if (parent !== window) parent.postMessage({ skyGo: "rooms" }, "*");
+          else location.href = "chon-phong.html";
+        };
+      }
+      return;
+    }
+
+    clearBtn.style.display = "inline-block";
+
+    var rooms = ids.map(function (id) {
+      return window.SkyAPI.getRoomType(id);
+    }).filter(Boolean);
+
+    listView.innerHTML = '<div class="fav-grid">' + rooms.map(function (r) {
+      return (
+        '<article class="fav-card">' +
+        '<div class="fav-card-img-wrap">' +
+        '<img src="' + r.image + '" alt="Phòng ' + r.name + '" loading="lazy">' +
+        '<button class="fav-remove-btn" data-rm="' + r.id + '" title="Bỏ khỏi yêu thích">♥</button>' +
+        '<span class="fav-badge-tag">' + (r.area + ' m² · ' + r.capacity + ' khách') + '</span>' +
+        '</div>' +
+        '<div class="fav-card-body">' +
+        '<div>' +
+        '<h2 class="fav-card-title">' + r.name + '</h2>' +
+        '<div class="fav-card-view">' + (r.view || 'View thành phố') + '</div>' +
+        '<div class="fav-card-meta">' +
+        '<span>🛏️ ' + r.bed + '</span>' +
+        '<span>🏢 ' + (r.floor || 'Tầng cao') + '</span>' +
+        '</div>' +
+        '<p class="fav-card-desc">' + (r.desc || '') + '</p>' +
+        '</div>' +
+        '<div class="fav-card-foot">' +
+        '<div class="fav-price-row">' +
+        '<span class="fav-price-label">Giá mỗi đêm:</span>' +
+        '<span class="fav-price-val">' + fmt(r.price) + '<small>/đêm</small></span>' +
+        '</div>' +
+        '<div class="fav-card-btns">' +
+        '<button class="btn-detail" data-detail="' + r.id + '">Xem chi tiết</button>' +
+        '<button class="btn-book-fav" data-book="' + r.id + '">Đặt ngay</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</article>'
+      );
+    }).join("") + '</div>';
+  }
+
+  document.addEventListener("click", function (e) {
+    var rmBtn = e.target.closest("[data-rm]");
+    if (rmBtn) {
+      var id = rmBtn.getAttribute("data-rm");
+      if (window.SkyWishlist) {
+        window.SkyWishlist.remove(id);
+        render();
+      }
+      return;
+    }
+
+    var dtBtn = e.target.closest("[data-detail]");
+    if (dtBtn) {
+      var rid = dtBtn.getAttribute("data-detail");
+      if (parent !== window) parent.postMessage({ skyGo: "detail:" + rid }, "*");
+      else location.href = "chi-tiet-phong.html#" + encodeURIComponent(rid);
+      return;
+    }
+
+    var bkBtn = e.target.closest("[data-book]");
+    if (bkBtn) {
+      if (parent !== window) parent.postMessage({ skyGo: "rooms" }, "*");
+      else location.href = "chon-phong.html";
+      return;
+    }
+  });
+
+  if (clearBtn) {
+    clearBtn.onclick = function () {
+      var doClear = function () {
+        if (window.SkyWishlist) window.SkyWishlist.clear();
+        render();
+        if (window.SkyUI) window.SkyUI.toast("Đã xóa toàn bộ danh sách phòng yêu thích");
+      };
+      if (window.SkyUI) {
+        window.SkyUI.confirm("Bạn có chắc chắn muốn xóa toàn bộ danh sách phòng yêu thích không?").then(function (ok) {
+          if (ok) doClear();
+        });
+      }
+    };
+  }
+
+  if (backBtn) {
+    backBtn.onclick = function () {
+      if (parent !== window) parent.postMessage({ skyGo: "rooms" }, "*");
+      else location.href = "chon-phong.html";
+    };
+  }
+
+  window.addEventListener("sky_wishlist_change", render);
+  render();
+})();
+</script>
+<script src="../js/ui-dialog.js?v=1"></script>
+<script src="../js/bridge.js"></script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+/* ==========================================================================
+   SKY HOTEL - Danh sách yêu thích (Wishlist Page)
+   Kế thừa toàn bộ token và bảng màu chuẩn Deep Sky từ theme.css
+   ========================================================================== */
+
+body[data-page="fav"] {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.fav-hero {
+  background: var(--navy);
+  color: #fff;
+  padding: 42px 20px 46px;
+  border-bottom: 1px solid var(--gold-border);
+  text-align: center;
+}
+
+.fav-hero-in {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fav-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.fav-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3.5vw, 36px);
+  margin: 0 0 10px;
+  color: #fff;
+}
+
+.fav-hero p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14.5px;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.fav-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 30px 24px 60px;
+}
+
+.fav-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+.fav-status {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.fav-status span {
+  color: var(--gold-text);
+  font-weight: 700;
+}
+
+.fav-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.fav-btn-action {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.fav-btn-action:hover {
+  border-color: var(--err);
+  color: var(--err);
+  background: rgba(192, 57, 43, 0.05);
+}
+
+.fav-btn-explore {
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--gold);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.fav-btn-explore:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Grid danh sách phòng yêu thích */
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.fav-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  position: relative;
+}
+
+.fav-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--gold);
+}
+
+.fav-card-img-wrap {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+}
+
+.fav-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.fav-card:hover .fav-card-img-wrap img {
+  transform: scale(1.05);
+}
+
+.fav-remove-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 0;
+  color: var(--err);
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.fav-remove-btn:hover {
+  transform: scale(1.15);
+  background: #fff;
+}
+
+.fav-badge-tag {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(23, 43, 58, 0.85);
+  backdrop-filter: blur(4px);
+  color: #f7e7c4;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-border);
+}
+
+.fav-card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fav-card-title {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--text);
+}
+
+.fav-card-view {
+  font-size: 12.5px;
+  color: var(--gold-text);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.fav-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.fav-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fav-card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.fav-card-foot {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: auto;
+}
+
+.fav-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.fav-price-label {
+  font-size: 11.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.fav-price-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold-text);
+  font-family: var(--serif);
+}
+
+.fav-price-val small {
+  font-size: 12px;
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.fav-card-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-detail {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-detail:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-book-fav {
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--gold);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.btn-book-fav:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Empty state */
+.fav-empty {
+  text-align: center;
+  padding: 70px 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.fav-empty-icon {
+  font-size: 54px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.fav-empty h3 {
+  font-family: var(--serif);
+  font-size: 24px;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.fav-empty p {
+  color: var(--muted);
+  font-size: 14.5px;
+  max-width: 480px;
+  margin: 0 auto 24px;
+}
+
+.btn-go-rooms {
+  display: inline-block;
+  background: var(--primary);
+  border: 1px solid var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 14px 32px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.btn-go-rooms:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 767.98px) {
+  .fav-hero {
+    padding: 24px 16px;
+  }
+  .fav-container {
+    padding: 20px 14px 40px;
+  }
+  .fav-grid {
+    grid-template-columns: 1fr;
+  }
+}

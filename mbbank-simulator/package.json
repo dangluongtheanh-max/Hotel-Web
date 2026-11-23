@@ -1,0 +1,15 @@
+{
+  "name": "mbbank-simulator",
+  "version": "1.0.0",
+  "description": "App MB Bank giả lập (quét QR VietQR) + server webhook/polling, tách từ BrewLite để dùng cho dự án khác",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "rebrand": "node scripts/rebrand.js",
+    "test": "node scripts/smoke-test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4"
+  }
+}

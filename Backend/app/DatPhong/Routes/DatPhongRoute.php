@@ -29,6 +29,11 @@ class DatPhongRoute
         // New route: lịch sử phiếu đặt phòng của khách hiện tại
         $router->get('/datphong/lichsu', [DatPhongController::class, 'lichSuDatPhong']);
         $router->post('/datphong/lichsu', [DatPhongController::class, 'lichSuDatPhong']);
+        // New route: chính sách hủy phòng & khách hàng tự hủy phòng online
+        $router->get('/datphong/chinhsachhuy', [DatPhongController::class, 'chinhSachHuy']);
+        $router->get('/datphong/tinhtienhoan', [DatPhongController::class, 'tinhTienHoan']);
+        $router->post('/datphong/tinhtienhoan', [DatPhongController::class, 'tinhTienHoan']);
+        $router->post('/datphong/huy', [DatPhongController::class, 'huyDatPhong']);
         // New route: cập nhật thông tin người lưu trú
         $router->post('/datphong/capnhatnguoiluutru', [DatPhongController::class, 'capNhatNguoiLuuTru']);
 

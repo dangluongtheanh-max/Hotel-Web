@@ -6,8 +6,11 @@ namespace App\ThanhToan\Services;
 
 use App\ThanhToan\Repositories\ThanhToanGiaoDichRepository;
 use App\HoaDon\Repositories\HoaDonRepository;
+use App\KhachHang\Repositories\KhachHangRepository;
+use App\LeTan\Services\LeTanPhieuService;
 use Database\Database;
 use PDO;
+use Shared\ChinhSachHoanHuy;
 
 /**
  * Service chuyên trách quản lý giao dịch thanh toán (VietQR Napas 247 MBBank),
@@ -18,6 +21,7 @@ class ThanhToanGiaoDichService
     private ThanhToanGiaoDichRepository $repo;
     private HoaDonRepository $hoaDonRepo;
     private ?ThanhToanDoiSoatService $doiSoatService;
+    private ?LeTanPhieuService $leTanPhieuService;
 
     // Cấu hình tài khoản MBBank chính thức của khách sạn
     public const BANK_ID = 'MB';
@@ -29,11 +33,13 @@ class ThanhToanGiaoDichService
     public function __construct(
         ?ThanhToanGiaoDichRepository $repo = null,
         ?HoaDonRepository $hoaDonRepo = null,
-        ?ThanhToanDoiSoatService $doiSoatService = null
+        ?ThanhToanDoiSoatService $doiSoatService = null,
+        ?LeTanPhieuService $leTanPhieuService = null
     ) {
         $this->repo = $repo ?? new ThanhToanGiaoDichRepository();
         $this->hoaDonRepo = $hoaDonRepo ?? new HoaDonRepository();
         $this->doiSoatService = $doiSoatService;
+        $this->leTanPhieuService = $leTanPhieuService;
     }
 
     public function setDoiSoatService(ThanhToanDoiSoatService $doiSoatService): void
@@ -220,15 +226,16 @@ class ThanhToanGiaoDichService
     }
 
     /**
-     * Quy trình Hoàn Tiền (Điền Form STK nhận lại tiền).
+     * Quy trình Hoàn Tiền & Hủy phòng hợp nhất (gọi chung quy tắc Shared\ChinhSachHoanHuy qua LeTanPhieuService).
      */
     public function yeuCauHoanTien(array $params): array
     {
-        $maHD = trim($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? '')));
-        $nganHangHoan = trim($params['NganHangHoan'] ?? '');
-        $stkHoan = trim($params['STKHoan'] ?? '');
-        $tenChuTKHoan = strtoupper(trim($params['TenChuTKHoan'] ?? ''));
-        $lyDoHoan = trim($params['LyDoHoan'] ?? 'Khách yêu cầu hủy phòng');
+        $maHD = trim((string)($params['MaHD'] ?? ($params['maHD'] ?? ($params['ma_hd'] ?? ''))));
+        $maPhong = trim((string)($params['MaPhong'] ?? ($params['maPhong'] ?? '')));
+        $nganHangHoan = trim((string)($params['NganHangHoan'] ?? ($params['nganHangHoan'] ?? '')));
+        $stkHoan = trim((string)($params['STKHoan'] ?? ($params['stkHoan'] ?? '')));
+        $tenChuTKHoan = strtoupper(trim((string)($params['TenChuTKHoan'] ?? ($params['tenChuTKHoan'] ?? ''))));
+        $lyDoHoan = trim((string)($params['LyDoHoan'] ?? ($params['lyDoHoan'] ?? 'Khách yêu cầu hủy phòng')));
 
         if (empty($maHD) || empty($nganHangHoan) || empty($stkHoan) || empty($tenChuTKHoan)) {
             return ['success' => false, 'error' => 'Vui lòng điền đầy đủ Ngân hàng, Số tài khoản và Tên chủ tài khoản nhận tiền hoàn.'];
@@ -239,55 +246,70 @@ class ThanhToanGiaoDichService
             return ['success' => false, 'error' => "Không tìm thấy giao dịch của hóa đơn '{$maHD}'."];
         }
 
-        if ($tt['TrangThaiThanhToan'] !== 'HoanTat') {
-            return ['success' => false, 'error' => "Hóa đơn '{$maHD}' chưa thanh toán hoàn tất, không thể hoàn tiền."];
+        if (!in_array($tt['TrangThaiThanhToan'], [ChinhSachHoanHuy::TT_HOAN_TAT, ChinhSachHoanHuy::TT_HOAN_MOT_PHAN], true)) {
+            return ['success' => false, 'error' => "Hóa đơn '{$maHD}' chưa thanh toán hoàn tất hoặc đã hoàn đủ, không thể hoàn tiền."];
         }
-
-        $soTienGoc = (float)$tt['SoTien'];
-        $tiLeHoan = 1.0;
-        $chinhSachGiaiThich = 'Hủy trước 24h: Hoàn 100% tiền';
 
         $hoaDon = $this->hoaDonRepo->findHoaDonById($maHD);
-        $pnp = $this->hoaDonRepo->getPhieuNhanPhongFull($hoaDon['MaPhieu']);
-        if ($pnp && !empty($pnp['DanhSachPhong'][0]['ThoiGianNhanPhong'])) {
-            $gioNhanPhong = strtotime($pnp['DanhSachPhong'][0]['ThoiGianNhanPhong']);
-            $soGioConLai = ($gioNhanPhong - time()) / 3600;
-
-            if ($soGioConLai < 24 && $soGioConLai > 0) {
-                $tiLeHoan = 0.70;
-                $chinhSachGiaiThich = 'Hủy trong vòng 24h trước giờ nhận phòng: Khấu trừ 30% phí hủy';
-            } elseif ($soGioConLai <= 0) {
-                $tiLeHoan = 0.50;
-                $chinhSachGiaiThich = 'Hủy sau giờ nhận phòng quy định: Khấu trừ 50% phí hủy';
-            }
+        if (!$hoaDon || empty($hoaDon['MaPhieu'])) {
+            return ['success' => false, 'error' => "Không tìm thấy phiếu đặt phòng gắn với hóa đơn '{$maHD}'."];
         }
 
-        $soTienHoan = round($soTienGoc * $tiLeHoan);
-        $phiHuy = $soTienGoc - $soTienHoan;
+        $cancelParams = [
+            'maPhieu' => $hoaDon['MaPhieu'],
+            'maPhong' => $maPhong,
+            'lyDo' => $lyDoHoan,
+            'nganHangHoan' => $nganHangHoan,
+            'stkHoan' => $stkHoan,
+            'tenChuTKHoan' => $tenChuTKHoan,
+        ];
 
-        $this->repo->saveRefund($tt['MaThanhToan'], [
-            'SoTienHoan' => $soTienHoan,
-            'NganHangHoan' => $nganHangHoan,
-            'STKHoan' => $stkHoan,
-            'TenChuTKHoan' => $tenChuTKHoan,
-            'LyDoHoan' => $lyDoHoan . " ({$chinhSachGiaiThich})",
-            'ThoiGianHoan' => date('Y-m-d H:i:s'),
-        ]);
+        $maTK = trim((string)($params['maTK'] ?? ($params['MaTK'] ?? '')));
+        if ($maTK !== '') {
+            $khach = (new KhachHangRepository(new Database()))->findByMaTK($maTK);
+            if ($khach && !empty($khach['MaKH'])) {
+                $cancelParams['actor'] = 'khachHang';
+                $cancelParams['maKH'] = $khach['MaKH'];
+            } else {
+                $cancelParams['maTK'] = $maTK;
+            }
+        }
+        if (!empty($params['maLeTan']) || !empty($params['MaLeTan'])) {
+            $cancelParams['maLeTan'] = $params['maLeTan'] ?? $params['MaLeTan'];
+        }
 
-        $vietQrHoanUrl = "https://img.vietqr.io/image/{$nganHangHoan}-{$stkHoan}-compact2.png"
-            . "?amount=" . (int)$soTienHoan
-            . "&addInfo=" . urlencode("HOAN TIEN " . $maHD)
-            . "&accountName=" . urlencode($tenChuTKHoan);
+        try {
+            $phieuService = $this->leTanPhieuService ?? new LeTanPhieuService();
+            $cancelRes = $phieuService->huyPhieu($cancelParams);
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+
+        $hoanInfo = $cancelRes['data']['hoanTien'] ?? [];
+        $soTienGoc = (float)$tt['SoTien'];
+        $soTienHoan = (float)($hoanInfo['soTienHoan'] ?? 0);
+        $phiHuy = (float)($hoanInfo['phiHuy'] ?? 0);
+        $chinhSachGiaiThich = $hoanInfo['moTaChinhSach'] ?? '';
+
+        $vietQrHoanUrl = null;
+        if ($soTienHoan > 0) {
+            $vietQrHoanUrl = "https://img.vietqr.io/image/{$nganHangHoan}-{$stkHoan}-compact2.png"
+                . "?amount=" . (int)$soTienHoan
+                . "&addInfo=" . urlencode("HOAN TIEN " . $maHD)
+                . "&accountName=" . urlencode($tenChuTKHoan);
+        }
 
         return [
             'success' => true,
-            'message' => "Đã duyệt hoàn tiền cho hóa đơn '{$maHD}' thành công!",
+            'message' => $cancelRes['message'] ?? "Đã xử lý hủy & hoàn tiền cho hóa đơn '{$maHD}' thành công!",
             'data' => [
                 'MaHD' => $maHD,
+                'MaPhieu' => $hoaDon['MaPhieu'],
                 'MaThanhToan' => $tt['MaThanhToan'],
                 'SoTienGoc' => $soTienGoc,
                 'PhiHuy' => $phiHuy,
                 'SoTienHoan' => $soTienHoan,
+                'TiLeHoan' => $hoanInfo['tiLeHoan'] ?? 0,
                 'ChinhSach' => $chinhSachGiaiThich,
                 'TaiKhoanNhanHoan' => [
                     'NganHang' => $nganHangHoan,
@@ -295,7 +317,8 @@ class ThanhToanGiaoDichService
                     'ChuTaiKhoan' => $tenChuTKHoan,
                 ],
                 'VietQrHoanUrl' => $vietQrHoanUrl,
-                'ThoiGianHoan' => date('Y-m-d H:i:s')
+                'ThoiGianHoan' => date('Y-m-d H:i:s'),
+                'HoanTienChiTiet' => $hoanInfo,
             ]
         ];
     }

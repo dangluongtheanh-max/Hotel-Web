@@ -642,16 +642,14 @@
                             placeholder="VD: Thay đổi lịch trình công tác, bận việc đột xuất...">
                     </div>
 
-                    <!-- Bảng chính sách hoàn tiền -->
+                    <!-- Bảng chính sách hoàn tiền (nạp đồng bộ từ Backend API) -->
                     <div class="card"
                         style="background: rgba(15, 23, 42, 0.4); border: 1px dashed #64748b; margin-top: 14px;">
                         <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
-                            📋 Chính sách hoàn tiền của khách sạn:
+                            📋 Chính sách hoàn tiền chuẩn của khách sạn:
                         </div>
-                        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.8;">
-                            • <b>Hủy trước 24h:</b> Hoàn <b>100%</b> số tiền hóa đơn.<br>
-                            • <b>Hủy trong vòng 24h:</b> Khấu trừ <b>30%</b> phí giữ phòng (Hoàn 70%).<br>
-                            • <b>Hủy sau giờ nhận phòng:</b> Khấu trừ <b>50%</b> phí hủy phòng.
+                        <div id="refundPolicyRulesBox" style="font-size: 12px; color: var(--text-muted); line-height: 1.8;">
+                            Đang tải chính sách hoàn tiền...
                         </div>
                     </div>
 
@@ -958,7 +956,13 @@
                     • <b>SỐ TIỀN THỰC HOÀN:</b> <b style="color: #34d399; font-size: 16px;">${new Intl.NumberFormat('vi-VN').format(info.SoTienHoan)} đ</b><br>
                     • Chuyển về: <b>${info.TaiKhoanNhanHoan.SoTaiKhoan}</b> (${info.TaiKhoanNhanHoan.NganHang}) - Chủ TK: <b>${info.TaiKhoanNhanHoan.ChuTaiKhoan}</b>
                 `;
-                    document.getElementById('imgRefundQR').src = info.VietQrHoanUrl;
+                    const qrImg = document.getElementById('imgRefundQR');
+                    if (info.VietQrHoanUrl) {
+                        qrImg.src = info.VietQrHoanUrl;
+                        qrImg.parentElement.style.display = 'block';
+                    } else {
+                        qrImg.parentElement.style.display = 'none';
+                    }
                     loadPaymentList();
                 } else {
                     alertBox.className = 'alert-box error';
@@ -982,7 +986,9 @@
                     tbody.innerHTML = resPayload.data.map(item => {
                         let badge = '<span class="status-badge status-pending">Chờ thanh toán</span>';
                         if (item.TrangThaiThanhToan === 'HoanTat') badge = '<span class="status-badge status-paid">Đã thanh toán</span>';
+                        if (item.TrangThaiThanhToan === 'HoanTienMotPhan') badge = '<span class="status-badge status-refunded">Hoàn tiền một phần</span>';
                         if (item.TrangThaiThanhToan === 'DaHoanTien') badge = '<span class="status-badge status-refunded">Đã hoàn tiền</span>';
+                        if (item.TrangThaiThanhToan === 'DaHuy') badge = '<span class="status-badge status-pending">Đã hủy</span>';
 
                         const hoanInfo = item.STKHoan ? `${item.STKHoan} (${item.NganHangHoan}) - ${item.TenChuTKHoan}` : '—';
                         const tienHoan = item.SoTienHoan > 0 ? new Intl.NumberFormat('vi-VN').format(item.SoTienHoan) + ' đ' : '0 đ';
@@ -1008,9 +1014,25 @@
             }
         }
 
+        async function loadCancellationPolicy() {
+            const box = document.getElementById('refundPolicyRulesBox');
+            if (!box) return;
+            try {
+                const res = await fetch('/datphong/chinhsachhuy');
+                const json = await res.json();
+                const rules = (json.data && json.data.quyTac) || [];
+                if (rules.length > 0) {
+                    box.innerHTML = rules.map(r => `• <b>${r.thoiDiem}:</b> ${r.moTa}`).join('<br>');
+                }
+            } catch (e) {
+                box.textContent = 'Không tải được chính sách hoàn tiền từ máy chủ.';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadPaymentForInvoice();
             loadPaymentList();
+            loadCancellationPolicy();
         });
     </script>
 

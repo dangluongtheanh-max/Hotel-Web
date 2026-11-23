@@ -378,7 +378,7 @@ class KhuyenMaiXuLyService
             $stmtUsed = $db->prepare(
                 "SELECT COUNT(*) FROM PhieuNhanPhong p 
                  JOIN KhuyenMai k ON p.MaKM = k.MaKM 
-                 WHERE p.MaKH = ? AND (
+                 WHERE p.MaKH = ? AND p.TrangThai != 'DaHuy' AND (
                      k.MaKM = 'KM001' 
                      OR k.TenKM LIKE '%khách mới%' 
                      OR k.TenKM LIKE '%khach hang moi%' 

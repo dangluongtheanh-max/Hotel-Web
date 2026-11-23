@@ -106,6 +106,22 @@ class DatPhongController
         }
     }
 
+    private function extractMaTK(array $params): ?string
+    {
+        $maTK = trim((string)($params['maTK'] ?? ($params['MaTK'] ?? '')));
+        if ($maTK === '') {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (empty($authHeader) && function_exists('getallheaders')) {
+                $headers = getallheaders();
+                $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+            }
+            if (!empty($authHeader)) {
+                $maTK = trim(str_replace(['Bearer ', 'bearer '], '', $authHeader));
+            }
+        }
+        return $maTK !== '' ? $maTK : null;
+    }
+
     /**
      * API Xem chi tiết phiếu đặt phòng (xác minh quyền sở hữu của khách hàng)
      * POST /datphong/xemctphieu
@@ -119,20 +135,9 @@ class DatPhongController
                 return Response::error($response, 'Mã phiếu không hợp lệ.', 400);
             }
 
-            // Lấy maTK từ request hoặc Authorization header
-            $maTK = trim($params['maTK'] ?? '');
-            if ($maTK === '') {
-                $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-                if (empty($authHeader) && function_exists('getallheaders')) {
-                    $headers = getallheaders();
-                    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-                }
-                if (!empty($authHeader)) {
-                    $maTK = trim(str_replace(['Bearer ', 'bearer '], '', $authHeader));
-                }
-            }
+            $maTK = $this->extractMaTK($params);
 
-            $result = $this->service->xemChiTietPhieu($maPhieu, $maTK ?: null);
+            $result = $this->service->xemChiTietPhieu($maPhieu, $maTK);
             if (!$result) {
                 return Response::error($response, 'Không tìm thấy phiếu nhận phòng.', 404);
             }
@@ -151,22 +156,55 @@ class DatPhongController
     {
         try {
             $params = $request->all();
-            $maTK = trim($params['maTK'] ?? '');
-            if ($maTK === '') {
-                $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-                if (empty($authHeader) && function_exists('getallheaders')) {
-                    $headers = getallheaders();
-                    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-                }
-                if (!empty($authHeader)) {
-                    $maTK = trim(str_replace(['Bearer ', 'bearer '], '', $authHeader));
-                }
-            }
+            $maTK = $this->extractMaTK($params);
 
-            $result = $this->service->capNhatNguoiLuuTru($params, $maTK ?: null);
+            $result = $this->service->capNhatNguoiLuuTru($params, $maTK);
             return Response::json($response, $result);
         } catch (Exception $e) {
             $code = in_array($e->getCode(), [400, 403, 404, 500], true) ? $e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $code);
+        }
+    }
+
+    /**
+     * API Lấy chính sách hủy phòng & hoàn tiền chuẩn của hệ thống
+     * GET /datphong/chinhsachhuy
+     */
+    public function chinhSachHuy($request, $response)
+    {
+        return Response::json($response, $this->service->layChinhSachHoanHuy());
+    }
+
+    /**
+     * API Khách hàng xem trước tiền hoàn dự kiến khi hủy toàn phiếu hoặc từng phòng
+     * GET|POST /datphong/tinhtienhoan
+     */
+    public function tinhTienHoan($request, $response)
+    {
+        try {
+            $params = $request->all();
+            $maTK = $this->extractMaTK($params);
+            $result = $this->service->tinhTienHoanKhach($params, $maTK);
+            return Response::json($response, $result);
+        } catch (Exception $e) {
+            $code = in_array((int)$e->getCode(), [400, 401, 403, 404], true) ? (int)$e->getCode() : 400;
+            return Response::error($response, $e->getMessage(), $code);
+        }
+    }
+
+    /**
+     * API Khách hàng tự hủy đặt phòng online & ghi nhận yêu cầu hoàn tiền
+     * POST /datphong/huy
+     */
+    public function huyDatPhong($request, $response)
+    {
+        try {
+            $params = $request->all();
+            $maTK = $this->extractMaTK($params);
+            $result = $this->service->huyDatPhongKhach($params, $maTK);
+            return Response::json($response, $result);
+        } catch (Exception $e) {
+            $code = in_array((int)$e->getCode(), [400, 401, 403, 404], true) ? (int)$e->getCode() : 400;
             return Response::error($response, $e->getMessage(), $code);
         }
     }
@@ -179,19 +217,7 @@ class DatPhongController
     {
         try {
             $params = $request->all();
-            $maTK = trim($params['maTK'] ?? '');
-
-            // Fallback sang Authorization header nếu client truyền qua header
-            if ($maTK === '') {
-                $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-                if (empty($authHeader) && function_exists('getallheaders')) {
-                    $headers = getallheaders();
-                    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-                }
-                if (!empty($authHeader)) {
-                    $maTK = trim(str_replace(['Bearer ', 'bearer '], '', $authHeader));
-                }
-            }
+            $maTK = $this->extractMaTK($params) ?? '';
 
             if ($maTK === '') {
                 return Response::error($response, 'Vui lòng đăng nhập tài khoản khách hàng để xem lịch sử đặt phòng.', 401);

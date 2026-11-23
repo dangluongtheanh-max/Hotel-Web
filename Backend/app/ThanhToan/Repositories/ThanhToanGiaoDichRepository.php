@@ -111,6 +111,8 @@ class ThanhToanGiaoDichRepository
     {
         $db = $db ?? $this->getConnection();
 
+        $trangThaiMoi = $refundData['TrangThaiThanhToan'] ?? 'DaHoanTien';
+
         // Kiểm tra xem bảng ThanhToan có các cột hoàn tiền chưa
         try {
             $checkCols = $db->query("SHOW COLUMNS FROM ThanhToan LIKE 'SoTienHoan'")->fetch();
@@ -123,7 +125,7 @@ class ThanhToanGiaoDichRepository
                         TenChuTKHoan = :tenChuTKHoan,
                         LyDoHoan = :lyDoHoan,
                         ThoiGianHoan = :thoiGianHoan,
-                        TrangThaiThanhToan = 'DaHoanTien'
+                        TrangThaiThanhToan = :trangThaiMoi
                     WHERE MaThanhToan = :maTT
                 ");
                 return $stmt->execute([
@@ -133,13 +135,14 @@ class ThanhToanGiaoDichRepository
                     ':tenChuTKHoan' => $refundData['TenChuTKHoan'] ?? '',
                     ':lyDoHoan' => $refundData['LyDoHoan'] ?? '',
                     ':thoiGianHoan' => $refundData['ThoiGianHoan'] ?? date('Y-m-d H:i:s'),
+                    ':trangThaiMoi' => $trangThaiMoi,
                     ':maTT' => $maTT
                 ]);
             }
         } catch (\Throwable $e) {}
 
-        // Fallback an toàn: Cập nhật trạng thái thành DaHoanTien nếu chưa có các cột phụ
-        return $this->capNhatTrangThai($maTT, 'DaHoanTien', $db);
+        // Fallback an toàn: Cập nhật trạng thái nếu chưa có các cột phụ
+        return $this->capNhatTrangThai($maTT, $trangThaiMoi, $db);
     }
 
     // Các hàm tương thích
